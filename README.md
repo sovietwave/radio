@@ -1,15 +1,4 @@
-# swr-app
-Soviet Wave Radio application
+# radio wrapper investigation
 
-```bash
-npm i
-npx cap sync @capacitor-community/electron
-npx cap open @capacitor-community/electron
-
-# bundling
-cd electron
-npm run make
-npm run package
-```
-
-
+- `cap` for Capacitor approach
+- `tau` for Tauri approach (v2 beta)
