@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Soviet Radio</string>
+    <string name="title_activity_main">Soviet Radio</string>
+    <string name="package_name">su.wave.radio</string>
+    <string name="custom_url_scheme">su.wave.radio</string>
+</resources>
