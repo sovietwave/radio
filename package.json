@@ -1,0 +1,15 @@
+{
+    "name": "swr",
+    "version": "0.0.1",
+    "type": "module",
+    "dependencies": {
+        "@capacitor/core": "^6.1.0"
+    },
+    "devDependencies": {
+        "@capacitor/cli": "^6.1.0",
+        "@capacitor-community/tauri": "^1.0.0-alpha.1",
+        "@capacitor/android": "^6.1.0",
+        "@capacitor/ios": "^6.1.0",
+        "@capacitor-community/electron": "^5.0.1"
+    }
+}
