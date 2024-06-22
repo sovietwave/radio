@@ -29,5 +29,10 @@
       "icons/512x512.png",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
   }
 }
