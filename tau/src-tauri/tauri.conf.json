@@ -1,7 +1,7 @@
 {
-  "productName": "swr",
+  "productName": "Sovietwave Radio",
   "version": "0.0.1",
-  "identifier": "su.wave.radio.app",
+  "identifier": "su.wave.radio",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -14,7 +14,8 @@
       {
         "title": "Радио «Советская Волна»",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "maximized": true
       }
     ],
     "security": {
