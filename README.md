@@ -1,5 +1,7 @@
 # radio wrapper investigation
 
+Application wrapper for [Soviet Wave Radio](sovietwave.su) site ([source-code](https://github.com/sovietwave))
+
 - `cap` for Capacitor approach
 - `tau` for Tauri approach (v2 beta)
 
