@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+
+    <meta name="description" content="Современная отечественная музыка, вдохновлённая мечтами из прошлого.">
+    <meta name="keywords" content="радио, ссср, советское, советская волна, советвейв, советвэйв,
+    radio, sovietwave, chillwave, retrowave, dreamwave, dreampop, weedwave, indie, ussr, soviet union">
+
+    <link rel="stylesheet" href="./styles/fonts.css">
+    <link rel="stylesheet" href="./styles/rangeinput.css">
+    <link rel="stylesheet" href="./styles/soviet.css">
+    <link rel="stylesheet" href="./styles/navi.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/sprites/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/sprites/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/sprites/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <meta property="og:image" content="/assets/sprites/favicons/social.jpg">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Советская Волна">
+    <meta name="application-name" content="Советская Волна">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <script src="https://static.nay.su/js/jquery.js" type="text/javascript"></script>
+    <script src="https://static.nay.su/js/util.js" type="text/javascript"></script>
+
+    <script type="module" src="./src/js/radio.js"></script>
+    <script type="module" src="./src/js/core.js"></script>
+
+    <title>Радио &laquo;Советская Волна&raquo;</title>
+</head>
+
+<body>
+    <script type="module" src="./src/index.ts"></script>
+
+    <div id="cover-image"></div>
+    <div id="bright-overlay" onclick="hideLeftPanels()"></div>
+    <div id="frame-overlay"></div>
+
+    <div id="player-wrapper">
+        <div id="player">
+            <div id="player-artist" class="player-track">
+                <a target="_blank" title="Cтраница артиста" id="player-artist-link"></a>
+            </div>
+
+            <div id="player-title" class="player-track">
+
+            </div>
+
+            <div id="player-switch" class="player-switch-stalled" onclick="radioToggle()"></div>
+
+            <div id="player-city" class="player-track"></div>
+
+
+        </div>
+    </div>
+
+    <!-- LINKS -->
+    <div id="panel">
+        <div id="panel-left-gradient"></div>
+
+        <div id="links">
+
+            <div id="links-title-section">
+                <div id="links-title">#sovietwave</div>
+                <div id="links-subtitle">Современная отечественная музыка<br>вдохновлённая мечтами из прошлого</div>
+            </div>
+
+            <div id="panel-title-gradient"></div>
+            <div id="panel-top-gradient"></div>
+            <div id="panel-bottom-gradient"></div>
+
+            <div id="links-center-back">
+                <div id="links-list">
+                    <div id="links-button-heart" class="links-label link" target="_blank">Наши соцсети</div>
+
+                    <a href="https://vk.com/soviet_wave" id="links-button-vk" class="links-button link"
+                        target="_blank"><img src="assets/sprites/icons/vk.svg" width="32"
+                            class="links-icon" />Сообщество</a>
+
+
+                    <a href="https://t.me/sovietwave" id="links-button-telegram" class="links-button link"
+                        target="_blank"><img src="assets/sprites/icons/telegram.svg" width="32"
+                            class="links-icon" />Канал</a>
+
+                    <a href="https://t.me/sovietwave_chat" id="links-button-chat" class="links-button link"
+                        target="_blank"><img src="assets/sprites/icons/chat.svg" width="32"
+                            class="links-icon" />Кухонька</a>
+
+                    <!--
+				<a href="https://soundcloud.com/sovietwave" id="links-button-soundcloud"
+				class="links-button link" target="_blank"><img
+				src="assets/sprites/icons/soundcloud.svg" width="32" class="links-icon" />Soundcloud</a>
+				-->
+
+                    <!--
+				<a href="https://www.twitch.tv/soviet_wave" id="links-button-twitch"
+				class="links-button link" target="_blank"><img
+				src="assets/sprites/icons/twitch.svg" width="32" class="links-icon" />Twitch</a>
+				-->
+
+                    <!--
+				<a href="https://vk.com/lostslides" id="links-button-lostslides"
+				class="links-button link" target="_blank"><img
+				src="assets/sprites/icons/lostslides.svg" width="32" class="links-icon" />Lost Slides</a>-->
+
+                    <div id="links-button-heart" class="links-label-new link" target="_blank"><img
+                            src="assets/sprites/icons/heart.svg" width="32" class="links-icon-new" />Поддержать</div>
+
+                    <a href="https://www.donationalerts.com/r/soviet_wave" id="links-button-donate"
+                        class="links-button link" target="_blank"><img src="assets/sprites/icons/donate.svg" width="32"
+                            class="links-icon" />Донатом</a>
+
+                    <a href="https://boosty.to/soviet_wave" id="links-button-boosty" class="links-button link"
+                        target="_blank"><img src="assets/sprites/icons/boosty.svg" width="32"
+                            class="links-icon" />Подпиской</a>
+
+
+
+
+                    <!--
+				<a href="https://fb.me/sovietwave" id="links-button-facebook"
+				class="links-button<?php if ($content['site_mode'] == 'night') echo (' night'); ?> link" target="_blank"><img
+				src="assets/sprites/icons/facebook.svg" width="32" class="links-icon" />Facebook</a>-->
+
+                    <!--<div id="links-m3u-container"> -->
+
+                    <div id="links-button-heart" class="links-label link" target="_blank">Файл для плеера</div>
+
+                    <a href="/sovietwave.m3u" id="links-button-m3u" class="links-button link" target="_blank"><img
+                            src="assets/sprites/icons/m3u.svg" width="32" class="links-icon" />sovietwave.m3u</a>
+
+                    <!--
+				<div class="links-label link links-label-bright"><span class="links-label-transparent">Файл для плеера </span>
+					<a href="/sovietwave.m3u" target="_blank">sovietwave.m3u</a>
+				</div>
+				-->
+
+
+                    <div class="links-label link links-label-bright"><span class="links-label-transparent">Фотографии
+                            предоставлены сообществом </span>
+                        <a href="https://vk.com/lostslides" target="_blank">Lost Slides</a>
+                    </div>
+
+
+                    <!--<div id="links-text-m3u">Файл для проигрывателей</div>-->
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- AIR -->
+    <div id="air-panel">
+        <div id="panel-left-gradient"></div>
+
+        <div id="air-list">
+            <div id="air-title-section">
+                <div id="air-title"></div>
+                <div id="air-times"></div>
+                <div id="air-tags"></div>
+            </div>
+
+
+            <div id="panel-title-gradient"></div>
+            <div id="panel-top-gradient"></div>
+            <div id="panel-bottom-gradient"></div>
+
+            <div id="air-playlist-container">
+                <div id="air-playlist">
+                    <!-- Ждём ответа из Центра... -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Yandex.Metrika counter -->
+    <script
+        type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function () { try { w.yaCounter45463833 = new Ya.Metrika2({ id: 45463833, clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: true }); } catch (e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/tag.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks2"); </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/45463833" style="position:absolute; left:-9999px;" alt="" /></div>
+    </noscript> <!-- /Yandex.Metrika counter -->
+    </div>
+    <!-- NAVI -->
+    <div id="navi">
+        <div id="navi-back" onclick="hideLeftPanels()"></div>
+
+        <div class="navi-block" id="left">
+            <div id="navi-links" onclick="toggleLinks()">
+                <div id="standalone-only">Ссылки</div>
+                <img src="/assets/sprites/icons/links.svg" width="32" id="mobile-button">
+            </div>
+
+            <div id="navi-air" onclick="toggleAirPanel()">
+                <div id="standalone-only">Эфир</div>
+                <img src="/assets/sprites/icons/air.svg" width="32" id="mobile-button">
+            </div>
+
+            <div id="panel-active-links"></div>
+            <div id="panel-active-air"></div>
+        </div>
+
+        <div class="navi-block" id="right">
+
+            <div id="listeners-container" class="navi-block-content">
+
+                <img src="/assets/sprites/icons/listeners.svg" width="32" align="absmiddle" hspace="5" /> <span
+                    id="listeners">?</span>
+                <div id="listeners"></div>
+
+            </div>
+
+            <div id="volume-speaker" class="navi-block-content">
+                <img id="volume-speaker-logo" src="/assets/sprites/icons/volume.svg" width="32" align="absmiddle" />
+            </div>
+
+            <div id="volume-container" class="navi-block-content">
+                <input id="volume-range" type="range" min="0" max="100" step="1" id="volume" />
+            </div>
+
+            <a href="#" id="switch-back" title="Сменить фон" class="links-button navi-block-content" onclick="
+                switchCurrentBackground(); return false;">
+                <img src="/assets/sprites/icons/back.svg" width="32" align="absmiddle" />
+            </a>
+        </div>
+
+        <!--
+    <div class="navi-block" id="mobile-left">
+        <div id="navi-links" onclick="toggleLinks()"><img src="/assets/sprites/icons/links.svg" id="mobile-button"></div>
+    </div>
+
+    <div class="navi-block" id="mobile-center"></div>   
+
+    <div class="navi-block" id="mobile-right">        
+        <div id="navi-air" onclick="toggleAirPanel()"><img src="/assets/sprites/icons/air.svg" id="mobile-button"></div>
+    </div>
+-->
+    </div>
+
+
+    <div id="navi-logo"><img src="/assets/sprites/logo.svg" onclick="toggleNavi()" /></div>
+
+
+    <div id="panel-active-air"></div>
+</body>
+
+</html>
