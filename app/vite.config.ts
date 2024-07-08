@@ -33,6 +33,14 @@ export default ({ command }) => defineConfig({
         assetsDir: "",
         reportCompressedSize: false,
         modulePreload: false,
+        rollupOptions: {
+            external: ["jquery"],
+            output: {
+                globals: {
+                    jquery: "$",
+                },
+            },
+        },
     },
     server: {
         port: 8080,

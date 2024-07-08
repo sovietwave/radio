@@ -1,11 +1,12 @@
 import { rnd } from "./common";
+// import $ from "jquery";
 
-var localStorageAvailable = false,
-	siteModeOverridden = true,
+var siteModeOverridden = true,
 	currentIndex = 0,
 	frameIndex = 0,
-	framesCount = 3;
-	
+	framesCount = 3,
+	SITE_MODE = "";
+
 var backs = {
 	"day": {
 		"backs": [
@@ -191,38 +192,37 @@ var volumeSpeaker;
 var volumeContainer;
 var streamOverride = false;
 
-function isMobileMode()
-{
+function isMobileMode() {
 	if ((document.documentElement.scrollWidth <= 800) ||
 		(document.documentElement.scrollHeight <= 500))
-			return true;
+		return true;
 	return false;
 }
 
-function getCurrentMode()
-{
+function getCurrentMode() {
 	var d = new Date();
-	var	nd = new Date(d.getTime() + (10800000)); // 3600000 * 3 (3 - MSK, UTC+3)
+	var nd = new Date(d.getTime() + (10800000)); // 3600000 * 3 (3 - MSK, UTC+3)
 	var t = nd.getUTCHours();
 
-	if (t >= 1       &&        t < 7) 
+	if (t >= 1 && t < 7)
 		return 'night';
 
-	if (t >= 7       &&        t < 19)
+	if (t >= 7 && t < 19)
 		return 'day';
 
-	if (t >= 0       &&        t < 1)
+	if (t >= 0 && t < 1)
 		return 'midnight';
 
 	return 'evening';
 }
 
-function init() {
-	localStorageAvailable = isLSAvailable();
+export function init() {
+	SITE_MODE = new URLSearchParams(location.search).get('mode') || "";
 
 	window.addEventListener('resize', (event) => {
-		if (frameMobileMode != isMobileMode())
+		if (frameMobileMode != isMobileMode()) {
 			switchFrame();
+		}
 	});
 
 	links = $('#panel');
@@ -238,63 +238,64 @@ function init() {
 	volumeSpeaker = $("#volume-container");
 	volumeContainer = $("#volume-speaker");
 
- 	sfxSlide = new Audio('../assets/sfx/slide.ogg');
- 	sfxClick = new Audio('../assets/sfx/click.ogg');
-	
-	if (SITE_MODE == 'stream'){
+	sfxSlide = new Audio('../assets/sfx/slide.ogg');
+	sfxClick = new Audio('../assets/sfx/click.ogg');
+
+	if (SITE_MODE == 'stream') {
 		streamOverride = true;
 		console.log("streamOverride");
 	}
 
-	if (SITE_MODE == "")
+	if (SITE_MODE == "") {
 		SITE_MODE = getCurrentMode();
+	}
 
 	currentIndex = -1;
 	console.log("SITE_MODE: " + SITE_MODE);
-	currentIndex = rnd(0, backs[SITE_MODE].backs.length); // Randomize fist pic
-	frameIndex = rnd(0, framesCount);
+	currentIndex = rnd(backs[SITE_MODE].backs.length); // Randomize fist pic
+	frameIndex = rnd(framesCount) + 1;
 
 
 
 	setTheme(SITE_MODE);
 
-/*
-	if (SITE_MODE != 'event' || !siteModeOverridden)
-		setInterval(function() {
-			var
-			d = new Date(),
-			nd = new Date(d.getTime() + (10800000)), // 3600000 * 3 (3 - MSK, UTC+3)
-
-			t = nd.getUTCHours();
-			m = nd.getUTCMinutes();
-
-			if (t >= 1        &&        t < 7) // night
-			{
-				if (SITE_MODE != 'night') {
-					SITE_MODE = 'night';
-					setTheme('night');
+	/*
+		if (SITE_MODE != 'event' || !siteModeOverridden)
+			setInterval(function() {
+				var
+				d = new Date(),
+				nd = new Date(d.getTime() + (10800000)), // 3600000 * 3 (3 - MSK, UTC+3)
+	
+				t = nd.getUTCHours();
+				m = nd.getUTCMinutes();
+	
+				if (t >= 1        &&        t < 7) // night
+				{
+					if (SITE_MODE != 'night') {
+						SITE_MODE = 'night';
+						setTheme('night');
+					}
+				} else if (t >= 7       &&        t < 19) // day
+				{
+					if (SITE_MODE != 'day') {
+						SITE_MODE = 'day';
+						setTheme('day');
+					}
+				} else if (t >= 0       &&        t < 1) // midnight
+				{
+					if (SITE_MODE != 'midnight') {
+						SITE_MODE = 'midnight';
+						setTheme('midnight');
+					}
+				} else // evening
+				{
+					if (SITE_MODE != 'evening') {
+						SITE_MODE = 'evening';
+						setTheme('evening');
+					}
 				}
-			} else if (t >= 7       &&        t < 19) // day
-			{
-				if (SITE_MODE != 'day') {
-					SITE_MODE = 'day';
-					setTheme('day');
-				}
-			} else if (t >= 0       &&        t < 1) // midnight
-			{
-				if (SITE_MODE != 'midnight') {
-					SITE_MODE = 'midnight';
-					setTheme('midnight');
-				}
-			} else // evening
-			{
-				if (SITE_MODE != 'evening') {
-					SITE_MODE = 'evening';
-					setTheme('evening');
-				}
-			}
-		}, 30000); // check every 30s  30000
-		*/
+			}, 30000); // check every 30s  30000
+			*/
 
 }
 
@@ -319,14 +320,14 @@ function switchBackground(mode) {
 	}
 
 
-	if (streamOverride){
+	if (streamOverride) {
 		var bg = 0;
 		console.log(backs['stream'].backs[0]);
 		if (mode == 'evening') bg = 1;
 		else if (mode == 'midnight') bg = 2;
 		else if (mode == 'night') bg = 3;
 
-		coverImage.css({'background-image': 'url(' + backs['stream'].backs[bg] + ')'});
+		coverImage.css({ 'background-image': 'url(' + backs['stream'].backs[bg] + ')' });
 		return;
 	}
 
@@ -342,17 +343,17 @@ function switchBackground(mode) {
 	nextIndex = currentIndex + 1;
 	if (nextIndex > backsCount - 1)
 		nextIndex = 0;
-	
+
 
 	if (isMobileMode())
-		coverImage.css({'background-image': 'url(' + currentModeAssets.backs_mobile[currentIndex] + ')'});
+		coverImage.css({ 'background-image': `url(${currentModeAssets.backs_mobile[currentIndex]})` });
 	else
-		coverImage.css({'background-image': 'url(' + currentModeAssets.backs[currentIndex] + ')'});
+		coverImage.css({ 'background-image': `url(${currentModeAssets.backs[currentIndex]})` });
 
 	switchFrame();
 }
 
-function switchFrame() {	
+function switchFrame() {
 	frameIndex++;
 	if (frameIndex > framesCount)
 		frameIndex = 1;
@@ -360,9 +361,9 @@ function switchFrame() {
 	frameMobileMode = isMobileMode();
 
 	if (!frameMobileMode)
-		frameOverlay.css({'background-image': 'url(/assets/sprites/frame' + frameIndex + '.png)'});
+		frameOverlay.css({ 'background-image': 'url(/assets/sprites/frame' + frameIndex + '.png)' });
 	else
-		frameOverlay.css({'background-image': 'url(/assets/sprites/frame' + frameIndex + 'm.png)'});
+		frameOverlay.css({ 'background-image': 'url(/assets/sprites/frame' + frameIndex + 'm.png)' });
 }
 
 globalThis.switchCurrentBackground = () => {
@@ -370,10 +371,10 @@ globalThis.switchCurrentBackground = () => {
 	switchBackground(SITE_MODE);
 
 	if (isMobileMode())
-		hideLeftPanels();
+		globalThis.hideLeftPanels();
 }
 
-function toggleFrame(){
+function toggleFrame() {
 	if (linksIsEnabled || airIsEnabled)
 		frameOverlay.animate({
 			left: '-30px',
@@ -390,12 +391,12 @@ function toggleFrame(){
 		}, 400);
 }
 
-globalThis.toggleLinks = () => {	
-	if (linksIsEnabled){
+globalThis.toggleLinks = () => {
+	if (linksIsEnabled) {
 		disableLinks();
 		sfxPlaySlide();
 	}
-	else{
+	else {
 		enableLinks();
 		sfxPlayClick();
 	}
@@ -403,7 +404,7 @@ globalThis.toggleLinks = () => {
 	toggleFrame();
 }
 
-function enableLinks(){
+function enableLinks() {
 	if (linksIsEnabled) return;
 	linksIsEnabled = true;
 
@@ -413,12 +414,11 @@ function enableLinks(){
 	disableAir();
 
 
-	if (isMobileMode())
-	{
+	if (isMobileMode()) {
 		links.show();
-		links.css({left: '0', opacity: '1'});
+		links.css({ left: '0', opacity: '1' });
 		activeLinks.show();
-		activeLinks.css({opacity: '1'});
+		activeLinks.css({ opacity: '1' });
 		volumeSpeaker.hide();
 		volumeContainer.hide();
 		return;
@@ -435,7 +435,7 @@ function enableLinks(){
 		opacity: '1'
 	}, 300);
 }
-function disableLinks(){
+function disableLinks() {
 	if (!linksIsEnabled) return;
 	linksIsEnabled = false;
 
@@ -444,15 +444,14 @@ function disableLinks(){
 	if (!airIsEnabled)
 		disableBright();
 
-	if (isMobileMode())
-	{
+	if (isMobileMode()) {
 		links.hide();
 		activeLinks.hide();
 		volumeSpeaker.hide();
 		volumeContainer.hide();
 		return;
 	}
-	else{
+	else {
 		volumeSpeaker.show();
 		volumeContainer.show();
 	}
@@ -460,19 +459,19 @@ function disableLinks(){
 	links.animate({
 		left: '-150',
 		opacity: '0'
-	}, 300, function(){links.hide();});
+	}, 300, function () { links.hide(); });
 
 	activeLinks.animate({
 		opacity: '0'
-	}, 300, function(){activeLinks.hide();});
+	}, 300, function () { activeLinks.hide(); });
 }
 
 globalThis.toggleAirPanel = () => {
-	if (airIsEnabled){	
+	if (airIsEnabled) {
 		disableAir();
 		sfxPlaySlide();
 	}
-	else{
+	else {
 		enableAir();
 		sfxPlayClick();
 	}
@@ -481,7 +480,7 @@ globalThis.toggleAirPanel = () => {
 }
 
 
-function enableAir(){
+function enableAir() {
 	if (airIsEnabled) return;
 	airIsEnabled = true;
 
@@ -490,13 +489,12 @@ function enableAir(){
 	enableBright();
 	disableLinks();
 
-	if (isMobileMode())
-	{
+	if (isMobileMode()) {
 		air.show();
-		air.css({left: '0', opacity: '1'});
+		air.css({ left: '0', opacity: '1' });
 		activeAir.show();
-		activeAir.css({opacity: '1'});
-		
+		activeAir.css({ opacity: '1' });
+
 		volumeSpeaker.hide();
 		volumeContainer.hide();
 		return;
@@ -513,7 +511,7 @@ function enableAir(){
 		opacity: '1'
 	}, 300);
 }
-function disableAir(){
+function disableAir() {
 	if (!airIsEnabled) return;
 	airIsEnabled = false;
 
@@ -522,16 +520,14 @@ function disableAir(){
 	if (!linksIsEnabled)
 		disableBright();
 
-	if (isMobileMode())
-	{
+	if (isMobileMode()) {
 		air.hide();
 		activeAir.hide();
 		volumeSpeaker.hide();
 		volumeContainer.hide();
 		return;
 	}
-	else
-	{
+	else {
 		volumeSpeaker.show();
 		volumeContainer.show();
 	}
@@ -539,21 +535,21 @@ function disableAir(){
 	air.animate({
 		left: '-150',
 		opacity: '0'
-	}, 300, function(){air.hide();});
-	
+	}, 300, function () { air.hide(); });
+
 
 	activeAir.animate({
 		opacity: '0'
-	}, 300, function(){activeAir.hide();});	
+	}, 300, function () { activeAir.hide(); });
 }
 
-function toggleBright(){
-	if (brightIsEnabled)		
+function toggleBright() {
+	if (brightIsEnabled)
 		disableBright()
 	else
 		enableBright;
 }
-function enableBright(){
+function enableBright() {
 	if (brightIsEnabled) return;
 	brightIsEnabled = true;
 
@@ -565,13 +561,13 @@ function enableBright(){
 		opacity: '0.2',
 	}, 300);
 }
-function disableBright(){
+function disableBright() {
 	if (!brightIsEnabled) return;
 	brightIsEnabled = false;
 
 	bright.animate({
 		opacity: '0',
-	}, 300, function(){bright.hide();});
+	}, 300, function () { bright.hide(); });
 }
 
 globalThis.hideLeftPanels = () => {
@@ -590,7 +586,7 @@ function sfxPlayClick() {
 	if (isMobileMode()) return;
 
 	//sfxClick.playbackRate = 0.9 + Math.random(0.2);	
-	sfxClick.volume = Math.max(0, volumeValue - 0.3);
+	sfxClick.volume = Math.max(0, globalThis.volumeValue - 0.3);
 	sfxClick.play();
 }
 
@@ -598,7 +594,7 @@ function sfxPlaySlide() {
 	if (isMobileMode()) return;
 
 	//sfxSlide.playbackRate = 0.7 + Math.random(0.3);
-	sfxSlide.volume = Math.max(0, volumeValue - 0.1);
+	sfxSlide.volume = Math.max(0, globalThis.volumeValue - 0.1);
 	sfxSlide.play();
 }
 
@@ -614,7 +610,7 @@ globalThis.toggleNavi = () => {
 	var durationShow = 350;
 	var durationHide = 450;
 
-	
+
 
 	if (!naviIsEnabled) {
 		sfxPlaySlide();
@@ -622,8 +618,8 @@ globalThis.toggleNavi = () => {
 		navi.animate({
 			opacity: '0',
 			bottom: '-170px'
-		  }, durationHide);
-		
+		}, durationHide);
+
 
 		frameOverlay.animate({
 			opacity: '0',
@@ -631,59 +627,59 @@ globalThis.toggleNavi = () => {
 			right: '-100px',
 			top: '-100px',
 			bottom: '-100px'
-		  }, durationHide);
+		}, durationHide);
 
 		coverImage.animate({
 			left: '0px',
 			right: '0px',
 			top: '0px',
 			bottom: '0px'
-		  }, durationHide);	
+		}, durationHide);
 
 		logo.animate({
 			bottom: '20px'
-		  }, durationHide * 0.15);
+		}, durationHide * 0.15);
 
 		logo.find('img').animate({
 			height: '70px'
-		  }, durationHide);
+		}, durationHide);
 
 		//coverImage.animate({'background-size': 'cover 100%'}, durationHide);
 
 	} else {
 		sfxPlayClick();
 		switchFrame();
-		
+
 		navi.animate({
 			opacity: '1',
 			bottom: '0px'
-		  }, durationShow);
-	
+		}, durationShow);
+
 		frameOverlay.animate({
 			opacity: '1',
 			left: '0px',
 			right: '0px',
 			top: '0px',
 			bottom: '69px'
-		  }, durationShow);		
+		}, durationShow);
 
 		coverImage.animate({
 			left: '-30px',
 			right: '-30px',
 			top: '-30px',
 			bottom: '-30px'
-		  }, durationShow);
+		}, durationShow);
 
 		logo.animate({
 			bottom: '5px'
-		  }, durationShow * 0.75);
+		}, durationShow * 0.75);
 
 		logo.find('img').animate({
 			height: '60px'
-		  }, durationShow);
+		}, durationShow);
 
 		//coverImage.animate({'background-size': 'cover 105%'}, durationShow);
-	}	
+	}
 }
 
 
@@ -698,5 +694,3 @@ function togglePlayer() {
 		player.show();
 }
 
-
-$(document).ready(init);

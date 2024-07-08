@@ -1,23 +1,15 @@
-import { rnd } from "./common";
+import { randword } from "./common";
+import { setVal } from "./statusSave";
+// import $ from "jquery";
 
 var lastTrack,
 	showingTrack,
 	showingTrackStruct,
 	trackHistoryItemHeight = 48, // average
 	airTitleHeight = 135,
-	trackHistoryAmount = 0,
-	lastVolumeValue = 0;
+	trackHistoryAmount = 0;
 
 const error = console.error;
-
-function randword() {
-	var s = '';
-	var ltr = 'qwertyuiopasdfghjklzxcvbnm';
-	while (s.length < 20) {
-		s += ltr[rnd(0, 20)];
-	}
-	return s;
-}
 
 
 let radioPlayer = null,
@@ -28,7 +20,11 @@ let radioPlayer = null,
 	tempShowing = false,
 	trackTimer = null;
 
-class Volume {
+export class Volume {
+	speakerLogo: JQuery;
+	slider: JQuery<HTMLInputElement>;
+	lastVolumeValue: number = 0;
+
 	constructor() {
 		var DEFAULT_VOLUME_VALUE = 0.75;
 
@@ -40,9 +36,9 @@ class Volume {
 		this.slider = $("#volume-range");
 		this.slider.on("input", () => {
 			if (playerReady) {
-				const vol = this.slider.val() / 100;
+				const vol = +this.slider.val() / 100;
 				radioPlayer.volume = vol;
-				volumeValue = vol;
+				globalThis.volumeValue = vol;
 			}
 
 			if (radioPlayer.volume != 0) {
@@ -62,23 +58,23 @@ class Volume {
 		if (radioPlayer.volume != 0) {
 			// mute
 
-			this.lastVolumeValue = this.slider.val() / 100;
+			this.lastVolumeValue = +this.slider.val() / 100;
 			radioPlayer.volume = 0;
-			volumeValue = 0;
+			globalThis.volumeValue = 0;
 			this.slider.val(0.);
 			this.speakerLogo.attr("src", "/assets/sprites/icons/mute.png");
 		} else {
 			// unmute
 
 			radioPlayer.volume = this.lastVolumeValue;
-			volumeValue = this.lastVolumeValue;
+			globalThis.volumeValue = this.lastVolumeValue;
 			this.slider.val(radioPlayer.volume * 100);
 			this.speakerLogo.attr("src", "/assets/sprites/icons/volume.png");
 		}
 	}
 }
 
-function radioInit() {
+export function radioInit() {
 	try {
 		radioPlayer = document.createElement('audio');
 		if (radioPlayer.canPlayType('audio/aac') != 'no' &&
@@ -108,7 +104,7 @@ function radioInit() {
 	}
 }
 
-function radioPlay(channel) {
+function radioPlay(channel?: string) {
 	channel = channel || currentChannel;
 
 	if (playerReady) {
@@ -191,7 +187,7 @@ function requestTrackInfo() {
 	getCurrentTrack(processBriefResult, true);
 }
 
-function getCurrentTrack(onSuccess, isBrief) {
+function getCurrentTrack(onSuccess, isBrief?: boolean) {
 	$.ajax({
 		url: '//core.waveradio.org/public/current',
 		data: {
@@ -456,9 +452,3 @@ function calculateListenersCount(data) {
 			$('#listeners').text(listenersCount);
 	});
 }
-
-
-$(document).ready(function () {
-	radioInit();
-	new Volume();
-});

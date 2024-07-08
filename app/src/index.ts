@@ -1,5 +1,8 @@
-const params = new URLSearchParams(location.search);
-const mode = params.get('mode') || "";
-globalThis.SITE_MODE = mode;
+import { init } from "./core";
+import { Volume, radioInit } from "./radio";
 
-globalThis.localStorageAvailable = globalThis.isLSAvailable();
+$(() => {
+    init();
+    radioInit();
+    new Volume();
+});
