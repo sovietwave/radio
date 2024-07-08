@@ -1,8 +1,9 @@
-import * as jQuery from 'jquery';
+import JQuery from "jquery";
+
 declare global {
     interface Window {
-        jQuery: typeof jQuery;
-        $: typeof jQuery;
+        jQuery: typeof JQuery;
+        $: typeof JQuery;
     }
 }
 

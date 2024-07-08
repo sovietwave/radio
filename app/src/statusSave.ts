@@ -2,51 +2,51 @@
                  Status Save Functions
 ********************************************************/
 
-export let localStorageAvailable: boolean = isLSAvailable();
-
 // Check for Local Storage Availability
-function isLSAvailable() {
+export const localStorageAvailable = (() => {
     try {
         return 'localStorage' in window && window['localStorage'] !== null;
     } catch (e) {
         return false;
     }
-}
+})();
 
 // Get Saved Value
-export function getVal(key, def) {
-    def = def || null;
-    var toReturn = (localStorageAvailable) ? localStorage[key] : getCookie(key);
+export const getVal = (key: string, def?: string): string | null => {
+    const toReturn = localStorageAvailable ? localStorage[key] : getCookie(key);
 
-    if (typeof toReturn === "undefined")
-        return def;
-    else
+    if (typeof toReturn === "undefined") {
+        return def || null;
+    }
+    else {
         return toReturn;
-}
+    }
+};
 
 // Save a Value
-export function setVal(key, val) {
-    if (localStorageAvailable)
+export const setVal = (key: string, val: string): void => {
+    if (localStorageAvailable) {
         localStorage[key] = val;
+    }
     else {
         setCookie(key, 'sasai_lalka', { expires: -1 });
         setCookie(key, val, { expires: 31536000000 });
     }
-}
+};
 
 // Cookie fallback if LocalStorage won't be available.
-function getCookie(name) {
-    var matches = document.cookie.match(new RegExp(
+const getCookie = (name: string): string | null => {
+    const matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
     ));
     return matches ? decodeURIComponent(matches[1]) : null;
-}
+};
 
-function setCookie(name, value, options) {
+const setCookie = (name: string, value: string, options?: any) => {
     options = options || {};
-    var expires = options.expires;
+    let expires = options.expires;
     if (typeof expires == "number" && expires) {
-        var d = new Date();
+        const d = new Date();
         d.setTime(d.getTime() + expires * 1000);
         expires = options.expires = d;
     }
@@ -54,14 +54,14 @@ function setCookie(name, value, options) {
         options.expires = expires.toUTCString();
     }
     value = encodeURIComponent(value);
-    var updatedCookie = name + "=" + value;
-    for (var propName in options) {
+    let updatedCookie = name + "=" + value;
+    for (let propName in options) {
         updatedCookie += "; " + propName;
-        var propValue = options[propName];
+        const propValue = options[propName];
         if (propValue !== true) {
             updatedCookie += "=" + propValue;
         }
     }
 
     document.cookie = updatedCookie;
-}
+};

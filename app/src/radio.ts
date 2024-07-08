@@ -1,32 +1,30 @@
 import { randword } from "./common";
 import { setVal } from "./statusSave";
-// import $ from "jquery";
-
-var lastTrack,
-	showingTrack,
-	showingTrackStruct,
-	trackHistoryItemHeight = 48, // average
-	airTitleHeight = 135,
-	trackHistoryAmount = 0;
+import { state } from "./core";
 
 const error = console.error;
 
+let lastTrack;
+let showingTrack;
+let showingTrackStruct;
+let trackHistoryItemHeight = 48; // average
+let airTitleHeight = 135;
+let trackHistoryAmount = 0;
+let radioPlayer = null;
+let playerReady = false;
+let currentChannel = '';
+let nowPlaying = false;
+let playerRestartTimer = null;
+let tempShowing = false;
+let trackTimer = null;
 
-let radioPlayer = null,
-	playerReady = false,
-	currentChannel = '',
-	nowPlaying = false,
-	playerRestartTimer = null,
-	tempShowing = false,
-	trackTimer = null;
-
-export class Volume {
+class Volume {
 	speakerLogo: JQuery;
 	slider: JQuery<HTMLInputElement>;
 	lastVolumeValue: number = 0;
 
 	constructor() {
-		var DEFAULT_VOLUME_VALUE = 0.75;
+		const DEFAULT_VOLUME_VALUE = 0.75;
 
 		this.speakerLogo = $("#volume-speaker");
 		this.speakerLogo.click(() => {
@@ -38,7 +36,7 @@ export class Volume {
 			if (playerReady) {
 				const vol = +this.slider.val() / 100;
 				radioPlayer.volume = vol;
-				globalThis.volumeValue = vol;
+				state.volumeValue = vol;
 			}
 
 			if (radioPlayer.volume != 0) {
@@ -60,21 +58,21 @@ export class Volume {
 
 			this.lastVolumeValue = +this.slider.val() / 100;
 			radioPlayer.volume = 0;
-			globalThis.volumeValue = 0;
+			state.volumeValue = 0;
 			this.slider.val(0.);
 			this.speakerLogo.attr("src", "/assets/sprites/icons/mute.png");
 		} else {
 			// unmute
 
 			radioPlayer.volume = this.lastVolumeValue;
-			globalThis.volumeValue = this.lastVolumeValue;
+			state.volumeValue = this.lastVolumeValue;
 			this.slider.val(radioPlayer.volume * 100);
 			this.speakerLogo.attr("src", "/assets/sprites/icons/volume.png");
 		}
 	}
 }
 
-export function radioInit() {
+export const radioInit = () => {
 	try {
 		radioPlayer = document.createElement('audio');
 		if (radioPlayer.canPlayType('audio/aac') != 'no' &&
@@ -84,27 +82,29 @@ export function radioInit() {
 				navigator.userAgent.indexOf("OPR") == -1 &&
 
 				// Some androids can't play AAC too.
-				navigator.userAgent.indexOf("Android") == -1))
-
+				navigator.userAgent.indexOf("Android") == -1)) {
 			currentChannel = 'soviet';
-		else
+		}
+		else {
 			currentChannel = 'soviet.mp3';
+		}
 
 		// Restore volume settings
-		// radioSetVolume(radioGetVolume(), false);
+		//radioSetVolume(radioGetVolume(), false);
 		// Initialize track info.
 		requestTrackInfo();
 		requestListenersCount();
 
-		playerReady = true;
+		new Volume();
 
+		playerReady = true;
 	} catch (e) {
 		alert("Error: " + e.message);
 		playerReady = false;
 	}
-}
+};
 
-function radioPlay(channel?: string) {
+const radioPlay = (channel?: string) => {
 	channel = channel || currentChannel;
 
 	if (playerReady) {
@@ -142,22 +142,22 @@ function radioPlay(channel?: string) {
 
 		$('#player-switch').attr('class', 'player-switch-playing');
 
-		setVal('player_on', 1);
+		setVal("player_on", "1");
 	} else
-		error('ERR: Still loading');
-}
+		error("ERR: Still loading");
+};
 
-function radioStop() {
+const radioStop = () => {
 	if (playerReady && radioPlayer) {
 		radioPlayer.pause();
 		radioPlayer.src = '';
 
 		$('#player-switch').attr('class', 'player-switch-stalled');
-		setVal('player_on', 0);
+		setVal('player_on', "0");
 	}
-}
+};
 
-globalThis.radioToggle = (channel) => {
+export const radioToggle = (channel?: string) => {
 	channel = channel || currentChannel;
 	if (!playerReady) {
 		error('Cannot start player, did not initialize yet');
@@ -203,8 +203,9 @@ function getCurrentTrack(onSuccess, isBrief?: boolean) {
 	});
 }
 
-function getTrackHistory() {
-	var amount = Math.floor(calculateHistoryViewport() / trackHistoryItemHeight);
+const getTrackHistory = () => {
+	// FIXME: unused
+	const amount = Math.floor(calculateHistoryViewport() / trackHistoryItemHeight);
 
 	$.ajax({
 		url: '//core.waveradio.org/public/history',
@@ -220,28 +221,27 @@ function getTrackHistory() {
 	}).fail(function (jq, jx) {
 		console.warn("History error:", jq, jx);
 	});
-}
+};
 
-function calculateHistoryViewport() {
-	var
-		naviHeight = $('#navi').height(),
-		docHeight = $(document).height();
+const calculateHistoryViewport = (): number => {
+	const naviHeight = $('#navi').height();
+	const docHeight = $(document).height();
 
 	return docHeight - (naviHeight + airTitleHeight);
-}
+};
 
-function processTrackHistory(data) {
+const processTrackHistory = (data) => {
 	if (!data || data['status'] === undefined) {
 		return;
 	}
 
-	var historyHtml = "";
+	let historyHtml = "";
 
 	switch (+data['status']) {
 		case 0:
 
 			data['payload'].forEach(function (track) {
-				var trackDate = new Date(+track['start_time'] * 1000);
+				const trackDate = new Date(+track['start_time'] * 1000);
 
 				// Time
 				historyHtml += '<div class="air-playlist-item"><div class="air-time">' + ((trackDate.getHours() < 10) ? '0' : '') + trackDate.getHours() + ':' +
@@ -254,7 +254,7 @@ function processTrackHistory(data) {
 
 				// artist
 				if (track['artist_links'] && track['artist_links'].length > 0) {
-					var artistLink = track['artist_links'][0]['link_text'];
+					const artistLink = track['artist_links'][0]['link_text'];
 					historyHtml += '<a class="air-band" href="' + artistLink + '" target="_blank">' + track['artist'] + '</a>';
 				} else {
 					historyHtml += '<span class="air-band">' + track['artist'] + '</span>';
@@ -276,9 +276,9 @@ function processTrackHistory(data) {
 	}
 
 	$('#air-playlist').html(historyHtml);
-}
+};
 
-function processBriefResult(csRes) {
+const processBriefResult = (csRes) => {
 
 	if (tempShowing)
 		return;
@@ -289,17 +289,17 @@ function processBriefResult(csRes) {
 		getTrackHistory();
 		getCurrentTrack(setTrackInfo);
 	}
-}
+};
 
-function splitTrackInfo(track) {
+const splitTrackInfo = (track) => {
 	return {
 		artist: track.substr(0, track.indexOf(' - ')),
 		title: track.substr(track.indexOf(' - ') + 3)
 	};
-}
+};
 
-function setArtistLink(link) {
-	var artistObj = $('#player-artist-link');
+const setArtistLink = (link) => {
+	const artistObj = $('#player-artist-link');
 
 	if (link) {
 		artistObj.attr('href', link);
@@ -322,19 +322,19 @@ function setArtistLink(link) {
 			return false;
 		});
 	}
-}
+};
 
-function setTrackInfo(track) {
+const setTrackInfo = (track) => {
 	if (!track)
 		return;
 
-	var trackToDisplay = '',
-		trackStruct = {},
-		artistLink = "";
+	let trackToDisplay = "";
+	let trackStruct = {};
+	let artistLink = "";
 
 	if (typeof track === 'string') {
 
-		var splitAttempt = splitTrackInfo(track);
+		const splitAttempt = splitTrackInfo(track);
 
 		if (splitAttempt.artist && splitAttempt.title) {
 			setTrackInfo({ // simulate successful server response
@@ -349,8 +349,6 @@ function setTrackInfo(track) {
 			setArtistLink(undefined);
 			$("#player-artist-link").html('&nbsp;');
 		}
-
-
 
 	} else if (typeof track === 'object') {
 		switch (track['status']) {
@@ -412,9 +410,9 @@ function setTrackInfo(track) {
 			navigator.mediaSession.metadata = new MediaMetadata(trackStruct);
 		}
 	}
-}
+};
 
-function setTempTitle(title) {
+const setTempTitle = (title) => {
 	tempShowing = true;
 
 	setTrackInfo(title);
@@ -423,11 +421,11 @@ function setTempTitle(title) {
 		tempShowing = false;
 		setTrackInfo(showingTrackStruct);
 	}, 5000);
-}
+};
 
 
 // Sovietwave-specific code but may be used anywhere
-function requestListenersCount() {
+const requestListenersCount = () => {
 	setTimeout(requestListenersCount, 20000);
 
 	$.ajax({
@@ -435,12 +433,12 @@ function requestListenersCount() {
 		dataType: 'json',
 		crossDomain: true
 	}).done(calculateListenersCount);
-}
+};
 
 
-function calculateListenersCount(data) {
-	var listenersCount = 0,
-		currentPos = 1;
+const calculateListenersCount = (data) => {
+	let listenersCount = 0;
+	let currentPos = 1;
 
 	data.icestats.source.forEach(function (mount) {
 		currentPos++;
@@ -451,4 +449,4 @@ function calculateListenersCount(data) {
 		if (currentPos === data.icestats.source.length)
 			$('#listeners').text(listenersCount);
 	});
-}
+};

@@ -1,13 +1,12 @@
 import { rnd } from "./common";
-// import $ from "jquery";
 
-var siteModeOverridden = true,
-	currentIndex = 0,
-	frameIndex = 0,
-	framesCount = 3,
-	SITE_MODE = "";
+//let siteModeOverridden = true;
+let currentIndex: number = 0;
+let frameIndex: number = 0;
+let framesCount: number = 3;
+let SITE_MODE: string = "";
 
-var backs = {
+const backs = {
 	"day": {
 		"backs": [
 			"/assets/sprites/bg/day1.jpg",
@@ -104,7 +103,7 @@ var backs = {
 	}
 };
 
-var modes = {
+const modes = {
 	"day": {
 		"title": "Дневной эфир",
 		"subtitle": "#chillwave #dreamwave #sovietwave",
@@ -170,56 +169,62 @@ var modes = {
 	}
 };
 
-var naviIsEnabled = true;
-var airIsEnabled = false;
-var linksIsEnabled = false;
-var brightIsEnabled = false;
-var links;
-var air;
-var bright;
-var navi;
-var logo;
-var activeLinks;
-var activeAir;
-var frameOverlay;
-var sfxSlide;
-var sfxClick;
-var coverImage;
-globalThis.volumeValue = 1;
-var frameMobileMode = false;
-var player;
-var volumeSpeaker;
-var volumeContainer;
-var streamOverride = false;
+let naviIsEnabled = true;
+let airIsEnabled = false;
+let linksIsEnabled = false;
+let brightIsEnabled = false;
+let links;
+let air;
+let bright;
+let navi;
+let logo;
+let activeLinks;
+let activeAir;
+let frameOverlay;
+let sfxSlide;
+let sfxClick;
+let coverImage;
+let frameMobileMode = false;
+let player;
+let volumeSpeaker;
+let volumeContainer;
+let streamOverride = false;
 
-function isMobileMode() {
+export let state = {
+	volumeValue: 1,
+};
+
+const isMobileMode = (): boolean => {
 	if ((document.documentElement.scrollWidth <= 800) ||
 		(document.documentElement.scrollHeight <= 500))
 		return true;
 	return false;
-}
+};
 
-function getCurrentMode() {
-	var d = new Date();
-	var nd = new Date(d.getTime() + (10800000)); // 3600000 * 3 (3 - MSK, UTC+3)
-	var t = nd.getUTCHours();
+const getCurrentMode = (): string => {
+	const d = new Date();
+	const nd = new Date(d.getTime() + (10800000)); // 3600000 * 3 (3 - MSK, UTC+3)
+	const t = nd.getUTCHours();
 
-	if (t >= 1 && t < 7)
+	if (t >= 1 && t < 7) {
 		return 'night';
+	}
 
-	if (t >= 7 && t < 19)
+	if (t >= 7 && t < 19) {
 		return 'day';
+	}
 
-	if (t >= 0 && t < 1)
+	if (t >= 0 && t < 1) {
 		return 'midnight';
+	}
 
 	return 'evening';
-}
+};
 
-export function init() {
+export const init = () => {
 	SITE_MODE = new URLSearchParams(location.search).get('mode') || "";
 
-	window.addEventListener('resize', (event) => {
+	window.addEventListener('resize', () => {
 		if (frameMobileMode != isMobileMode()) {
 			switchFrame();
 		}
@@ -238,8 +243,8 @@ export function init() {
 	volumeSpeaker = $("#volume-container");
 	volumeContainer = $("#volume-speaker");
 
-	sfxSlide = new Audio('../assets/sfx/slide.ogg');
-	sfxClick = new Audio('../assets/sfx/click.ogg');
+	sfxSlide = new Audio('/assets/sfx/slide.ogg');
+	sfxClick = new Audio('/assets/sfx/click.ogg');
 
 	if (SITE_MODE == 'stream') {
 		streamOverride = true;
@@ -254,8 +259,6 @@ export function init() {
 	console.log("SITE_MODE: " + SITE_MODE);
 	currentIndex = rnd(backs[SITE_MODE].backs.length); // Randomize fist pic
 	frameIndex = rnd(framesCount) + 1;
-
-
 
 	setTheme(SITE_MODE);
 
@@ -296,12 +299,11 @@ export function init() {
 				}
 			}, 30000); // check every 30s  30000
 			*/
+};
 
-}
-
-function setTheme(mode) {
+const setTheme = (mode: string) => {
 	if (modes[mode]) {
-		var modeContent = modes[mode];
+		const modeContent = modes[mode];
 
 		$('#air-title').text(modeContent['title']);
 		$('#air-tags').text(modeContent['subtitle']);
@@ -313,7 +315,7 @@ function setTheme(mode) {
 	switchBackground(mode);
 }
 
-function switchBackground(mode) {
+const switchBackground = (mode: string) => {
 	if (mode != SITE_MODE) {
 		console.log("Backgrounds can be changed only for current (" + SITE_MODE + ") site mode");
 		return;
@@ -321,7 +323,7 @@ function switchBackground(mode) {
 
 
 	if (streamOverride) {
-		var bg = 0;
+		let bg = 0;
 		console.log(backs['stream'].backs[0]);
 		if (mode == 'evening') bg = 1;
 		else if (mode == 'midnight') bg = 2;
@@ -331,9 +333,9 @@ function switchBackground(mode) {
 		return;
 	}
 
-	var currentModeAssets = backs[SITE_MODE],
-		backsCount = currentModeAssets.backs.length,
-		nextIndex = 0;
+	const currentModeAssets = backs[SITE_MODE];
+	const backsCount = currentModeAssets.backs.length;
+	let nextIndex = 0;
 
 	currentIndex++;
 
@@ -341,8 +343,9 @@ function switchBackground(mode) {
 		currentIndex = 0;
 
 	nextIndex = currentIndex + 1;
-	if (nextIndex > backsCount - 1)
+	if (nextIndex > backsCount - 1) {
 		nextIndex = 0;
+	}
 
 
 	if (isMobileMode())
@@ -351,9 +354,9 @@ function switchBackground(mode) {
 		coverImage.css({ 'background-image': `url(${currentModeAssets.backs[currentIndex]})` });
 
 	switchFrame();
-}
+};
 
-function switchFrame() {
+const switchFrame = () => {
 	frameIndex++;
 	if (frameIndex > framesCount)
 		frameIndex = 1;
@@ -364,17 +367,18 @@ function switchFrame() {
 		frameOverlay.css({ 'background-image': 'url(/assets/sprites/frame' + frameIndex + '.png)' });
 	else
 		frameOverlay.css({ 'background-image': 'url(/assets/sprites/frame' + frameIndex + 'm.png)' });
-}
+};
 
-globalThis.switchCurrentBackground = () => {
+export const switchCurrentBackground = () => {
 	sfxPlaySlide();
 	switchBackground(SITE_MODE);
 
-	if (isMobileMode())
-		globalThis.hideLeftPanels();
-}
+	if (isMobileMode()) {
+		hideLeftPanels();
+	}
+};
 
-function toggleFrame() {
+const toggleFrame = () => {
 	if (linksIsEnabled || airIsEnabled)
 		frameOverlay.animate({
 			left: '-30px',
@@ -389,9 +393,9 @@ function toggleFrame() {
 			top: '0px',
 			bottom: '69px'
 		}, 400);
-}
+};
 
-globalThis.toggleLinks = () => {
+export const toggleLinks = () => {
 	if (linksIsEnabled) {
 		disableLinks();
 		sfxPlaySlide();
@@ -402,10 +406,13 @@ globalThis.toggleLinks = () => {
 	}
 
 	toggleFrame();
-}
+};
 
-function enableLinks() {
-	if (linksIsEnabled) return;
+const enableLinks = () => {
+	if (linksIsEnabled) {
+		return;
+	}
+
 	linksIsEnabled = true;
 
 	togglePlayer(); //for mobile
@@ -434,8 +441,9 @@ function enableLinks() {
 	activeLinks.animate({
 		opacity: '1'
 	}, 300);
-}
-function disableLinks() {
+};
+
+const disableLinks = () => {
 	if (!linksIsEnabled) return;
 	linksIsEnabled = false;
 
@@ -466,7 +474,7 @@ function disableLinks() {
 	}, 300, function () { activeLinks.hide(); });
 }
 
-globalThis.toggleAirPanel = () => {
+export const toggleAirPanel = () => {
 	if (airIsEnabled) {
 		disableAir();
 		sfxPlaySlide();
@@ -477,10 +485,9 @@ globalThis.toggleAirPanel = () => {
 	}
 
 	toggleFrame();
-}
+};
 
-
-function enableAir() {
+const enableAir = () => {
 	if (airIsEnabled) return;
 	airIsEnabled = true;
 
@@ -510,8 +517,9 @@ function enableAir() {
 	activeAir.animate({
 		opacity: '1'
 	}, 300);
-}
-function disableAir() {
+};
+
+const disableAir = () => {
 	if (!airIsEnabled) return;
 	airIsEnabled = false;
 
@@ -541,16 +549,21 @@ function disableAir() {
 	activeAir.animate({
 		opacity: '0'
 	}, 300, function () { activeAir.hide(); });
-}
+};
 
-function toggleBright() {
-	if (brightIsEnabled)
-		disableBright()
-	else
-		enableBright;
-}
-function enableBright() {
-	if (brightIsEnabled) return;
+const toggleBright = () => {
+	if (brightIsEnabled) {
+		disableBright();
+	}
+	else {
+		enableBright();
+	}
+};
+
+const enableBright = () => {
+	if (brightIsEnabled) {
+		return;
+	}
 	brightIsEnabled = true;
 
 	if (isMobileMode())
@@ -560,19 +573,23 @@ function enableBright() {
 	bright.animate({
 		opacity: '0.2',
 	}, 300);
-}
-function disableBright() {
-	if (!brightIsEnabled) return;
+};
+
+const disableBright = () => {
+	if (!brightIsEnabled) {
+		return;
+	}
 	brightIsEnabled = false;
 
 	bright.animate({
 		opacity: '0',
 	}, 300, function () { bright.hide(); });
-}
+};
 
-globalThis.hideLeftPanels = () => {
-	if (!linksIsEnabled && !airIsEnabled)
+export const hideLeftPanels = () => {
+	if (!linksIsEnabled && !airIsEnabled) {
 		return;
+	}
 
 	disableBright();
 	disableAir();
@@ -580,25 +597,29 @@ globalThis.hideLeftPanels = () => {
 
 	sfxPlaySlide();
 	toggleFrame();
-}
+};
 
-function sfxPlayClick() {
-	if (isMobileMode()) return;
+const sfxPlayClick = () => {
+	if (isMobileMode()) {
+		return;
+	}
 
 	//sfxClick.playbackRate = 0.9 + Math.random(0.2);	
-	sfxClick.volume = Math.max(0, globalThis.volumeValue - 0.3);
+	sfxClick.volume = Math.max(0, state.volumeValue - 0.3);
 	sfxClick.play();
-}
+};
 
-function sfxPlaySlide() {
-	if (isMobileMode()) return;
+const sfxPlaySlide = () => {
+	if (isMobileMode()) {
+		return;
+	}
 
 	//sfxSlide.playbackRate = 0.7 + Math.random(0.3);
-	sfxSlide.volume = Math.max(0, globalThis.volumeValue - 0.1);
+	sfxSlide.volume = Math.max(0, state.volumeValue - 0.1);
 	sfxSlide.play();
-}
+};
 
-globalThis.toggleNavi = () => {
+export const toggleNavi = () => {
 	disableBright();
 	disableAir();
 	disableLinks();
@@ -607,10 +628,8 @@ globalThis.toggleNavi = () => {
 
 	naviIsEnabled = !naviIsEnabled;
 
-	var durationShow = 350;
-	var durationHide = 450;
-
-
+	const durationShow = 350;
+	const durationHide = 450;
 
 	if (!naviIsEnabled) {
 		sfxPlaySlide();
@@ -680,17 +699,17 @@ globalThis.toggleNavi = () => {
 
 		//coverImage.animate({'background-size': 'cover 105%'}, durationShow);
 	}
-}
+};
 
-
-function togglePlayer() {
+const togglePlayer = () => {
 	if (isMobileMode()) {
 		if (linksIsEnabled || airIsEnabled) {
 			player.hide();
 		} else {
 			player.show();
 		}
-	} else
+	} else {
 		player.show();
-}
+	}
+};
 
