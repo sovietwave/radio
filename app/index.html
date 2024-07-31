@@ -42,16 +42,9 @@
             <div id="player-artist" class="player-track">
                 <a target="_blank" title="Cтраница артиста" id="player-artist-link"></a>
             </div>
-
-            <div id="player-title" class="player-track">
-
-            </div>
-
+            <div id="player-title" class="player-track"></div>
             <div id="player-switch" class="player-switch-stalled" onclick="radioToggle()"></div>
-
             <div id="player-city" class="player-track"></div>
-
-
         </div>
     </div>
 
@@ -72,79 +65,38 @@
 
             <div id="links-center-back">
                 <div id="links-list">
+
                     <div id="links-button-heart" class="links-label link" target="_blank">Наши соцсети</div>
+                    <a href="https://vk.com/soviet_wave" id="links-button-vk" class="links-button link" target="_blank">
+                        <img src="assets/sprites/icons/vk.svg" width="32" class="links-icon" />Сообщество</a>
+                    <a href="https://t.me/sovietwave" id="links-button-telegram" class="links-button link" target="_blank">
+                        <img src="assets/sprites/icons/telegram.svg" width="32" class="links-icon" />Канал</a>
+                    <a href="https://t.me/sovietwave_chat" id="links-button-chat" class="links-button link" target="_blank">
+                        <img src="assets/sprites/icons/chat.svg" width="32" class="links-icon" />Кухонька</a>
 
-                    <a href="https://vk.com/soviet_wave" id="links-button-vk" class="links-button link"
-                        target="_blank"><img src="assets/sprites/icons/vk.svg" width="32"
-                            class="links-icon" />Сообщество</a>
+                    <div id="links-button-heart" class="links-label-new link" target="_blank">
+                        <img src="assets/sprites/icons/heart.svg" width="32" class="links-icon-new" />Поддержать</div>
+                    <a href="https://www.donationalerts.com/r/soviet_wave" id="links-button-donate" class="links-button link" target="_blank">
+                        <img src="assets/sprites/icons/donate.svg" width="32" class="links-icon" />Донатом</a>
+                    <a href="https://boosty.to/soviet_wave" id="links-button-boosty" class="links-button link" target="_blank">
+                        <img src="assets/sprites/icons/boosty.svg" width="32" class="links-icon" />Подпиской</a>
 
-
-                    <a href="https://t.me/sovietwave" id="links-button-telegram" class="links-button link"
-                        target="_blank"><img src="assets/sprites/icons/telegram.svg" width="32"
-                            class="links-icon" />Канал</a>
-
-                    <a href="https://t.me/sovietwave_chat" id="links-button-chat" class="links-button link"
-                        target="_blank"><img src="assets/sprites/icons/chat.svg" width="32"
-                            class="links-icon" />Кухонька</a>
-
-                    <!--
-				<a href="https://soundcloud.com/sovietwave" id="links-button-soundcloud"
-				class="links-button link" target="_blank"><img
-				src="assets/sprites/icons/soundcloud.svg" width="32" class="links-icon" />Soundcloud</a>
-				-->
-
-                    <!--
-				<a href="https://www.twitch.tv/soviet_wave" id="links-button-twitch"
-				class="links-button link" target="_blank"><img
-				src="assets/sprites/icons/twitch.svg" width="32" class="links-icon" />Twitch</a>
-				-->
-
-                    <!--
-				<a href="https://vk.com/lostslides" id="links-button-lostslides"
-				class="links-button link" target="_blank"><img
-				src="assets/sprites/icons/lostslides.svg" width="32" class="links-icon" />Lost Slides</a>-->
-
-                    <div id="links-button-heart" class="links-label-new link" target="_blank"><img
-                            src="assets/sprites/icons/heart.svg" width="32" class="links-icon-new" />Поддержать</div>
-
-                    <a href="https://www.donationalerts.com/r/soviet_wave" id="links-button-donate"
-                        class="links-button link" target="_blank"><img src="assets/sprites/icons/donate.svg" width="32"
-                            class="links-icon" />Донатом</a>
-
-                    <a href="https://boosty.to/soviet_wave" id="links-button-boosty" class="links-button link"
-                        target="_blank"><img src="assets/sprites/icons/boosty.svg" width="32"
-                            class="links-icon" />Подпиской</a>
+                    <div id="links-button-heart" class="links-label link" target="_blank">Скачать</div>
+                    <a href="https://play.google.com/store/apps/details?id=su.wave.radio" class="links-button link" target="_blank">
+                        <img src="assets/sprites/icons/android.svg" width="32" class="links-icon" />Android</a>
+                    <a href="/sovietwave.m3u" class="links-button link" target="_blank">
+                        <img src="assets/sprites/icons/iphone.svg" width="32" class="links-icon" />iPhone</a>
+                    <a href="/sovietwave.m3u" class="links-button link" target="_blank">
+                        <img src="assets/sprites/icons/windows.svg" width="32" class="links-icon" />Windows</a>
+                    <a href="/sovietwave.m3u" class="links-button link" target="_blank">
+                        <img src="assets/sprites/icons/m3u.svg" width="32" class="links-icon" />Файл для плеера</a>
 
 
-
-
-                    <!--
-				<a href="https://fb.me/sovietwave" id="links-button-facebook"
-				class="links-button<?php if ($content['site_mode'] == 'night') echo (' night'); ?> link" target="_blank"><img
-				src="assets/sprites/icons/facebook.svg" width="32" class="links-icon" />Facebook</a>-->
-
-                    <!--<div id="links-m3u-container"> -->
-
-                    <div id="links-button-heart" class="links-label link" target="_blank">Файл для плеера</div>
-
-                    <a href="/sovietwave.m3u" id="links-button-m3u" class="links-button link" target="_blank"><img
-                            src="assets/sprites/icons/m3u.svg" width="32" class="links-icon" />sovietwave.m3u</a>
-
-                    <!--
-				<div class="links-label link links-label-bright"><span class="links-label-transparent">Файл для плеера </span>
-					<a href="/sovietwave.m3u" target="_blank">sovietwave.m3u</a>
-				</div>
-				-->
-
-
-                    <div class="links-label link links-label-bright"><span class="links-label-transparent">Фотографии
-                            предоставлены сообществом </span>
+                    <div class="links-label link links-label-bright">
+                        <span class="links-label-transparent">Фотографии предоставлены сообществом </span>
                         <a href="https://vk.com/lostslides" target="_blank">Lost Slides</a>
                     </div>
 
-
-                    <!--<div id="links-text-m3u">Файл для проигрывателей</div>-->
-                    <!-- </div> -->
                 </div>
             </div>
         </div>

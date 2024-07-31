@@ -306,7 +306,7 @@ a.night
 	background-color: rgba(0,0,0,0.4);
 	overflow-y: scroll;
 
-	display: flex;
+
 	justify-content: center;
 }
 
