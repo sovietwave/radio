@@ -224,11 +224,13 @@ const getCurrentMode = (): string => {
 export const init = () => {
 	SITE_MODE = new URLSearchParams(location.search).get('mode') || "";
 
+	
 	window.addEventListener('resize', () => {
 		if (frameMobileMode != isMobileMode()) {
 			switchFrame();
 		}
 	});
+	
 
 	links = $('#panel');
 	air = $('#air-panel');
@@ -361,7 +363,7 @@ const switchFrame = () => {
 	if (frameIndex > framesCount)
 		frameIndex = 1;
 
-	frameMobileMode = isMobileMode();
+	frameMobileMode = document.documentElement.scrollWidth < document.documentElement.scrollHeight;
 
 	if (!frameMobileMode)
 		frameOverlay.css({ 'background-image': 'url(/assets/sprites/frame' + frameIndex + '.png)' });
@@ -600,20 +602,12 @@ export const hideLeftPanels = () => {
 };
 
 const sfxPlayClick = () => {
-	if (isMobileMode()) {
-		return;
-	}
-
 	//sfxClick.playbackRate = 0.9 + Math.random(0.2);	
 	sfxClick.volume = Math.max(0, state.volumeValue - 0.3);
 	sfxClick.play();
 };
 
 const sfxPlaySlide = () => {
-	if (isMobileMode()) {
-		return;
-	}
-
 	//sfxSlide.playbackRate = 0.7 + Math.random(0.3);
 	sfxSlide.volume = Math.max(0, state.volumeValue - 0.1);
 	sfxSlide.play();
