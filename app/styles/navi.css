@@ -276,45 +276,7 @@
 /* S ВЁРСТКА - Прортретная для телефонов */
 @media handheld, only screen and (max-width: 800px), (max-height: 500px){
 	
-	#volume-container
-	{
-		display: none;
-		/*
-		position: fixed;
-    	left: -moz-calc(50% - 62px);
-    	left: -webkit-calc(50% - 62px);
-    	left: -o-calc(50% - 62px);
-    	left: calc(50% - 62px);
-		top: 333px;
-
-		filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.75));
-		-webkit-filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.75));
-
-		width: 150px;
-		height: auto;
-		opacity: 0.8;
-		*/
-	}
-
-	#volume-speaker
-	{
-		display: none;
-		/*
-		position: fixed;
-    	left: -moz-calc(50% - 120px);
-    	left: -webkit-calc(50% - 120px);
-    	left: -o-calc(50% - 120px);
-    	left: calc(50% - 120px);
-		top: 330px;
-
-		filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.75));
-		-webkit-filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.75));
-		opacity: 0.8;
-
-		width: auto;*/
-	}
-
-	#standalone-only
+	#volume-container, #volume-speaker, #standalone-only
 	{
 		display: none;
 	}
@@ -403,17 +365,11 @@
 	}
 }
 
-/*
-@media handheld, only screen and (max-width: 700px), (max-height: 500px){
+/* XS ВЁРСТКА - Совсем маленбкая вёрстка жесть */
+@media handheld, only screen and (max-height: 499px){
 
-	#volume-container
-	{
-		top: 287px;
+	#listeners-container {
+		font-size: 14pt;
 	}
 
-	#volume-speaker
-	{
-		top: 284px;
-	}
 }
-*/
