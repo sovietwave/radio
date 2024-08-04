@@ -17,5 +17,6 @@ npm run build
 
 ## TODO
 
+- [ ] Настроить Progressive Web Application
 - [ ] download all `fonts/stereonic` variants
 
