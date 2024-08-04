@@ -186,8 +186,6 @@ let sfxClick;
 let coverImage;
 let frameMobileMode = false;
 let player;
-let volumeSpeaker;
-let volumeContainer;
 let streamOverride = false;
 
 export let state = {
@@ -242,8 +240,6 @@ export const init = () => {
 	frameOverlay = $('#frame-overlay');
 	coverImage = $('#cover-image');
 	player = $("#player-wrapper");
-	volumeSpeaker = $("#volume-container");
-	volumeContainer = $("#volume-speaker");
 
 	sfxSlide = new Audio('/assets/sfx/slide.ogg');
 	sfxClick = new Audio('/assets/sfx/click.ogg');
@@ -428,8 +424,6 @@ const enableLinks = () => {
 		links.css({ left: '0', opacity: '1' });
 		activeLinks.show();
 		activeLinks.css({ opacity: '1' });
-		volumeSpeaker.hide();
-		volumeContainer.hide();
 		return;
 	}
 
@@ -457,13 +451,7 @@ const disableLinks = () => {
 	if (isMobileMode()) {
 		links.hide();
 		activeLinks.hide();
-		volumeSpeaker.hide();
-		volumeContainer.hide();
 		return;
-	}
-	else {
-		volumeSpeaker.show();
-		volumeContainer.show();
 	}
 
 	links.animate({
@@ -503,9 +491,6 @@ const enableAir = () => {
 		air.css({ left: '0', opacity: '1' });
 		activeAir.show();
 		activeAir.css({ opacity: '1' });
-
-		volumeSpeaker.hide();
-		volumeContainer.hide();
 		return;
 	}
 
@@ -533,13 +518,7 @@ const disableAir = () => {
 	if (isMobileMode()) {
 		air.hide();
 		activeAir.hide();
-		volumeSpeaker.hide();
-		volumeContainer.hide();
 		return;
-	}
-	else {
-		volumeSpeaker.show();
-		volumeContainer.show();
 	}
 
 	air.animate({

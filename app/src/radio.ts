@@ -446,7 +446,9 @@ const calculateListenersCount = (data) => {
 		if (mount.server_name.indexOf('Sovietwave') > -1)
 			listenersCount += mount.listeners;
 
-		if (currentPos === data.icestats.source.length)
+		if (currentPos === data.icestats.source.length){
 			$('#listeners').text(listenersCount);
+			$('#listeners-alt').text(listenersCount);
+		}
 	});
 };
