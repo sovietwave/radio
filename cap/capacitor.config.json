@@ -1,7 +1,7 @@
 {
   "appId": "su.wave.radio",
   "appName": "Soviet Radio",
-  "webDir": "www",
+  "webDir": "../app/dist",
   "server": {
     "allowNavigation": [
       "sovietwave.su"
