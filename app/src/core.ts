@@ -418,18 +418,10 @@ const enableLinks = () => {
 	enableBright();
 	disableAir();
 
-
-	if (isMobileMode()) {
-		links.show();
-		links.css({ left: '0', opacity: '1' });
-		activeLinks.show();
-		activeLinks.css({ opacity: '1' });
-		return;
-	}
-
 	links.show();
 	links.animate({
 		left: '0',
+		top: '0',
 		opacity: '1'
 	}, 300);
 
@@ -448,20 +440,24 @@ const disableLinks = () => {
 	if (!airIsEnabled)
 		disableBright();
 
-	if (isMobileMode()) {
-		links.hide();
-		activeLinks.hide();
-		return;
-	}
-
-	links.animate({
-		left: '-150',
-		opacity: '0'
-	}, 300, function () { links.hide(); });
-
 	activeLinks.animate({
 		opacity: '0'
 	}, 300, function () { activeLinks.hide(); });
+
+	if (!isMobileMode()) {
+		links.animate({
+			left: '-150',
+			opacity: '0'
+		}, 300, function () { links.hide(); });
+	}
+	else
+	{
+		links.animate({
+			top: '-100',
+			opacity: '0'
+		}, 300, function () { links.hide(); });
+	}
+
 }
 
 export const toggleAirPanel = () => {
@@ -486,17 +482,10 @@ const enableAir = () => {
 	enableBright();
 	disableLinks();
 
-	if (isMobileMode()) {
-		air.show();
-		air.css({ left: '0', opacity: '1' });
-		activeAir.show();
-		activeAir.css({ opacity: '1' });
-		return;
-	}
-
 	air.show();
 	air.animate({
 		left: '0',
+		top: '0',
 		opacity: '1'
 	}, 300);
 
@@ -515,16 +504,17 @@ const disableAir = () => {
 	if (!linksIsEnabled)
 		disableBright();
 
-	if (isMobileMode()) {
-		air.hide();
-		activeAir.hide();
-		return;
+	if (!isMobileMode()) {
+		air.animate({
+			left: '-150',
+			opacity: '0'
+		}, 300, function () { air.hide(); });
+	} else {
+		air.animate({
+			top: '-100',
+			opacity: '0'
+		}, 300, function () { air.hide(); });
 	}
-
-	air.animate({
-		left: '-150',
-		opacity: '0'
-	}, 300, function () { air.hide(); });
 
 
 	activeAir.animate({

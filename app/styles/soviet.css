@@ -611,12 +611,9 @@ a.night
 	#panel, #air-panel{
 		position: fixed;
 		width: 100%;
+		left: 0px;
+		top: -100px;
 	}
-
-	#air-panel{
-		left: 150px;
-	}
-
 	
 	#links-title {
 		margin-top: 18px;
