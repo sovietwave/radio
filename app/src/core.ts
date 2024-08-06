@@ -183,6 +183,7 @@ let activeAir;
 let frameOverlay;
 let sfxSlide;
 let sfxClick;
+let sfxCamera;
 let coverImage;
 let frameMobileMode = false;
 let player;
@@ -243,6 +244,7 @@ export const init = () => {
 
 	sfxSlide = new Audio('/assets/sfx/slide.ogg');
 	sfxClick = new Audio('/assets/sfx/click.ogg');
+	sfxCamera = new Audio('/assets/sfx/camera.ogg');
 
 	if (SITE_MODE == 'stream') {
 		streamOverride = true;
@@ -368,7 +370,7 @@ const switchFrame = () => {
 };
 
 export const switchCurrentBackground = () => {
-	sfxPlaySlide();
+	sfxPlayCamera();
 	switchBackground(SITE_MODE);
 
 	if (isMobileMode()) {
@@ -571,15 +573,15 @@ export const hideLeftPanels = () => {
 };
 
 const sfxPlayClick = () => {
-	//sfxClick.playbackRate = 0.9 + Math.random(0.2);	
-	sfxClick.volume = Math.max(0, state.volumeValue - 0.3);
 	sfxClick.play();
 };
 
 const sfxPlaySlide = () => {
-	//sfxSlide.playbackRate = 0.7 + Math.random(0.3);
-	sfxSlide.volume = Math.max(0, state.volumeValue - 0.1);
 	sfxSlide.play();
+};
+
+const sfxPlayCamera = () => {
+	sfxCamera.play();
 };
 
 export const toggleNavi = () => {
