@@ -35,10 +35,6 @@ a
 a:hover{
 	opacity: 1;
 	
-	/*
-	filter: drop-shadow(0px 0px 3px rgba(255, 222, 128, 0.7));
-	-webkit-filter: drop-shadow(0px 0px 3px rgba(255, 222, 128, 0.7));	
-	*/
 	filter: drop-shadow(0px 0px 3px rgba(var(--accentR), var(--accentG), var(--accentB), 0.7));
 	-webkit-filter: drop-shadow(0px 0px 3px rgba(var(--accentR), var(--accentG), var(--accentB), 0.7));
 }
@@ -167,7 +163,7 @@ a.night
 
 #panel, #air-panel
 {
-    background: rgba(0,0,0,0.64);
+    background: rgba(0,0,0,0.9);
     z-index: 10;
 
 	display: none;
@@ -277,8 +273,6 @@ a.night
 	bottom: 70px;
 
 	z-index: 20;
-	opacity: 0.0;
-	background-color: #000;
 }
 
 #links-separator {	
@@ -321,7 +315,7 @@ a.night
 
 #links-title-section
 {
-    text-shadow: 0 0 2px rgba(255, 222, 128, 0.5);
+    text-shadow: 0 0 2px rgba(var(--accentR), var(--accentG), var(--accentB), 0.5);
 	width: 100%;
 	margin: 0;
 	position: relative;
@@ -332,7 +326,7 @@ a.night
 }
 
 #links-title {
-	text-shadow: 0 0 4px rgba(255, 222, 128, 1);
+	text-shadow: 0 0 4px rgba(var(--accentR), var(--accentG), var(--accentB), 1);
 	text-align: center;
 	font-size: 24pt;
 	margin-bottom: 4pt;
@@ -506,7 +500,7 @@ a.night
 	background-image: url('/assets/sprites/frame2.png');
 	background-size: 100% 100%;
 
-	z-index: 10;
+	z-index: 50;
 	pointer-events: none;
 }
 

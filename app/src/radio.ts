@@ -199,7 +199,7 @@ function getCurrentTrack(onSuccess, isBrief?: boolean) {
 	}).done(function (data) {
 		onSuccess(data);
 	}).fail(function (jq, jx) {
-		setTrackInfo('Поиск частоты...');
+		setTrackInfo(' ');
 	});
 }
 
@@ -332,6 +332,8 @@ const setTrackInfo = (track) => {
 	let trackStruct = {};
 	let artistLink = "";
 
+	$('#player-city').html('&nbsp;');
+
 	if (typeof track === 'string') {
 
 		const splitAttempt = splitTrackInfo(track);
@@ -394,11 +396,8 @@ const setTrackInfo = (track) => {
 		$("#player-artist-link-stream").text(trackStruct['artist']);
 		$("#player-title").text(trackStruct['title']);
 
-		if (trackStruct['city'] && trackStruct['city'] !== "Unknown") {
+		if (trackStruct['city'] && trackStruct['city'] !== "Unknown")
 			$('#player-city').text(trackStruct['city']);
-		} else {
-			$('#player-city').html('&nbsp;');
-		}
 
 		// iOS
 		if (radioPlayer != null) {
