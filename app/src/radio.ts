@@ -135,7 +135,7 @@ const radioPlay = (channel?: string) => {
 
 		radioPlayer.onloadstart = function () {
 			if (nowPlaying)
-				setTempTitle('Настройка частоты...');
+				setTempTitle('Поиск частоты...');
 		}
 
 		radioPlayer.play();
@@ -199,7 +199,7 @@ function getCurrentTrack(onSuccess, isBrief?: boolean) {
 	}).done(function (data) {
 		onSuccess(data);
 	}).fail(function (jq, jx) {
-		setTrackInfo('Связь потеряна');
+		setTrackInfo('Поиск частоты...');
 	});
 }
 

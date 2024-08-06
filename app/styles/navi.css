@@ -264,8 +264,10 @@
 
 /* MOBILE BUTTON */
 
-#mobile-button{
-	display: none;
+.mobile-button{
+	vertical-align: middle;
+	display: inline;
+	width: 32px;
 }
 
 /* M ВЁРСТКА - Без логотипа */
@@ -311,6 +313,7 @@
 	#mobile-button{
 		vertical-align: middle;
 		display: inline;
+		width: 32px;
 	}
 
 	#navi-logo{
@@ -338,8 +341,23 @@
 /* XS ВЁРСТКА - Совсем маленбкая вёрстка жесть */
 @media handheld, only screen and (max-height: 499px){
 
+	#navi{
+		box-shadow: 0 0 3px 3px rgba(0, 0, 0, 1);
+		height: 50px;
+	}
+
+
+	#panel-active-links, #panel-active-air
+	{
+		height: 50px;
+	}
+
 	#listeners-container {
 		font-size: 14pt;
+	}
+
+	.mobile-button{
+		width: 24px;
 	}
 
 }

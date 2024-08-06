@@ -182,8 +182,12 @@ let activeLinks;
 let activeAir;
 let frameOverlay;
 let sfxSlide;
+let sfxSlide2;
 let sfxClick;
+let sfxClick2;
 let sfxCamera;
+let sfxCamera2;
+let sfxCounter;
 let coverImage;
 let frameMobileMode = false;
 let player;
@@ -223,13 +227,9 @@ const getCurrentMode = (): string => {
 export const init = () => {
 	SITE_MODE = new URLSearchParams(location.search).get('mode') || "";
 
-	
 	window.addEventListener('resize', () => {
-		if (frameMobileMode != isMobileMode()) {
-			switchFrame();
-		}
+		switchFrame();
 	});
-	
 
 	links = $('#panel');
 	air = $('#air-panel');
@@ -246,6 +246,11 @@ export const init = () => {
 	sfxClick = new Audio('/assets/sfx/click.ogg');
 	sfxCamera = new Audio('/assets/sfx/camera.ogg');
 
+	sfxSlide2 = new Audio('/assets/sfx/slide.ogg');
+	sfxClick2 = new Audio('/assets/sfx/click.ogg');
+	sfxCamera2 = new Audio('/assets/sfx/camera.ogg');
+	sfxCounter = 0;
+
 	if (SITE_MODE == 'stream') {
 		streamOverride = true;
 		console.log("streamOverride");
@@ -261,44 +266,6 @@ export const init = () => {
 	frameIndex = rnd(framesCount) + 1;
 
 	setTheme(SITE_MODE);
-
-	/*
-		if (SITE_MODE != 'event' || !siteModeOverridden)
-			setInterval(function() {
-				var
-				d = new Date(),
-				nd = new Date(d.getTime() + (10800000)), // 3600000 * 3 (3 - MSK, UTC+3)
-	
-				t = nd.getUTCHours();
-				m = nd.getUTCMinutes();
-	
-				if (t >= 1        &&        t < 7) // night
-				{
-					if (SITE_MODE != 'night') {
-						SITE_MODE = 'night';
-						setTheme('night');
-					}
-				} else if (t >= 7       &&        t < 19) // day
-				{
-					if (SITE_MODE != 'day') {
-						SITE_MODE = 'day';
-						setTheme('day');
-					}
-				} else if (t >= 0       &&        t < 1) // midnight
-				{
-					if (SITE_MODE != 'midnight') {
-						SITE_MODE = 'midnight';
-						setTheme('midnight');
-					}
-				} else // evening
-				{
-					if (SITE_MODE != 'evening') {
-						SITE_MODE = 'evening';
-						setTheme('evening');
-					}
-				}
-			}, 30000); // check every 30s  30000
-			*/
 };
 
 const setTheme = (mode: string) => {
@@ -379,19 +346,23 @@ export const switchCurrentBackground = () => {
 };
 
 const toggleFrame = () => {
-	if (linksIsEnabled || airIsEnabled)
+	var naviHeight = '69px';
+	if (isXSMode())
+		naviHeight = '49px';
+	
+	if ((!isMobileMode()) && (linksIsEnabled || airIsEnabled))
 		frameOverlay.animate({
 			left: '-30px',
 			right: '-30px',
 			top: '-30px',
-			bottom: '69px'
+			bottom: naviHeight
 		}, 600);
 	else
 		frameOverlay.animate({
 			left: '0px',
 			right: '0px',
 			top: '0px',
-			bottom: '69px'
+			bottom: naviHeight
 		}, 400);
 };
 
@@ -573,15 +544,33 @@ export const hideLeftPanels = () => {
 };
 
 const sfxPlayClick = () => {
-	sfxClick.play();
+	sfxCounter++;
+	if (sfxCounter == 1)
+		sfxClick.play();
+	else{
+		sfxClick2.play();
+		sfxCounter = 0;
+	}
 };
 
 const sfxPlaySlide = () => {
-	sfxSlide.play();
+	sfxCounter++;
+	if (sfxCounter == 1)
+		sfxSlide.play();
+	else{
+		sfxSlide2.play();
+		sfxCounter = 0;
+	}
 };
 
 const sfxPlayCamera = () => {
-	sfxCamera.play();
+	sfxCounter++;
+	if (sfxCounter == 1)
+		sfxCamera.play();
+	else{
+		sfxCamera2.play();
+		sfxCounter = 0;
+	}
 };
 
 export const toggleNavi = () => {
@@ -603,7 +592,6 @@ export const toggleNavi = () => {
 			opacity: '0',
 			bottom: '-170px'
 		}, durationHide);
-
 
 		frameOverlay.animate({
 			opacity: '0',
