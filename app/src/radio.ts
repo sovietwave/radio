@@ -109,7 +109,7 @@ const radioPlay = (channel?: string) => {
 
 	if (playerReady) {
 		// Create a player object
-		radioPlayer.src = '//station.waveradio.org/' + channel + '?' + randword(); // fixes buffering
+		radioPlayer.src = `https://station.waveradio.org/${channel}?${randword()}`; // fixes buffering
 		radioPlayer.title = showingTrack;
 
 		radioPlayer.onerror = function () {
@@ -189,7 +189,7 @@ function requestTrackInfo() {
 
 function getCurrentTrack(onSuccess, isBrief?: boolean) {
 	$.ajax({
-		url: '//core.waveradio.org/public/current',
+		url: "https://core.waveradio.org/public/current",
 		data: {
 			station: 'soviet',
 			brief: (isBrief ? '1' : '0')
@@ -208,7 +208,7 @@ const getTrackHistory = () => {
 	const amount = Math.floor(calculateHistoryViewport() / trackHistoryItemHeight);
 
 	$.ajax({
-		url: '//core.waveradio.org/public/history',
+		url: "https://core.waveradio.org/public/history",
 		data: {
 			station: 'soviet',
 			"amount": 100,
@@ -428,7 +428,7 @@ const requestListenersCount = () => {
 	setTimeout(requestListenersCount, 20000);
 
 	$.ajax({
-		url: '//station.waveradio.org/status-json.xsl',
+		url: "https://station.waveradio.org/status-json.xsl",
 		dataType: 'json',
 		crossDomain: true
 	}).done(calculateListenersCount);
