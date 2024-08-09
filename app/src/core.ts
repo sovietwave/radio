@@ -204,6 +204,12 @@ const isMobileMode = (): boolean => {
 	return false;
 };
 
+const isXSMode = () => {
+	if (document.documentElement.scrollHeight < 500)
+		return true;
+	return false;
+}
+
 const getCurrentMode = (): string => {
 	const d = new Date();
 	const nd = new Date(d.getTime() + (10800000)); // 3600000 * 3 (3 - MSK, UTC+3)
@@ -354,9 +360,6 @@ export const switchCurrentBackground = () => {
 		hideLeftPanels();
 	}
 };
-
-// TODO: implement placeholder
-const isXSMode = () => false;
 
 const toggleFrame = () => {
 	var naviHeight = '69px';
