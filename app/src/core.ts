@@ -252,13 +252,13 @@ export const init = () => {
 	coverImage = $('#cover-image');
 	player = $("#player-wrapper");
 
-	sfxSlide = new Audio('/assets/sfx/slide.ogg');
-	sfxClick = new Audio('/assets/sfx/click.ogg');
-	sfxCamera = new Audio('/assets/sfx/camera.ogg');
+	sfxSlide = new Audio('/assets/sfx/slide.mp3');
+	sfxClick = new Audio('/assets/sfx/click.mp3');
+	sfxCamera = new Audio('/assets/sfx/camera.mp3');
 
-	sfxSlide2 = new Audio('/assets/sfx/slide.ogg');
-	sfxClick2 = new Audio('/assets/sfx/click.ogg');
-	sfxCamera2 = new Audio('/assets/sfx/camera.ogg');
+	sfxSlide2 = new Audio('/assets/sfx/slide.mp3');
+	sfxClick2 = new Audio('/assets/sfx/click.mp3');
+	sfxCamera2 = new Audio('/assets/sfx/camera.mp3');
 	sfxCounter = 0;
 
 	if (SITE_MODE == 'stream') {
