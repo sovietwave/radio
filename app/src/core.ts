@@ -224,8 +224,18 @@ const getCurrentMode = (): string => {
 	return 'evening';
 };
 
+const getUrlSearchParam = (key: string): string|null => {
+	try {
+		return new URLSearchParams(location.search).get(key);
+	}
+	catch {
+		// the latest iOS WKWebView (2024) could be blocked by privacy and fails to read query params
+	}
+	return null;
+};
+
 export const init = () => {
-	SITE_MODE = new URLSearchParams(location.search).get('mode') || "";
+	SITE_MODE = getUrlSearchParam("mode") || "";
 
 	window.addEventListener('resize', () => {
 		switchFrame();
@@ -344,6 +354,9 @@ export const switchCurrentBackground = () => {
 		hideLeftPanels();
 	}
 };
+
+// TODO: implement placeholder
+const isXSMode = () => false;
 
 const toggleFrame = () => {
 	var naviHeight = '69px';
