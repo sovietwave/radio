@@ -192,6 +192,7 @@ let coverImage;
 let frameMobileMode = false;
 let player;
 let streamOverride = false;
+let portraitOrientation;
 
 export let state = {
 	volumeValue: 1,
@@ -243,9 +244,8 @@ const getUrlSearchParam = (key: string): string|null => {
 export const init = () => {
 	SITE_MODE = getUrlSearchParam("mode") || "";
 
-	window.addEventListener('resize', () => {
-		switchFrame();
-	});
+	window.addEventListener('resize', () => { onResize(); });
+	portraitOrientation = isMobileMode();
 
 	links = $('#panel');
 	air = $('#air-panel');
@@ -331,7 +331,7 @@ const switchBackground = (mode: string) => {
 	}
 
 
-	if (isMobileMode())
+	if (portraitOrientation)
 		coverImage.css({ 'background-image': `url(${currentModeAssets.backs_mobile[currentIndex]})` });
 	else
 		coverImage.css({ 'background-image': `url(${currentModeAssets.backs[currentIndex]})` });
@@ -339,14 +339,23 @@ const switchBackground = (mode: string) => {
 	switchFrame();
 };
 
+const onResize = () => {
+	let nowIsMobile = isMobileMode();
+
+	if (nowIsMobile != portraitOrientation){
+		portraitOrientation = nowIsMobile;
+		switchFrame();
+	}	
+}
+
 const switchFrame = () => {
 	frameIndex++;
 	if (frameIndex > framesCount)
 		frameIndex = 1;
 
-	frameMobileMode = document.documentElement.scrollWidth < document.documentElement.scrollHeight;
+	let frameMobileMode = document.documentElement.scrollWidth < document.documentElement.scrollHeight;
 
-	if (!frameMobileMode)
+	if (!portraitOrientation)
 		frameOverlay.css({ 'background-image': 'url(/assets/sprites/frame' + frameIndex + '.png)' });
 	else
 		frameOverlay.css({ 'background-image': 'url(/assets/sprites/frame' + frameIndex + 'm.png)' });
@@ -356,9 +365,8 @@ export const switchCurrentBackground = () => {
 	sfxPlayCamera();
 	switchBackground(SITE_MODE);
 
-	if (isMobileMode()) {
+	if (portraitOrientation) 
 		hideLeftPanels();
-	}
 };
 
 const toggleFrame = () => {
@@ -366,7 +374,7 @@ const toggleFrame = () => {
 	if (isXSMode())
 		naviHeight = '49px';
 	
-	if ((!isMobileMode()) && (linksIsEnabled || airIsEnabled))
+	if ((!portraitOrientation) && (linksIsEnabled || airIsEnabled))
 		frameOverlay.animate({
 			left: '-30px',
 			right: '-30px',
@@ -433,7 +441,7 @@ const disableLinks = () => {
 		opacity: '0'
 	}, 300, function () { activeLinks.hide(); });
 
-	if (!isMobileMode()) {
+	if (!portraitOrientation) {
 		links.animate({
 			left: '-150',
 			opacity: '0'
@@ -493,7 +501,7 @@ const disableAir = () => {
 	if (!linksIsEnabled)
 		disableBright();
 
-	if (!isMobileMode()) {
+	if (!portraitOrientation) {
 		air.animate({
 			left: '-150',
 			opacity: '0'
@@ -526,7 +534,7 @@ const enableBright = () => {
 	}
 	brightIsEnabled = true;
 
-	if (isMobileMode())
+	if (portraitOrientation)
 		return;
 
 	bright.show();
@@ -671,7 +679,7 @@ export const toggleNavi = () => {
 };
 
 const togglePlayer = () => {
-	if (isMobileMode()) {
+	if (portraitOrientation) {
 		if (linksIsEnabled || airIsEnabled) {
 			player.hide();
 		} else {
