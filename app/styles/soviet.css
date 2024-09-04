@@ -23,10 +23,12 @@ body, html
 	font-size: 16pt;
 	background-color: #000000;
 	
+	/*
     padding-top: env(safe-area-inset-top);
     padding-right: env(safe-area-inset-right);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
+    */
 }
 
 a
@@ -180,8 +182,6 @@ a.night
 	width: 450px;
 	border: none;
 	opacity: 0;
-
-    padding-top: env(safe-area-inset-top);
 }
 
 .link {
@@ -506,6 +506,8 @@ a.night
 	background-size: cover;
 	background-image: url('/assets/sprites/frame2.png');
 	background-size: 100% 100%;
+
+	mix-blend-mode: multiply;
 
 	z-index: 50;
 	pointer-events: none;

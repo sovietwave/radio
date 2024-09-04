@@ -39,12 +39,8 @@
 
     <div id="player-wrapper">
         <div id="player">
-            <div id="player-artist" class="player-track">
-                <a target="_blank" title="Cтраница артиста" id="player-artist-link"></a>
-            </div>
-            <div id="player-title" class="player-track"></div>
+			<font size="32">Европа Плюс</font>
             <div id="player-switch" class="player-switch-stalled" onclick="radioToggle()"></div>
-            <div id="player-city" class="player-track"></div>
         </div>
     </div>
 
@@ -86,15 +82,6 @@
                     <a href="https://t.me/sovietwave_chat" id="links-button-chat" class="links-button link" target="_blank">
                         <img src="assets/sprites/icons/chat.svg" class="links-icon" />Кухонька</a>
 
-                    <div id="links-button-heart" class="links-label link" target="_blank">
-                        <!--<img src="assets/sprites/icons/heart.svg" class="links-icon-new" />-->
-                        Поддержать
-                    </div>
-                    <a href="https://www.donationalerts.com/r/soviet_wave" id="links-button-donate" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/donate.svg" class="links-icon" />Донатом</a>
-                    <a href="https://boosty.to/soviet_wave" id="links-button-boosty" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/boosty.svg" class="links-icon" />Подпиской</a>
-
                     <div id="links-button-heart" class="links-label-new link" target="_blank">Скачать</div>
                     <a href="https://play.google.com/store/apps/details?id=su.wave.radio" class="links-button link" target="_blank">
                         <img src="assets/sprites/icons/android.svg" class="links-icon" />Android</a>
@@ -111,6 +98,10 @@
                         <a href="https://vk.com/lostslides" target="_blank">Lost Slides</a>
                     </div>
 
+					<div class="links-label link links-label-bright">
+                        <span class="links-label-transparent">Написать нам </span>
+                        <a href="mailto:fest@sovietwave.su" target="_blank">fest@sovietwave.su</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -122,21 +113,17 @@
         <div id="panel-left-gradient"></div>
 
         <div id="air-list">
-            <div id="air-title-section">
-                <div id="air-title"></div>
-                <div id="air-times"></div>
-                <div id="air-tags"></div>
-            </div>
-
-
-            <div id="panel-title-gradient"></div>
-            <div id="panel-top-gradient"></div>
             <div id="panel-bottom-gradient"></div>
 
             <div id="air-playlist-container">
-                <div id="air-playlist">
-                    <!-- Ждём ответа из Центра... -->
-                </div>
+                - <a href="/sovietwave.m3u">Советская Волна</a><br>
+				- <a href="/sovietwave.m3u">Маяк</a><br>
+				- <a href="/sovietwave.m3u">Европа Алюс</a><br>
+				- <a href="/sovietwave.m3u">Авторадио</a><br>
+				- <a href="/sovietwave.m3u">Новое Радио</a><br>
+				- <a href="/sovietwave.m3u">Русское Радио</a><br>
+				- <a href="/sovietwave.m3u">Юмор FM</a><br>
+				- <a href="/sovietwave.m3u">Радио Шансон</a><br>
             </div>
 
         </div>
@@ -159,7 +146,7 @@
             </div>
 
             <div id="navi-air" onclick="toggleAirPanel()">
-                <div id="standalone-only">Эфир</div>
+                <div id="standalone-only">Станции</div>
                 <img src="/assets/sprites/icons/air.svg" class="mobile-button">
             </div>
 
