@@ -1,14 +1,13 @@
 :root {
 	/*
 	FFDE80
-		filter: drop-shadow(0px 0px 3px rgba(255, 222, 128, 0.7));
-	-webkit-filter: drop-shadow(0px 0px 3px rgba(255, 222, 128, 0.7));	
 	FF80DE
+	C994FF
 	*/
-  --accent: #C994FF;
-  --accentR: 201;
-  --accentG: 148;
-  --accentB: 255;
+  --accent: #70B0C3;
+  --accentR: 112;
+  --accentG: 176;
+  --accentB: 295;
 }
 
 body, html
@@ -186,15 +185,36 @@ a.night
 
 .link {
 	display: block;
-	margin: 5px;
+	margin-left: 15px;
+	margin-top: 10px;
+	line-height: 30px;
 }
 
 .links-label
 {
-	margin-left: -20px;
-	margin-top: 50px;
-	opacity: 0.5;
+	margin-left: 0px;
+	line-height: 30px;
+	/*margin-top: 50px;*/
 	width: fit-content;
+	opacity: 0.5;
+}
+
+.links-label-new
+{
+	margin-left: 0px;
+	/*margin-top: 50px;*/
+	line-height: 30px;
+	width: fit-content;
+	
+	opacity: 1;
+	width: fit-content;
+	color: var(--accent);
+}
+
+.links-space
+{
+	display: block;
+	height: 35px;
 }
 
 .links-label-bright
@@ -205,15 +225,6 @@ a.night
 .links-label-transparent
 {
 	opacity: 0.5;
-}
-
-.links-label-new
-{
-	margin-left: -20px;
-	margin-top: 50px;
-	opacity: 1;
-	width: fit-content;
-	color: #ff2692;
 }
 
 .links-button
@@ -296,28 +307,24 @@ a.night
 	position: absolute;
 	
 	top: 150px;
+
 	bottom: 70px;
 	width: 100%;
-
+	
 	background-color: rgba(0,0,0,0.4);
 	overflow-y: scroll;
 	overflow-x: hidden;
-
-	justify-content: center;
+	
+	display: block;
+    align-content: center;  
 }
 
 #links-list {
-	position: static;
-
-	justify-items: center;
-	font-size: 16pt;
-	line-height: 24pt;	
-
 	width: 300px;
-	padding-top: 20px;
-	padding-left: 50px;
-	padding-bottom: 70px;
-	margin: auto;
+	margin-top: 50px;
+	margin-bottom: 50px;
+	margin-left: auto;
+    margin-right: auto;
 }
 
 #links-title-section
@@ -604,6 +611,11 @@ a.night
 
 /* S ВЁРСТКА - Прортретная для телефонов */
 @media handheld, only screen and (max-width: 800px), (max-height: 500px){
+	
+	#air-playlist::-webkit-scrollbar, #links-center-back::-webkit-scrollbar {
+		width: 35px;
+	}
+	
 	#panel, #air-panel{
 		position: fixed;
 		width: 100%;
