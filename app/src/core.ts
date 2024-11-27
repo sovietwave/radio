@@ -65,31 +65,13 @@ const backs = {
 
 	"event": {
 		"backs": [
-			"/assets/sprites/bg/event_space/1.jpg",
-			"/assets/sprites/bg/event_space/2.jpg",
-			"/assets/sprites/bg/event_space/3.jpg",
-			"/assets/sprites/bg/event_space/4.jpg",
-			"/assets/sprites/bg/event_space/5.jpg",
-			"/assets/sprites/bg/event_space/6.jpg",
-			"/assets/sprites/bg/event_space/7.jpg",
-			"/assets/sprites/bg/event_space/8.jpg",
-			"/assets/sprites/bg/event_space/9.jpg",
-			"/assets/sprites/bg/event_space/10.jpg",
-			"/assets/sprites/bg/event_space/11.jpg"
+			"/assets/sprites/bg/event_diskette/1.jpg",
+			"/assets/sprites/bg/event_diskette/2.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/event_space/1.jpg",
-			"/assets/sprites/bg/event_space/2.jpg",
-			"/assets/sprites/bg/event_space/3.jpg",
-			"/assets/sprites/bg/event_space/4.jpg",
-			"/assets/sprites/bg/event_space/5.jpg",
-			"/assets/sprites/bg/event_space/6.jpg",
-			"/assets/sprites/bg/event_space/7.jpg",
-			"/assets/sprites/bg/event_space/8.jpg",
-			"/assets/sprites/bg/event_space/9.jpg",
-			"/assets/sprites/bg/event_space/10.jpg",
-			"/assets/sprites/bg/event_space/11.jpg"
+			"/assets/sprites/bg/event_diskette/1.jpg",
+			"/assets/sprites/bg/event_diskette/2.jpg"
 		]
 	},
 
@@ -135,13 +117,11 @@ const modes = {
 		"finish": "7:00",
 		"times": "0:00 — 1:00 МСК"
 	},
-
+	
 	"event": {
-		"title": "День Космонавтики",
+		"title": "Вечер в Дискете",
 		"subtitle": "#sovietwave",
-		"start": "12 мая",
-		"finish": "14 мая",
-		"times": "12, 13, 14 мая"
+		"times": "28 ноября"
 	},
 
 	"event_space": {
@@ -272,10 +252,14 @@ export const init = () => {
 		console.log("streamOverride");
 	}
 
+	/*
 	if (SITE_MODE == "") {
 		SITE_MODE = getCurrentMode();
 	}
+	*/
 
+	SITE_MODE = "event";
+	
 	currentIndex = -1;
 	console.log("SITE_MODE: " + SITE_MODE);
 	currentIndex = rnd(backs[SITE_MODE].backs.length); // Randomize fist pic
