@@ -252,13 +252,11 @@ export const init = () => {
 		console.log("streamOverride");
 	}
 
-	/*
+	/* SITE_MODE = "event"; */
+	
 	if (SITE_MODE == "") {
 		SITE_MODE = getCurrentMode();
 	}
-	*/
-
-	SITE_MODE = "event";
 	
 	currentIndex = -1;
 	console.log("SITE_MODE: " + SITE_MODE);

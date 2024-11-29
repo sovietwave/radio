@@ -1,14 +1,15 @@
 :root {
 	/*
-	FFDE80
-	FF80DE
-	C994FF
-	70B0C3
+	FFDE80 yellow
+	FF80DE pink
+	C994FF purple
+	70B0C3 winter
+	903BD8 diskette
 	*/
-  --accent: #903BD8;
-  --accentR: 144;
-  --accentG: 59;
-  --accentB: 216;
+  --accent: #FFDE80;
+  --accentR: 255;
+  --accentG: 222;
+  --accentB: 128;
 }
 
 body, html
