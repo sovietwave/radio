@@ -9,57 +9,57 @@ let SITE_MODE: string = "";
 const backs = {
 	"day": {
 		"backs": [
-			"/assets/sprites/bg/day1.jpg",
-			"/assets/sprites/bg/day2.jpg",
-			"/assets/sprites/bg/day3.jpg"
+			"/assets/sprites/bg/day4.jpg",
+			"/assets/sprites/bg/day8.jpg",
+			"/assets/sprites/bg/day9.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/mobile/day1.jpg",
-			"/assets/sprites/bg/mobile/day2.jpg",
-			"/assets/sprites/bg/mobile/day3.jpg"
+			"/assets/sprites/bg/mobile/day4.jpg",
+			"/assets/sprites/bg/mobile/day8.jpg",
+			"/assets/sprites/bg/mobile/day9.jpg"
 		]
 	},
 
 	"evening": {
 		"backs": [
-			"/assets/sprites/bg/evening1.jpg",
-			"/assets/sprites/bg/evening2.jpg",
-			"/assets/sprites/bg/evening3.jpg"
+			"/assets/sprites/bg/evening4.jpg",
+			"/assets/sprites/bg/evening8.jpg",
+			"/assets/sprites/bg/evening9.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/mobile/evening1.jpg",
-			"/assets/sprites/bg/mobile/evening2.jpg",
-			"/assets/sprites/bg/mobile/evening3.jpg"
+			"/assets/sprites/bg/mobile/evening4.jpg",
+			"/assets/sprites/bg/mobile/evening8.jpg",
+			"/assets/sprites/bg/mobile/evening9.jpg"
 		]
 	},
 
 	"night": {
 		"backs": [
-			"/assets/sprites/bg/night1.jpg",
-			"/assets/sprites/bg/night2.jpg",
-			"/assets/sprites/bg/night3.jpg"
+			"/assets/sprites/bg/night4.jpg",
+			"/assets/sprites/bg/night8.jpg",
+			"/assets/sprites/bg/night9.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/mobile/night1.jpg",
-			"/assets/sprites/bg/mobile/night2.jpg",
-			"/assets/sprites/bg/mobile/night3.jpg"
+			"/assets/sprites/bg/mobile/night4.jpg",
+			"/assets/sprites/bg/mobile/night8.jpg",
+			"/assets/sprites/bg/mobile/night9.jpg"
 		]
 	},
 
 	"midnight": {
 		"backs": [
-			"/assets/sprites/bg/midnight1.jpg",
 			"/assets/sprites/bg/midnight2.jpg",
-			"/assets/sprites/bg/midnight3.jpg"
+			"/assets/sprites/bg/midnight4.jpg",
+			"/assets/sprites/bg/midnight6.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/mobile/midnight1.jpg",
 			"/assets/sprites/bg/mobile/midnight2.jpg",
-			"/assets/sprites/bg/mobile/midnight3.jpg"
+			"/assets/sprites/bg/mobile/midnight4.jpg",
+			"/assets/sprites/bg/mobile/midnight6.jpg"
 		]
 	},
 
@@ -173,6 +173,9 @@ let frameMobileMode = false;
 let player;
 let streamOverride = false;
 let portraitOrientation;
+let animDurationFaster = 100;
+let animDurationFast = 250;
+let animDurationLong = 600;
 
 export let state = {
 	volumeValue: 1,
@@ -362,7 +365,7 @@ const toggleFrame = () => {
 			right: '-30px',
 			top: '-30px',
 			bottom: naviHeight
-		}, 600);
+		}, animDurationLong);
 	else
 		frameOverlay.animate({
 			left: '0px',
@@ -402,12 +405,12 @@ const enableLinks = () => {
 		left: '0',
 		top: '0',
 		opacity: '1'
-	}, 300);
+	}, animDurationFast);
 
 	activeLinks.show();
 	activeLinks.animate({
 		opacity: '1'
-	}, 300);
+	}, animDurationFast);
 };
 
 const disableLinks = () => {
@@ -421,20 +424,20 @@ const disableLinks = () => {
 
 	activeLinks.animate({
 		opacity: '0'
-	}, 300, function () { activeLinks.hide(); });
+	}, animDurationFast, function () { activeLinks.hide(); });
 
 	if (!portraitOrientation) {
 		links.animate({
 			left: '-150',
 			opacity: '0'
-		}, 300, function () { links.hide(); });
+		}, animDurationFast, function () { links.hide(); });
 	}
 	else
 	{
 		links.animate({
 			top: '-100',
 			opacity: '0'
-		}, 300, function () { links.hide(); });
+		}, animDurationFast, function () { links.hide(); });
 	}
 
 }
@@ -466,12 +469,12 @@ const enableAir = () => {
 		left: '0',
 		top: '0',
 		opacity: '1'
-	}, 300);
+	}, animDurationFast);
 
 	activeAir.show();
 	activeAir.animate({
 		opacity: '1'
-	}, 300);
+	}, animDurationFast);
 };
 
 const disableAir = () => {
@@ -487,18 +490,18 @@ const disableAir = () => {
 		air.animate({
 			left: '-150',
 			opacity: '0'
-		}, 300, function () { air.hide(); });
+		}, animDurationFast, function () { air.hide(); });
 	} else {
 		air.animate({
 			top: '-100',
 			opacity: '0'
-		}, 300, function () { air.hide(); });
+		}, animDurationFast, function () { air.hide(); });
 	}
 
 
 	activeAir.animate({
 		opacity: '0'
-	}, 300, function () { activeAir.hide(); });
+	}, animDurationFast, function () { activeAir.hide(); });
 };
 
 const toggleBright = () => {
@@ -522,7 +525,7 @@ const enableBright = () => {
 	bright.show();
 	bright.animate({
 		opacity: '0.2',
-	}, 300);
+	}, animDurationFast);
 };
 
 const disableBright = () => {
@@ -533,7 +536,7 @@ const disableBright = () => {
 
 	bright.animate({
 		opacity: '0',
-	}, 300, function () { bright.hide(); });
+	}, animDurationFast, function () { bright.hide(); });
 };
 
 export const hideLeftPanels = () => {
@@ -588,16 +591,13 @@ export const toggleNavi = () => {
 
 	naviIsEnabled = !naviIsEnabled;
 
-	const durationShow = 350;
-	const durationHide = 450;
-
 	if (!naviIsEnabled) {
 		sfxPlaySlide();
 
 		navi.animate({
 			opacity: '0',
 			bottom: '-170px'
-		}, durationHide);
+		}, animDurationLong);
 
 		frameOverlay.animate({
 			opacity: '0',
@@ -605,22 +605,22 @@ export const toggleNavi = () => {
 			right: '-100px',
 			top: '-100px',
 			bottom: '-100px'
-		}, durationHide);
+		}, animDurationLong);
 
 		coverImage.animate({
 			left: '0px',
 			right: '0px',
 			top: '0px',
 			bottom: '0px'
-		}, durationHide);
+		}, animDurationLong);
 
 		logo.animate({
 			bottom: '20px'
-		}, durationHide * 0.15);
+		}, animDurationFaster);
 
 		logo.find('img').animate({
 			height: '70px'
-		}, durationHide);
+		}, animDurationLong);
 
 		//coverImage.animate({'background-size': 'cover 100%'}, durationHide);
 
@@ -631,7 +631,7 @@ export const toggleNavi = () => {
 		navi.animate({
 			opacity: '1',
 			bottom: '0px'
-		}, durationShow);
+		}, animDurationFast);
 
 		frameOverlay.animate({
 			opacity: '1',
@@ -639,22 +639,22 @@ export const toggleNavi = () => {
 			right: '0px',
 			top: '0px',
 			bottom: '69px'
-		}, durationShow);
+		}, animDurationFast);
 
 		coverImage.animate({
 			left: '-30px',
 			right: '-30px',
 			top: '-30px',
 			bottom: '-30px'
-		}, durationShow);
+		}, animDurationFast);
 
 		logo.animate({
 			bottom: '5px'
-		}, durationShow * 0.75);
+		}, animDurationFaster);
 
 		logo.find('img').animate({
 			height: '60px'
-		}, durationShow);
+		}, animDurationFast);
 
 		//coverImage.animate({'background-size': 'cover 105%'}, durationShow);
 	}

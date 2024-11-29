@@ -6,10 +6,10 @@
 	70B0C3 winter
 	903BD8 diskette
 	*/
-  --accent: #FFDE80;
-  --accentR: 255;
-  --accentG: 222;
-  --accentB: 128;
+  --accent: #70B0C3;
+  --accentR: 112;
+  --accentG: 176;
+  --accentB: 195;
 }
 
 body, html
