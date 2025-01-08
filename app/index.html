@@ -34,8 +34,11 @@
 
 <body>
     <div id="cover-image"></div>
-    <div id="bright-overlay" onclick="hideLeftPanels()"></div>
-    <div id="frame-overlay"></div>
+
+    <div id="hide-on-micro">
+        <div id="bright-overlay" onclick="hideLeftPanels()"></div>
+        <div id="frame-overlay"></div>
+    </div>
 
     <div id="player-wrapper">
         <div id="player">
@@ -48,173 +51,199 @@
         </div>
     </div>
 
-    <!-- LINKS -->
-    <div id="panel">
-        <div id="panel-left-gradient"></div>
+    <div id="hide-on-micro">
+        <!-- LINKS -->
+        <div id="panel">
+            <div id="panel-left-gradient"></div>
 
-        <div id="links">
+            <div id="links">
 
-            <div id="links-title-section">
-                <div id="links-title">#sovietwave</div>
-                <div id="links-subtitle">Современная отечественная музыка<br>вдохновлённая мечтами из прошлого</div>
-            </div>
+                <div id="links-title-section">
+                    <div id="links-title">#sovietwave</div>
+                    <div id="links-subtitle">Современная отечественная музыка<br>вдохновлённая мечтами из прошлого</div>
+                </div>
 
-            <div id="panel-title-gradient"></div>
-            <div id="panel-top-gradient"></div>
-            <div id="panel-bottom-gradient"></div>
+                <div id="panel-title-gradient"></div>
+                <div id="panel-top-gradient"></div>
+                <div id="panel-bottom-gradient"></div>
 
-            <div id="links-logo"><img src="/assets/sprites/logo.svg"></div>
+                <div id="links-logo"><img src="/assets/sprites/logo.svg"></div>
 
-            <div id="links-center-back">                
-                <div id="links-list">
-			
-                <div id="listeners-alt-container">					
-                    <div id="links-button-heart" class="links-label link" target="_blank">
-                        Сейчас слушают
-                        <img src="/assets/sprites/icons/listeners.svg" class="mobile-button" hspace="5" />
-                        <span id="listeners-alt">?</span>
-                        <div id="listeners-alt"></div>
-                    </div>
-					
-					<div class="links-space"></div>
-                </div>				
-                    <div id="links-button-heart" class="links-label link" target="_blank">Наши соцсети</div>
-                    <a href="https://vk.com/soviet_wave" id="links-button-vk" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/vk.svg" class="links-icon" />Сообщество</a>
-                    <a href="https://t.me/sovietwave" id="links-button-telegram" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/telegram.svg" class="links-icon" />Канал</a>
-                    <a href="https://t.me/sovietwave_chat" id="links-button-chat" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/chat.svg" class="links-icon" />Кухонька</a>
-
-					<div class="links-space"></div>
-	
-                    <div id="links-button-heart" class="links-label-new link" target="_blank">
-                        <!--<img src="assets/sprites/icons/heart.svg" class="links-icon-new" />-->
-                        Поддержать
-                    </div>
-                    <a href="https://www.donationalerts.com/r/soviet_wave" id="links-button-donate" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/donate.svg" class="links-icon" />Донатом</a>
-                    <a href="https://boosty.to/soviet_wave" id="links-button-boosty" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/boosty.svg" class="links-icon" />Подпиской</a>
-
-					<div class="links-space"></div>
-					
-
-                    <div id="links-button-heart" class="links-label link" target="_blank">Скачать</div>
-					<a href="/sovietwave.m3u" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/m3u.svg" class="links-icon" />Файл для плеера</a>
-					
-					<!--
-                    <div id="links-button-heart" class="links-label-new link" target="_blank">Скачать</div>
-					
-                    <a href="https://play.google.com/store/apps/details?id=su.wave.radio" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/android.svg" class="links-icon" />Android</a>
+                <div id="links-center-back">                
+                    <div id="links-list">
+                
+                    <div id="listeners-alt-container">					
+                        <div id="links-button-heart" class="links-label link" target="_blank">
+                            Сейчас слушают
+                            <img src="/assets/sprites/icons/listeners.svg" class="mobile-button" hspace="5" />
+                            <span id="listeners-alt">?</span>
+                            <div id="listeners-alt"></div>
+                        </div>
+                        
+                        <div class="links-space"></div>
+                    </div>				
                     
-					
-                        <img src="assets/sprites/icons/iphone.svg" class="links-icon" />iPhone</a>
-                    <a href="/sovietwave.m3u" class="links-button link" target="_blank">
-					
-					
-					<a href="/SovietwaveRadio.zip" class="links-button link" target="_blank">
-					    <img src="assets/sprites/icons/windows.svg" class="links-icon" />Windows</a>
                     
-					<a href="/sovietwave.m3u" class="links-button link" target="_blank">
-                        <img src="assets/sprites/icons/m3u.svg" class="links-icon" />Файл для плеера</a>
-					-->
-					
-					<div class="links-space"></div>
-					
-                    <div class="links-label link links-label-bright">
-                        <span class="links-label-transparent">Фотографии предоставлены сообществом </span>
-                        <a href="https://vk.com/lostslides" target="_blank">Lost Slides</a>
+                    
+                        <div class="links-label">Наши соцсети</div>
+                        
+                        <a href="https://t.me/sovietwave" class="links-button" target="_blank">
+                            <img src="assets/sprites/icons/telegram.svg" class="links-icon" /><u>Канал</u></a>
+                            
+                        <a href="https://t.me/sovietwave_chat" class="links-button" target="_blank">
+                            <img src="assets/sprites/icons/chat.svg" class="links-icon" /><u>Кухонька</u></a>
+                            
+                        <a href="https://vk.com/soviet_wave" class="links-button" target="_blank">
+                            <img src="assets/sprites/icons/vk.svg" class="links-icon" /><u>Сообщество</u></a>
+
+                        <div class="links-space"></div>
+        
+        
+        
+        
+        
+                        <div id="links-button-heart" class="links-label">Поддержать</div>
+                        
+                        <a href="https://www.donationalerts.com/r/soviet_wave" class="links-button" target="_blank">
+                            <img src="assets/sprites/icons/donate.svg" class="links-icon" /><u>Донатом</u></a>
+                            
+                        <a href="https://boosty.to/soviet_wave" class="links-button" target="_blank">
+                            <img src="assets/sprites/icons/boosty.svg" class="links-icon" /><u>Подпиской</u></a>
+
+                        <div class="links-space"></div>
+                        
+                        
+                        
+                        
+                        
+                        <div id="links-button-heart" class="links-label-new">Скачать</div>
+                        
+                        <a href="https://play.google.com/store/apps/details?id=su.wave.radio" class="links-button" target="_blank">
+                            <img src="assets/sprites/icons/googleplay.svg" class="links-icon" /><u>Google Play</u></a>
+                        
+                        <div class="links-button">
+                            <a href="SovietwaveRadio.apk"  target="_blank" class="links-textbutton">
+                            <img src="assets/sprites/icons/android.svg" class="links-icon" /><u>Android</u>
+                            <span class="links-extension">APK</span>
+                            </a>						
+                        </div>
+                        
+                        <div class="links-button">
+                            <a href="/SovietwaveRadio.zip" target="_blank" class="links-textbutton">
+                            <img src="assets/sprites/icons/windows.svg" class="links-icon" /><u>Windows</u>
+                            <span class="links-extension">ZIP</span>
+                            </a>
+                        </div>
+                        
+                        <div class="links-button">
+                            <a href="/sovietwave.m3u" target="_blank" class="links-textbutton">
+                            <img src="assets/sprites/icons/m3u.svg" class="links-icon" /><u>Файл для плеера</u>
+                            <span class="links-extension">M3U</span>
+                            </a>
+                        </div>
+                        
+                        <div class="links-space"></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <div class="links-label-multistring">
+                            <span class="links-multistring">Фотографии предоставлены сообществом </span>
+                            <a class="links-label-bright" href="https://vk.com/lostslides" target="_blank"><u>Lost Slides</u></a>
+                        </div>
+                        
+                        
+                        
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
-    <!-- AIR -->
-    <div id="air-panel">
-        <div id="panel-left-gradient"></div>
+        <!-- AIR -->
+        <div id="air-panel">
+            <div id="panel-left-gradient"></div>
 
-        <div id="air-list">
-            <div id="air-title-section">
-                <div id="air-title"></div>
-                <div id="air-times"></div>
-                <div id="air-tags"></div>
-            </div>
-
-
-            <div id="panel-title-gradient"></div>
-            <div id="panel-top-gradient"></div>
-            <div id="panel-bottom-gradient"></div>
-
-            <div id="air-playlist-container">
-                <div id="air-playlist">
-                    <!-- Ждём ответа из Центра... -->
+            <div id="air-list">
+                <div id="air-title-section">
+                    <div id="air-title"></div>
+                    <div id="air-times"></div>
+                    <div id="air-tags"></div>
                 </div>
+
+
+                <div id="panel-title-gradient"></div>
+                <div id="panel-top-gradient"></div>
+                <div id="panel-bottom-gradient"></div>
+
+                <div id="air-playlist-container">
+                    <div id="air-playlist">
+                        <!-- Ждём ответа из Центра... -->
+                    </div>
+                </div>
+
             </div>
 
         </div>
 
-    </div>
 
-
-    </div>
-    <!-- NAVI -->
+        </div>
+        <!-- NAVI -->
 
 
 
-    <div id="navi">
-        <div id="navi-back" onclick="hideLeftPanels()"></div>
+        <div id="navi">
+            <div id="navi-back" onclick="hideLeftPanels()"></div>
 
-        <div class="navi-block" id="left">
-            <div id="navi-links" onclick="toggleLinks()">
-                <div id="standalone-only">Ссылки</div>
-                <img src="/assets/sprites/icons/links.svg" class="mobile-button">
+            <div class="navi-block" id="left">
+                <div id="navi-links" onclick="toggleLinks()">
+                    <div id="standalone-only">Ссылки</div>
+                    <img src="/assets/sprites/icons/links.svg" class="mobile-button">
+                </div>
+
+                <div id="navi-air" onclick="toggleAirPanel()">
+                    <div id="standalone-only">Эфир</div>
+                    <img src="/assets/sprites/icons/air.svg" class="mobile-button">
+                </div>
+
+                <div id="panel-active-links"></div>
+                <div id="panel-active-air"></div>
             </div>
 
-            <div id="navi-air" onclick="toggleAirPanel()">
-                <div id="standalone-only">Эфир</div>
-                <img src="/assets/sprites/icons/air.svg" class="mobile-button">
+            <div class="navi-block" id="right">
+
+                <div id="listeners-container" class="navi-block-content">
+                    <img src="/assets/sprites/icons/listeners.svg" class="mobile-button" hspace="5" /> <span
+                        id="listeners">?</span>
+                    <div id="listeners"></div>
+                </div>
+
+                <div id="volume-speaker" class="navi-block-content">
+                    <img id="volume-speaker-logo" src="/assets/sprites/icons/volume.svg" class="mobile-button" />
+                </div>
+
+                <div id="volume-container" class="navi-block-content">
+                    <input id="volume-range" type="range" min="0" max="100" step="1" id="volume" />
+                </div>
+
+                <a href="#" id="switch-back" title="Сменить фон" class="links-button navi-block-content" onclick="
+                    switchCurrentBackground(); return false;">
+                    <img src="/assets/sprites/icons/back.svg" class="mobile-button" hspace="5" />
+                </a>
             </div>
 
-            <div id="panel-active-links"></div>
-            <div id="panel-active-air"></div>
         </div>
 
-        <div class="navi-block" id="right">
+        <div id="navi-logo"><img src="/assets/sprites/logo.svg" onclick="toggleNavi()" /></div>
 
-            <div id="listeners-container" class="navi-block-content">
-                <img src="/assets/sprites/icons/listeners.svg" class="mobile-button" hspace="5" /> <span
-                    id="listeners">?</span>
-                <div id="listeners"></div>
-            </div>
-
-            <div id="volume-speaker" class="navi-block-content">
-                <img id="volume-speaker-logo" src="/assets/sprites/icons/volume.svg" class="mobile-button" />
-            </div>
-
-            <div id="volume-container" class="navi-block-content">
-                <input id="volume-range" type="range" min="0" max="100" step="1" id="volume" />
-            </div>
-
-            <a href="#" id="switch-back" title="Сменить фон" class="links-button navi-block-content" onclick="
-                switchCurrentBackground(); return false;">
-                <img src="/assets/sprites/icons/back.svg" class="mobile-button" hspace="5" />
-            </a>
-        </div>
+        <div id="panel-active-air"></div>
 
     </div>
-
-    <div id="navi-logo"><img src="/assets/sprites/logo.svg" onclick="toggleNavi()" /></div>
-
-    <div id="panel-active-air"></div>
 </body>
 
 </html>
-
 
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
