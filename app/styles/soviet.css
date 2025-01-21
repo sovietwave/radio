@@ -185,27 +185,16 @@ a.night
     padding-top: env(safe-area-inset-top);
 }
 
-.link {
-	display: block;
-	margin-left: 15px;
-	margin-top: 10px;
-	line-height: 30px;
-}
-
 .links-label
 {
-	margin-left: 0px;
-	line-height: 30px;
-	/*margin-top: 50px;*/
+	line-height: 40px;
 	width: fit-content;
 	opacity: 0.5;
 }
 
 .links-label-new
 {
-	margin-left: 0px;
-	/*margin-top: 50px;*/
-	line-height: 30px;
+	line-height: 40px;
 	width: fit-content;
 	
 	opacity: 1;
@@ -213,10 +202,17 @@ a.night
 	color: var(--accent);
 }
 
+.links-label-multistring
+{
+	line-height: 25px;
+	width: fit-content;
+	opacity: 1;
+}
+
 .links-space
 {
 	display: block;
-	height: 35px;
+	height: 20px;
 }
 
 .links-label-bright
@@ -224,15 +220,31 @@ a.night
 	opacity: 1;
 }
 
-.links-label-transparent
-{
-	opacity: 0.5;
-}
-
 .links-button
 {
-	opacity: 0.8;
-	width: fit-content;
+	text-decoration: none;
+	
+	display: block;
+	margin-left: 15px;
+	line-height: 40px;
+}
+
+.links-textbutton
+{
+	text-decoration: none;
+}
+
+.links-extension
+{
+	opacity: 0.5;
+	text-decoration: none;
+	margin-left: 5px;
+}
+
+.links-multistring
+{
+	opacity: 0.5;
+	text-decoration: none;
 }
 
 .links-button:hover
@@ -323,8 +335,8 @@ a.night
 
 #links-list {
 	width: 300px;
-	margin-top: 50px;
-	margin-bottom: 50px;
+	margin-top: 60px;
+	margin-bottom: 70px;
 	margin-left: auto;
     margin-right: auto;
 }
@@ -670,47 +682,24 @@ a.night
 }
 
 /* XS ВЁРСТКА - Совсем маленбкая вёрстка жесть */
-@media handheld, only screen and (max-height: 499px){
+@media handheld, only screen and (max-width: 400px), (max-height: 400px){
 
-	#panel-title-gradient,
-	#links-logo,
-	#air-title,
-	#air-title-section
+	#hide-on-micro
 	{
 		display: none;
 	}
 
-	#links-center-back, #air-playlist-container {
-		top: 0px;
-		bottom: 50px;
-		margin: 0, auto;
-	}
+    #player-wrapper
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
 
-	#links-list {
-		padding-top: 5px;
-		line-height: 20pt;
-	}
+    #player
+    {
+        margin-top: 0px;
+    }
 
-	.links-label {
-		margin-top: 25px;
-	}
-
-	#player-artist, #player-title, #player-city,
-	#links-list, #air-list {
-		font-size: 14pt;
-	}
-
-	.links-icon,
-	.links-icon-new
-	{
-		width: 24px;
-	}
-
-	#frame-overlay {
-		bottom: 49px;
-	}
-
-	#panel-bottom-gradient {
-		display: none;
-	}
 }

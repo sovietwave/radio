@@ -176,6 +176,7 @@ let portraitOrientation;
 let animDurationFaster = 100;
 let animDurationFast = 250;
 let animDurationLong = 600;
+let switchedToMicro = false;
 
 export let state = {
 	volumeValue: 1,
@@ -189,7 +190,8 @@ const isMobileMode = (): boolean => {
 };
 
 const isXSMode = () => {
-	if (document.documentElement.scrollHeight < 500)
+	if ((document.documentElement.scrollWidth <= 400) ||
+		(document.documentElement.scrollHeight <= 400))
 		return true;
 	return false;
 }
@@ -326,11 +328,19 @@ const switchBackground = (mode: string) => {
 
 const onResize = () => {
 	let nowIsMobile = isMobileMode();
+    let nowIsMicro = isXSMode();
 
 	if (nowIsMobile != portraitOrientation){
 		portraitOrientation = nowIsMobile;
 		switchFrame();
-	}	
+	}
+
+    if (nowIsMicro && (!switchedToMicro)){
+        switchedToMicro = true;
+        disableBright();
+	    disableAir();
+	    disableLinks();
+    }    
 }
 
 const switchFrame = () => {
@@ -355,23 +365,18 @@ export const switchCurrentBackground = () => {
 };
 
 const toggleFrame = () => {
-	var naviHeight = '69px';
-	if (isXSMode())
-		naviHeight = '49px';
 	
 	if ((!portraitOrientation) && (linksIsEnabled || airIsEnabled))
 		frameOverlay.animate({
 			left: '-30px',
 			right: '-30px',
-			top: '-30px',
-			bottom: naviHeight
+			top: '-30px'
 		}, animDurationLong);
 	else
 		frameOverlay.animate({
 			left: '0px',
 			right: '0px',
-			top: '0px',
-			bottom: naviHeight
+			top: '0px'
 		}, 400);
 };
 
