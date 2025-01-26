@@ -190,7 +190,7 @@ const isMobileMode = (): boolean => {
 };
 
 const isXSMode = () => {
-	if ((document.documentElement.scrollWidth <= 400) ||
+	if ((document.documentElement.scrollWidth <= 300) ||
 		(document.documentElement.scrollHeight <= 400))
 		return true;
 	return false;
