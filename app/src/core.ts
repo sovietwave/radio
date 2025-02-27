@@ -5,6 +5,7 @@ let currentIndex: number = 0;
 let frameIndex: number = 0;
 let framesCount: number = 3;
 let SITE_MODE: string = "";
+let OVERRIDE_MODE: string = "";
 
 const backs = {
 	"day": {
@@ -171,7 +172,6 @@ let sfxCounter;
 let coverImage;
 let frameMobileMode = false;
 let player;
-let streamOverride = false;
 let portraitOrientation;
 let animDurationFaster = 100;
 let animDurationFast = 250;
@@ -227,8 +227,6 @@ const getUrlSearchParam = (key: string): string|null => {
 };
 
 export const init = () => {
-	SITE_MODE = getUrlSearchParam("mode") || "";
-
 	window.addEventListener('resize', () => { onResize(); });
 	portraitOrientation = isMobileMode();
 
@@ -252,26 +250,30 @@ export const init = () => {
 	sfxCamera2 = new Audio('/assets/sfx/camera.mp3');
 	sfxCounter = 0;
 
-	if (SITE_MODE == 'stream') {
-		streamOverride = true;
+	frameIndex = rnd(framesCount) + 1;
+
+	OVERRIDE_MODE = getUrlSearchParam("mode") || "";
+
+	if (OVERRIDE_MODE == 'stream') {
 		console.log("streamOverride");
 	}
 
-	/* SITE_MODE = "event"; */
+	// OVERRIDE_MODE = "stream"; 
 	
-	if (SITE_MODE == "") {
-		SITE_MODE = getCurrentMode();
-	}
-	
-	currentIndex = -1;
-	console.log("SITE_MODE: " + SITE_MODE);
-	currentIndex = rnd(backs[SITE_MODE].backs.length); // Randomize fist pic
-	frameIndex = rnd(framesCount) + 1;
+	requestThemeMode();
+}
 
-	setTheme(SITE_MODE);
-};
+function setTheme(){
+	let mode = OVERRIDE_MODE;
+	if (mode == "")
+		mode = getCurrentMode();
 
-const setTheme = (mode: string) => {
+	if (SITE_MODE == mode)
+		return;
+
+	SITE_MODE = mode;
+	console.log("SITE_MODE: " + SITE_MODE);	
+
 	if (modes[mode]) {
 		const modeContent = modes[mode];
 
@@ -282,17 +284,17 @@ const setTheme = (mode: string) => {
 		$('#air-times').text(modeContent['times']);
 	}
 
+	currentIndex = rnd(backs[mode].backs.length); // Randomize fist pic
 	switchBackground(mode);
 }
 
-const switchBackground = (mode: string) => {
-	if (mode != SITE_MODE) {
-		console.log("Backgrounds can be changed only for current (" + SITE_MODE + ") site mode");
-		return;
-	}
+function requestThemeMode() {	
+	setTimeout(requestThemeMode, 10000);
+	setTheme();
+}
 
-
-	if (streamOverride) {
+function switchBackground(mode){
+	if (OVERRIDE_MODE == 'stream') {
 		let bg = 0;
 		console.log(backs['stream'].backs[0]);
 		if (mode == 'evening') bg = 1;
@@ -303,7 +305,7 @@ const switchBackground = (mode: string) => {
 		return;
 	}
 
-	const currentModeAssets = backs[SITE_MODE];
+	const currentModeAssets = backs[mode];
 	const backsCount = currentModeAssets.backs.length;
 	let nextIndex = 0;
 
@@ -316,7 +318,6 @@ const switchBackground = (mode: string) => {
 	if (nextIndex > backsCount - 1) {
 		nextIndex = 0;
 	}
-
 
 	if (portraitOrientation)
 		coverImage.css({ 'background-image': `url(${currentModeAssets.backs_mobile[currentIndex]})` });
