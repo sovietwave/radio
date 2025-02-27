@@ -10,57 +10,57 @@ let OVERRIDE_MODE: string = "";
 const backs = {
 	"day": {
 		"backs": [
-			"/assets/sprites/bg/day4.jpg",
-			"/assets/sprites/bg/day8.jpg",
-			"/assets/sprites/bg/day9.jpg"
+			"/assets/sprites/bg/day10.jpg",
+			"/assets/sprites/bg/day5.jpg",
+			"/assets/sprites/bg/day6.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/mobile/day4.jpg",
-			"/assets/sprites/bg/mobile/day8.jpg",
-			"/assets/sprites/bg/mobile/day9.jpg"
+			"/assets/sprites/bg/mobile/day10.jpg",
+			"/assets/sprites/bg/mobile/day5.jpg",
+			"/assets/sprites/bg/mobile/day6.jpg"
 		]
 	},
 
 	"evening": {
 		"backs": [
-			"/assets/sprites/bg/evening4.jpg",
-			"/assets/sprites/bg/evening8.jpg",
-			"/assets/sprites/bg/evening9.jpg"
+			"/assets/sprites/bg/evening1.jpg",
+			"/assets/sprites/bg/evening10.jpg",
+			"/assets/sprites/bg/evening6.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/mobile/evening4.jpg",
-			"/assets/sprites/bg/mobile/evening8.jpg",
-			"/assets/sprites/bg/mobile/evening9.jpg"
+			"/assets/sprites/bg/mobile/evening1.jpg",
+			"/assets/sprites/bg/mobile/evening10.jpg",
+			"/assets/sprites/bg/mobile/evening6.jpg"
 		]
 	},
 
 	"night": {
 		"backs": [
-			"/assets/sprites/bg/night4.jpg",
-			"/assets/sprites/bg/night8.jpg",
-			"/assets/sprites/bg/night9.jpg"
+			"/assets/sprites/bg/night1.jpg",
+			"/assets/sprites/bg/midnight2.jpg",
+			"/assets/sprites/bg/night6.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/mobile/night4.jpg",
-			"/assets/sprites/bg/mobile/night8.jpg",
-			"/assets/sprites/bg/mobile/night9.jpg"
+			"/assets/sprites/bg/mobile/night1.jpg",
+			"/assets/sprites/bg/mobile/midnight2.jpg",
+			"/assets/sprites/bg/mobile/night6.jpg"
 		]
 	},
 
 	"midnight": {
 		"backs": [
-			"/assets/sprites/bg/midnight2.jpg",
-			"/assets/sprites/bg/midnight4.jpg",
-			"/assets/sprites/bg/midnight6.jpg"
+			"/assets/sprites/bg/midnight1.jpg",
+			"/assets/sprites/bg/night7.jpg",
+			"/assets/sprites/bg/midnight5.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/mobile/midnight2.jpg",
-			"/assets/sprites/bg/mobile/midnight4.jpg",
-			"/assets/sprites/bg/mobile/midnight6.jpg"
+			"/assets/sprites/bg/mobile/midnight1.jpg",
+			"/assets/sprites/bg/mobile/night7.jpg",
+			"/assets/sprites/bg/mobile/midnight5.jpg"
 		]
 	},
 
