@@ -8,6 +8,152 @@ let SITE_MODE: string = "";
 let OVERRIDE_MODE: string = "";
 
 const backs = {
+	"full": {
+		"backs": [
+			"/assets/sprites/bg/v1/day0.jpg",
+			"/assets/sprites/bg/v1/day1.jpg",
+			"/assets/sprites/bg/v1/day2.jpg",
+			"/assets/sprites/bg/v1/day3.jpg",			
+
+			"/assets/sprites/bg/day1.jpg",
+			"/assets/sprites/bg/day2.jpg",
+			"/assets/sprites/bg/day3.jpg",
+			"/assets/sprites/bg/day4.jpg",
+			"/assets/sprites/bg/day5.jpg",
+			"/assets/sprites/bg/day6.jpg",
+			"/assets/sprites/bg/day7.jpg",
+			"/assets/sprites/bg/day8.jpg",
+			"/assets/sprites/bg/day9.jpg",
+			"/assets/sprites/bg/day10.jpg",
+
+			"/assets/sprites/bg/evening1.jpg",
+			"/assets/sprites/bg/evening2.jpg",
+			"/assets/sprites/bg/evening3.jpg",
+			"/assets/sprites/bg/evening4.jpg",
+			"/assets/sprites/bg/evening5.jpg",
+			"/assets/sprites/bg/evening6.jpg",
+			"/assets/sprites/bg/evening7.jpg",
+			"/assets/sprites/bg/evening8.jpg",
+			"/assets/sprites/bg/evening9.jpg",
+			"/assets/sprites/bg/evening10.jpg",
+
+			"/assets/sprites/bg/v1/evening0.jpg",
+			"/assets/sprites/bg/v1/evening1.jpg",
+			"/assets/sprites/bg/v1/evening2.jpg",
+			"/assets/sprites/bg/v1/evening3.jpg",
+
+			"/assets/sprites/bg/midnight1.jpg",
+			"/assets/sprites/bg/midnight2.jpg",
+			"/assets/sprites/bg/midnight3.jpg",
+			"/assets/sprites/bg/midnight4.jpg",
+			"/assets/sprites/bg/midnight5.jpg",
+			"/assets/sprites/bg/midnight6.jpg",
+
+			"/assets/sprites/bg/v1/night0.jpg",
+			"/assets/sprites/bg/v1/night1.jpg",
+			"/assets/sprites/bg/v1/night2.jpg",
+			"/assets/sprites/bg/v1/night3.jpg",
+
+			"/assets/sprites/bg/night1.jpg",
+			"/assets/sprites/bg/night2.jpg",
+			"/assets/sprites/bg/night3.jpg",
+			"/assets/sprites/bg/night4.jpg",
+			"/assets/sprites/bg/night5.jpg",
+			"/assets/sprites/bg/night6.jpg",
+			"/assets/sprites/bg/night7.jpg",
+			"/assets/sprites/bg/night8.jpg",
+			"/assets/sprites/bg/night9.jpg"
+		],
+
+		"backs_mobile": [
+			"/assets/sprites/bg/v1/day0.jpg",
+			"/assets/sprites/bg/v1/day1.jpg",
+			"/assets/sprites/bg/v1/day2.jpg",
+			"/assets/sprites/bg/v1/day3.jpg",	
+
+			"/assets/sprites/bg/mobile/day1.jpg",
+			"/assets/sprites/bg/mobile/day2.jpg",
+			"/assets/sprites/bg/mobile/day3.jpg",
+			"/assets/sprites/bg/mobile/day4.jpg",
+			"/assets/sprites/bg/mobile/day5.jpg",
+			"/assets/sprites/bg/mobile/day6.jpg",
+			"/assets/sprites/bg/mobile/day7.jpg",
+			"/assets/sprites/bg/mobile/day8.jpg",
+			"/assets/sprites/bg/mobile/day9.jpg",
+			"/assets/sprites/bg/mobile/day10.jpg",
+
+			"/assets/sprites/bg/v1/evening0.jpg",
+			"/assets/sprites/bg/v1/evening1.jpg",
+			"/assets/sprites/bg/v1/evening2.jpg",
+			"/assets/sprites/bg/v1/evening3.jpg",
+
+			"/assets/sprites/bg/mobile/evening1.jpg",
+			"/assets/sprites/bg/mobile/evening2.jpg",
+			"/assets/sprites/bg/mobile/evening3.jpg",
+			"/assets/sprites/bg/mobile/evening4.jpg",
+			"/assets/sprites/bg/mobile/evening5.jpg",
+			"/assets/sprites/bg/mobile/evening6.jpg",
+			"/assets/sprites/bg/mobile/evening7.jpg",
+			"/assets/sprites/bg/mobile/evening8.jpg",
+			"/assets/sprites/bg/mobile/evening9.jpg",
+			"/assets/sprites/bg/mobile/evening10.jpg",
+
+			"/assets/sprites/bg/mobile/midnight1.jpg",
+			"/assets/sprites/bg/mobile/midnight2.jpg",
+			"/assets/sprites/bg/mobile/midnight3.jpg",
+			"/assets/sprites/bg/mobile/midnight4.jpg",
+			"/assets/sprites/bg/mobile/midnight5.jpg",
+			"/assets/sprites/bg/mobile/midnight6.jpg",
+
+			"/assets/sprites/bg/v1/night0.jpg",
+			"/assets/sprites/bg/v1/night1.jpg",
+			"/assets/sprites/bg/v1/night2.jpg",
+			"/assets/sprites/bg/v1/night3.jpg",
+
+			"/assets/sprites/bg/mobile/night1.jpg",
+			"/assets/sprites/bg/mobile/night2.jpg",
+			"/assets/sprites/bg/mobile/night3.jpg",
+			"/assets/sprites/bg/mobile/night4.jpg",
+			"/assets/sprites/bg/mobile/night5.jpg",
+			"/assets/sprites/bg/mobile/night6.jpg",
+			"/assets/sprites/bg/mobile/night7.jpg",
+			"/assets/sprites/bg/mobile/night8.jpg",
+			"/assets/sprites/bg/mobile/night9.jpg"
+		]
+	},
+
+	"v1": {
+		"backs": [
+			"/assets/sprites/bg/v1/day0.jpg",
+			"/assets/sprites/bg/v1/day1.jpg",
+			"/assets/sprites/bg/v1/day2.jpg",
+			"/assets/sprites/bg/v1/day3.jpg",
+			"/assets/sprites/bg/v1/evening0.jpg",
+			"/assets/sprites/bg/v1/evening1.jpg",
+			"/assets/sprites/bg/v1/evening2.jpg",
+			"/assets/sprites/bg/v1/evening3.jpg",
+			"/assets/sprites/bg/v1/night0.jpg",
+			"/assets/sprites/bg/v1/night1.jpg",
+			"/assets/sprites/bg/v1/night2.jpg",
+			"/assets/sprites/bg/v1/night3.jpg"
+		],
+
+		"backs_mobile": [
+			"/assets/sprites/bg/v1/day0.jpg",
+			"/assets/sprites/bg/v1/day1.jpg",
+			"/assets/sprites/bg/v1/day2.jpg",
+			"/assets/sprites/bg/v1/day3.jpg",
+			"/assets/sprites/bg/v1/evening0.jpg",
+			"/assets/sprites/bg/v1/evening1.jpg",
+			"/assets/sprites/bg/v1/evening2.jpg",
+			"/assets/sprites/bg/v1/evening3.jpg",
+			"/assets/sprites/bg/v1/night0.jpg",
+			"/assets/sprites/bg/v1/night1.jpg",
+			"/assets/sprites/bg/v1/night2.jpg",
+			"/assets/sprites/bg/v1/night3.jpg"
+		]
+	},
+
 	"day": {
 		"backs": [
 			"/assets/sprites/bg/day10.jpg",
