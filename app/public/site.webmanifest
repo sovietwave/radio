@@ -1,6 +1,8 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Советская Волна",
+    "short_name": "SW",
+    "start_url": "/",
+    "id": "/",
     "icons": [
         {
             "src": "/assets/sprites/favicons/android-chrome-192x192.png",
@@ -16,4 +18,5 @@
     "theme_color": "#ffffff",
     "background_color": "#ffffff",
     "display": "standalone"
+    
 }

@@ -269,6 +269,12 @@ export const init = () => {
 	frameIndex = rnd(framesCount) + 1;
 
 	setTheme(SITE_MODE);
+
+	if ("serviceWorker" in navigator) {
+		navigator.serviceWorker.register("/service-worker.js")
+		// .then(reg => console.log("Service Worker registered", reg))
+		.catch(err => console.error("Service Worker registration failed", err));
+	}
 };
 
 const setTheme = (mode: string) => {
