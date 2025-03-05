@@ -1,4 +1,5 @@
 import { defineConfig, Terser } from "vite";
+import { VitePWA } from 'vite-plugin-pwa'
 
 const getTerserOptions = (command: string): Terser.MinifyOptions => {
     if (command === "build") {
@@ -47,5 +48,23 @@ export default ({ command }) => defineConfig({
         open: true,
     },
     plugins: [
+        VitePWA({
+            registerType: 'autoUpdate',
+            workbox: {
+              clientsClaim: true,
+              skipWaiting: true,
+              // Add your precache and routing strategies
+            },
+            manifest: {
+              // Optional PWA manifest configuration
+              name: 'Your App Name',
+              short_name: 'App',
+              theme_color: '#ffffff',
+              icons: [
+                // Add your PWA icons here
+              ]
+            },
+            // filename: 'sw.ts'
+          })
     ],
 });
