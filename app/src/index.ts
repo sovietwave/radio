@@ -5,6 +5,8 @@ import {
      toggleAirPanel,
      hideLeftPanels,
      toggleNavi,
+     initPWA,
+     installPWA,
 } from './core'
 import { radioInit, radioToggle } from './radio'
 
@@ -16,8 +18,10 @@ globalThis.toggleAirPanel = toggleAirPanel
 globalThis.hideLeftPanels = hideLeftPanels
 globalThis.toggleLinks = toggleLinks
 globalThis.toggleNavi = toggleNavi
+globalThis.installPWA = installPWA
 
 $(() => {
      init()
      radioInit()
+     initPWA()
 })

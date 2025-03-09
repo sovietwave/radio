@@ -177,6 +177,8 @@ let animDurationFaster = 100
 let animDurationFast = 250
 let animDurationLong = 600
 let switchedToMicro = false
+let deferredPrompt: any = null
+let pwaInstallable = false
 
 export let state = {
      volumeValue: 1,
@@ -771,4 +773,33 @@ const togglePlayer = () => {
      } else {
           player.show()
      }
+}
+
+export const initPWA = () => {
+     window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault()
+          deferredPrompt = e
+          pwaInstallable = true
+          $('#pwa-install-button').show()
+     })
+     window.addEventListener('appinstalled', () => {
+          console.log('PWA was installed')
+          $('#pwa-install-button').hide()
+          pwaInstallable = false
+          deferredPrompt = null
+     })
+     $('#pwa-install-button').hide()
+}
+
+export const installPWA = async () => {
+     if (!deferredPrompt) {
+          console.log('PWA installation not available')
+          return
+     }
+     deferredPrompt.prompt()
+     const { outcome } = await deferredPrompt.userChoice
+     console.log(`User response to the install prompt: ${outcome}`)
+     deferredPrompt = null
+     pwaInstallable = false
+     $('#pwa-install-button').hide()
 }
