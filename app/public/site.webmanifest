@@ -1,23 +1,21 @@
 {
-    "name": "Советская Волна",
-    "short_name": "SW",
-    "start_url": "/",
-    "id": "/",
-    "icons": [
-        {
-            "src": "/assets/sprites/favicons/android-chrome-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/assets/sprites/favicons/android-chrome-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "display": "standalone"
-
-    
+     "name": "Советская Волна",
+     "short_name": "SW",
+     "start_url": "/",
+     "theme_color": "#ffffff",
+     "id": "/",
+     "icons": [
+          {
+               "src": "/assets/sprites/favicons/android-chrome-192x192.png",
+               "sizes": "192x192",
+               "type": "image/png"
+          },
+          {
+               "src": "/assets/sprites/favicons/android-chrome-512x512.png",
+               "sizes": "512x512",
+               "type": "image/png"
+          }
+     ],
+     "background_color": "#ffffff",
+     "display": "standalone"
 }
