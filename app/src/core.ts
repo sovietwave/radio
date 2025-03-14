@@ -794,6 +794,7 @@ export const initPWA = () => {
 export const installPWA = async () => {
      if (!deferredPrompt) {
           console.log('PWA installation not available')
+		  alert('Приложение уже установлено\n\nДля запуска найдите ярлык на рабочем столе или в установленных программах')
           return
      }
      deferredPrompt.prompt()
