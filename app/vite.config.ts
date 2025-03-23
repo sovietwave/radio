@@ -1,5 +1,7 @@
 import { defineConfig, Terser } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import fs from 'fs'
+import path from 'path'
 
 const getTerserOptions = (command: string): Terser.MinifyOptions => {
      if (command === 'build') {
@@ -47,10 +49,29 @@ export default ({ command }) =>
           server: {
                port: 8080,
                open: true,
+               https: {
+                    key: fs.readFileSync(
+                         path.resolve(__dirname, 'localhost+1-key.pem')
+                    ),
+                    cert: fs.readFileSync(
+                         path.resolve(__dirname, 'localhost+1.pem')
+                    ),
+               },
           },
           plugins: [
                VitePWA({
                     registerType: 'autoUpdate',
+                    devOptions: {
+                         enabled: true,
+                    },
+                    workbox: {
+                         clientsClaim: true,
+                         skipWaiting: true,
+                         globPatterns: [
+                              '**/*.{jpg,js,css,html,svg,eot,otf,ttf,woff,woff2}',
+                         ],
+                         maximumFileSizeToCacheInBytes: 10 * 1024 ** 2,
+                    },
                     manifest: {
                          name: 'Советская Волна',
                          short_name: 'SW',
@@ -71,6 +92,10 @@ export default ({ command }) =>
                          ],
                          background_color: '#ffffff',
                          display: 'standalone',
+                         scope: '/',
+                         lang: 'ru',
+                         description:
+                              'Современная отечественная музыка, вдохновлённая мечтами из прошлого',
                     },
                }),
           ],
