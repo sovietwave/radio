@@ -67,10 +67,6 @@ export default ({ command }) =>
                     workbox: {
                          clientsClaim: true,
                          skipWaiting: true,
-                         globPatterns: [
-                              '**/*.{jpg,js,css,html,svg,eot,otf,ttf,woff,woff2}',
-                         ],
-                         maximumFileSizeToCacheInBytes: 10 * 1024 ** 2,
                     },
                     manifest: {
                          name: 'Советская Волна',
