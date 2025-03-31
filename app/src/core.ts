@@ -178,7 +178,6 @@ let animDurationFast = 250
 let animDurationLong = 600
 let switchedToMicro = false
 let deferredPrompt: any = null
-let pwaInstallable = false
 
 export let state = {
      volumeValue: 1,
@@ -776,24 +775,28 @@ const togglePlayer = () => {
 }
 
 export const initPWA = () => {
+     const isMobileOS = 'ontouchstart' in window && navigator.maxTouchPoints > 0;
+
+     if (!('BeforeInstallPromptEvent' in window) || window.matchMedia('(display-mode: standalone)').matches) {
+          $('#pwa-install-button').hide()
+          return
+     }
      window.addEventListener('beforeinstallprompt', (e) => {
           e.preventDefault()
           deferredPrompt = e
-          pwaInstallable = true
-          $('#pwa-install-button').show()
+          if (deferredPrompt && localStorage.pwaInstalled === 'true') {
+               localStorage.removeItem('pwaInstalled');
+          }
      })
      window.addEventListener('appinstalled', () => {
-          console.log('PWA was installed')
           $('#pwa-install-button').hide()
-          pwaInstallable = false
           deferredPrompt = null
-     })
-     $('#pwa-install-button').hide()
+          !isMobileOS && localStorage.setItem('pwaInstalled', 'true')
+     }) 
 }
 
 export const installPWA = async () => {
-     if (!deferredPrompt) {
-          console.log('PWA installation not available')
+     if (localStorage.pwaInstalled === 'true') {
           alert(
                'Приложение уже установлено\n\nДля запуска найдите ярлык на рабочем столе или в установленных программах'
           )
@@ -801,8 +804,8 @@ export const installPWA = async () => {
      }
      deferredPrompt.prompt()
      const { outcome } = await deferredPrompt.userChoice
-     console.log(`User response to the install prompt: ${outcome}`)
-     deferredPrompt = null
-     pwaInstallable = false
-     $('#pwa-install-button').hide()
+     if (outcome === 'accepted') {
+          deferredPrompt = null
+          $('#pwa-install-button').hide()
+     }
 }

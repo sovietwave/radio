@@ -49,14 +49,6 @@ export default ({ command }) =>
           server: {
                port: 8080,
                open: true,
-               https: {
-                    key: fs.readFileSync(
-                         path.resolve(__dirname, 'localhost+1-key.pem')
-                    ),
-                    cert: fs.readFileSync(
-                         path.resolve(__dirname, 'localhost+1.pem')
-                    ),
-               },
           },
           plugins: [
                VitePWA({
