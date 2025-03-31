@@ -777,13 +777,18 @@ const togglePlayer = () => {
 export const initPWA = () => {
      const isMobileOS = 'ontouchstart' in window && navigator.maxTouchPoints > 0;
 
+     $('#pwa-install-button').hide();
+
      if (!('BeforeInstallPromptEvent' in window) || window.matchMedia('(display-mode: standalone)').matches) {
           $('#pwa-install-button').hide()
           return
      }
      window.addEventListener('beforeinstallprompt', (e) => {
           e.preventDefault()
-          deferredPrompt = e
+          deferredPrompt = e;
+
+          $('#pwa-install-button').show();
+          
           if (deferredPrompt && localStorage.pwaInstalled === 'true') {
                localStorage.removeItem('pwaInstalled');
           }
