@@ -17,7 +17,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/sprites/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/sprites/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/sprites/favicons/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <!-- <link rel="manifest" href="/site.webmanifest"> -->
 
     <meta property="og:image" content="/assets/sprites/favicons/social.jpg">
     <meta name="mobile-web-app-capable" content="yes">
@@ -116,17 +116,29 @@
                         
                         
                         
-                        <div id="links-button-heart" class="links-label-new">Скачать</div>
-                        
-                        <a href="https://play.google.com/store/apps/details?id=su.wave.radio" class="links-button" target="_blank">
-                            <img src="assets/sprites/icons/googleplay.svg" class="links-icon" /><u>Google Play</u></a>
-                        
+                        <div id="links-button-heart" class="links-label-new">Приложение</div>
+                       
+                        <div id="pwa-install-button" class="links-button">
+                            <a href="#" onclick="installPWA(); return false;" target="_blank" class="links-textbutton">
+                            <img src="assets/sprites/icons/pwa.svg" class="links-icon"/><u>Установить</u>
+                            <span class="links-extension">PWA</span>
+                            </a>
+                        </div>
+
+                        <div class="links-button">
+                            <a href="https://play.google.com/store/apps/details?id=su.wave.radio"  target="_blank" class="links-textbutton">
+                            <img src="assets/sprites/icons/googleplay.svg" class="links-icon" /><u>Google Play</u>
+                            
+                            </a>
+                        </div>
+
                         <div class="links-button">
                             <a href="SovietwaveRadio.apk"  target="_blank" class="links-textbutton">
                             <img src="assets/sprites/icons/android.svg" class="links-icon" /><u>Android</u>
                             <span class="links-extension">APK</span>
-                            </a>						
+                            </a>
                         </div>
+
                         
                         <div class="links-button">
                             <a href="/SovietwaveRadio.zip" target="_blank" class="links-textbutton">

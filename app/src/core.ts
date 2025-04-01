@@ -323,6 +323,7 @@ let animDurationFaster = 100;
 let animDurationFast = 250;
 let animDurationLong = 600;
 let switchedToMicro = false;
+let deferredPrompt: any = null;
 
 export let state = {
 	volumeValue: 1,
@@ -824,3 +825,43 @@ const togglePlayer = () => {
 	}
 };
 
+export const initPWA = () => {
+     const isMobileOS = 'ontouchstart' in window && navigator.maxTouchPoints > 0;
+
+     $('#pwa-install-button').hide();
+
+     if (!('BeforeInstallPromptEvent' in window) || window.matchMedia('(display-mode: standalone)').matches) {
+          $('#pwa-install-button').hide()
+          return
+     }
+     window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault()
+          deferredPrompt = e;
+
+          $('#pwa-install-button').show();
+          
+          if (deferredPrompt && localStorage.pwaInstalled === 'true') {
+               localStorage.removeItem('pwaInstalled');
+          }
+     })
+     window.addEventListener('appinstalled', () => {
+          $('#pwa-install-button').hide()
+          deferredPrompt = null
+          !isMobileOS && localStorage.setItem('pwaInstalled', 'true')
+     }) 
+}
+
+export const installPWA = async () => {
+     if (localStorage.pwaInstalled === 'true') {
+          alert(
+               'Приложение уже установлено\n\nДля запуска найдите ярлык на рабочем столе или в установленных программах'
+          )
+          return
+     }
+     deferredPrompt.prompt()
+     const { outcome } = await deferredPrompt.userChoice
+     if (outcome === 'accepted') {
+          deferredPrompt = null
+          $('#pwa-install-button').hide()
+     }
+}

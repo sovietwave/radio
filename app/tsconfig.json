@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
+        "lib": ["ESNext", "WebWorker"],
         "moduleResolution": "Bundler",
         "types": [
             "vite",
@@ -9,6 +10,6 @@
         ],
     },
     "include": [
-        "./*.ts",
+        "./*.ts", "sw.js", "service-worker-registration.js",
     ]
 }
