@@ -5,11 +5,12 @@
 	C994FF purple
 	70B0C3 winter
 	903BD8 diskette
+	51E08D spring
 	*/
-  --accent: #51E08D;
-  --accentR: 81;
-  --accentG: 224;
-  --accentB: 141;
+  --accent: rgb(149, 78, 177);
+  --accentR: 149;
+  --accentG: 78;
+  --accentB: 177;
 }
 
 body, html
@@ -229,6 +230,26 @@ a.night
 	line-height: 40px;
 }
 
+.links-button:hover
+{
+	opacity: 1;
+}
+
+.links-button-new
+{
+	text-decoration: none;
+	
+	display: block;
+	margin-left: 15px;
+	line-height: 40px;
+	color: var(--accent);
+}
+
+.links-button-new:hover
+{
+	opacity: 1;
+}
+
 .links-textbutton
 {
 	text-decoration: none;
@@ -246,25 +267,6 @@ a.night
 	opacity: 0.5;
 	text-decoration: none;
 }
-
-.links-button:hover
-{
-	opacity: 1;
-}
-
-.links-button-new
-{
-	opacity: 0.8;
-	width: fit-content;
-	color: #BE3618;
-}
-
-.links-button-new:hover{
-	opacity: 1;
-	filter: drop-shadow(0px 0px 3px rgba(183, 136, 255, 0.7));
-	-webkit-filter: drop-shadow(0px 0px 3px rgba(183, 136, 255, 0.7));	
-}
-
 
 .links-icon
 {

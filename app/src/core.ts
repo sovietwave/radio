@@ -212,13 +212,29 @@ const backs = {
 
 	"event": {
 		"backs": [
-			"/assets/sprites/bg/event_diskette/1.jpg",
-			"/assets/sprites/bg/event_diskette/2.jpg"
+			"/assets/sprites/bg/event_120425/1.jpg",
+			"/assets/sprites/bg/event_120425/2.jpg",
+			"/assets/sprites/bg/event_120425/3.jpg",
+			"/assets/sprites/bg/event_120425/4.jpg",
+			"/assets/sprites/bg/event_120425/5.jpg",
+			"/assets/sprites/bg/event_120425/6.jpg",
+			"/assets/sprites/bg/event_120425/7.jpg",
+			"/assets/sprites/bg/event_120425/8.jpg",
+			"/assets/sprites/bg/event_120425/9.jpg",
+			"/assets/sprites/bg/event_120425/10.jpg"
 		],
 
 		"backs_mobile": [
-			"/assets/sprites/bg/event_diskette/1.jpg",
-			"/assets/sprites/bg/event_diskette/2.jpg"
+			"/assets/sprites/bg/event_120425/mobile/1.jpg",
+			"/assets/sprites/bg/event_120425/mobile/2.jpg",
+			"/assets/sprites/bg/event_120425/mobile/3.jpg",
+			"/assets/sprites/bg/event_120425/mobile/4.jpg",
+			"/assets/sprites/bg/event_120425/mobile/5.jpg",
+			"/assets/sprites/bg/event_120425/mobile/6.jpg",
+			"/assets/sprites/bg/event_120425/mobile/7.jpg",
+			"/assets/sprites/bg/event_120425/mobile/8.jpg",
+			"/assets/sprites/bg/event_120425/mobile/9.jpg",
+			"/assets/sprites/bg/event_120425/mobile/10.jpg"
 		]
 	},
 
@@ -265,18 +281,18 @@ const modes = {
 		"times": "0:00 — 1:00 МСК"
 	},
 	
-	"event": {
+	"event_diskette": {
 		"title": "Вечер в Дискете",
 		"subtitle": "#sovietwave",
 		"times": "28 ноября"
 	},
 
-	"event_space": {
+	"event": {
 		"title": "День Космонавтики",
 		"subtitle": "#sovietwave",
 		"start": "12 апреля",
 		"finish": "14 апреля",
-		"times": "12—18 апреля"
+		"times": "12 — 14 апреля"
 	},
 
 	"event2_ssw": {
@@ -399,13 +415,12 @@ export const init = () => {
 
 	frameIndex = rnd(framesCount) + 1;
 
-	OVERRIDE_MODE = getUrlSearchParam("mode") || "";
+	OVERRIDE_MODE = 'event';
+	//OVERRIDE_MODE = getUrlSearchParam("mode") || "";
 
 	if (OVERRIDE_MODE == 'stream') {
 		console.log("streamOverride");
 	}
-
-	// OVERRIDE_MODE = "stream"; 
 	
 	requestThemeMode();
 }
