@@ -1,6 +1,5 @@
 import { rnd } from "./common";
 
-//let siteModeOverridden = true;
 let currentIndex: number = 0;
 let frameIndex: number = 0;
 let framesCount: number = 3;
@@ -415,8 +414,10 @@ export const init = () => {
 
 	frameIndex = rnd(framesCount) + 1;
 
-	OVERRIDE_MODE = 'event';
-	//OVERRIDE_MODE = getUrlSearchParam("mode") || "";
+	
+	OVERRIDE_MODE = getUrlSearchParam("mode") || "";
+	//OVERRIDE_MODE = 'event';
+
 
 	if (OVERRIDE_MODE == 'stream') {
 		console.log("streamOverride");
