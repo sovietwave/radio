@@ -695,3 +695,59 @@ a.night
     }
 
 }
+
+
+#openPopup {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    width: 72px;
+    height: 72px;
+    background-size: 72px 72px; 
+    background-position: 0 0; 
+    border: none;
+    cursor: pointer;
+	background-color: transparent;
+    background-image: url('/assets/sprites/set12apr.png');
+	opacity: 0.75; 
+	transition: opacity 0.2s ease; 
+}
+
+#openPopup:hover {
+    opacity: 1; 
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(0px);
+    z-index: 10;
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease; 
+}
+
+.popup.show {
+    display: flex;
+    transform: translate(-50%, -50%) translateY(-20px); 
+    opacity: 1;
+}
+
+.popup-content {
+    background-color: rgba(0, 0, 0, 1);
+    width: 640px;
+    height: 480px;
+    position: relative;
+    padding: 10px 10px 55px 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+	border-radius: 10px;
+}
+
+.popup-links {
+    display: block; 
+    margin-left: auto;
+    margin-right: 0; 
+    text-align: right; 
+    padding: 0;	
+}

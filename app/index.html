@@ -51,8 +51,26 @@
         </div>
     </div>
 
+    <div id="openPopup" onclick="showPopup()"></div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <iframe width="640" height="480" src="https://www.youtube.com/embed/-wNoOqfBz9Y?si=bP6vimqYp7PailY3" 
+                title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+            </iframe>
+            
+            <div class="popup-links">
+                <a href="https://www.youtube.com/watch?v=-wNoOqfBz9Y" target="_blank"><img src="assets/sprites/icons/youtube.svg" class="links-icon" /></a>
+                <a href="https://vk.com/video-71116189_456239153" target="_blank"><img src="assets/sprites/icons/vk.svg" class="links-icon" /></a>
+            </div>
+        </div>
+    </div>
+
+
     <div id="hide-on-micro">
         <!-- LINKS -->
+
         <div id="panel">
             <div id="panel-left-gradient"></div>
 
@@ -69,9 +87,10 @@
 
                 <div id="links-logo"><img src="/assets/sprites/logo.svg"></div>
 
+                
                 <div id="links-center-back">                
                     <div id="links-list">
-                
+
                     <div id="listeners-alt-container">					
                         <div id="links-button-heart" class="links-label link" target="_blank">
                             Сейчас слушают

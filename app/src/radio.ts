@@ -147,7 +147,7 @@ const radioPlay = (channel?: string) => {
 		error("ERR: Still loading");
 };
 
-const radioStop = () => {
+export const radioStop = () => {
 	if (playerReady && radioPlayer) {
 		radioPlayer.pause();
 		radioPlayer.src = '';

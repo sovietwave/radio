@@ -8,10 +8,11 @@ import {
      initPWA,
      installPWA,
 } from './core'
-import { radioInit, radioToggle } from './radio'
+import { radioInit, radioToggle, radioStop } from './radio'
 
 // register external control functions for HTML
 globalThis.radioToggle = radioToggle
+globalThis.radioStop = radioStop
 globalThis.switchCurrentBackground = switchCurrentBackground
 globalThis.toggleLinks = toggleLinks
 globalThis.toggleAirPanel = toggleAirPanel

@@ -1,4 +1,5 @@
 import { rnd } from "./common";
+import { radioStop } from "./radio";
 
 let currentIndex: number = 0;
 let frameIndex: number = 0;
@@ -709,9 +710,12 @@ const disableBright = () => {
 };
 
 export const hideLeftPanels = () => {
+/*
+
 	if (!linksIsEnabled && !airIsEnabled) {
 		return;
-	}
+	}*/
+	closePopup();
 
 	disableBright();
 	disableAir();
@@ -755,6 +759,7 @@ export const toggleNavi = () => {
 	disableBright();
 	disableAir();
 	disableLinks();
+	closePopup();
 
 	togglePlayer(); //for mobile
 
@@ -880,4 +885,30 @@ export const installPWA = async () => {
           deferredPrompt = null
           $('#pwa-install-button').hide()
      }
+}
+
+let popupTimeout;
+
+
+export function showPopup () {
+	enableBright();
+	sfxClick.play();
+	//radioStop();
+	
+	clearTimeout(popupTimeout);
+    const popup = document.getElementById('popup');
+    popup.style.display = 'flex';
+    setTimeout(() => {
+        popup.classList.add('show');
+    }, 10); 
+}
+
+(window as any).showPopup = showPopup;
+
+export function closePopup () {
+    const popup = document.getElementById('popup');
+    popup.classList.remove('show');
+    popupTimeout = setTimeout(() => {
+        popup.style.display = 'none';
+    }, 400); 
 }
