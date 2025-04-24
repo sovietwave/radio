@@ -53,12 +53,10 @@ export default ({ command }) =>
           plugins: [
                VitePWA({
                     registerType: 'autoUpdate',
-                    devOptions: {
-                         enabled: true,
-                    },
                     workbox: {
                          clientsClaim: true,
                          skipWaiting: true,
+                         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
                     },
                     manifest: {
                          name: 'Советская Волна',
