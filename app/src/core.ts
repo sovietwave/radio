@@ -571,6 +571,7 @@ export const toggleLinks = () => {
           sfxPlayClick()
      }
 
+     closePopup()
      toggleFrame()
 }
 
