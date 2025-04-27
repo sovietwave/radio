@@ -813,13 +813,25 @@ a.night {
      width: 72px;
      height: 72px;
      background-size: 72px 72px;
-     background-position: 0 0;
+     background-position: center;
      border: none;
      cursor: pointer;
      background-color: transparent;
      background-image: url('/assets/sprites/set12apr.png');
+     background-repeat: no-repeat;
      opacity: 0.75;
-     transition: opacity 0.2s ease;
+     transition: all 0.2s ease;
+}
+/* Мобильная вёрстка для кнопки #openPopup */
+@media (max-width: 500px) {
+     #openPopup {
+          top: 20px;
+          right: 20px;
+          width: 55px;
+          height: 55px;
+          background-size: 55px 55px;
+          transition: all 0.2s ease;
+     }
 }
 
 #openPopup:hover {
