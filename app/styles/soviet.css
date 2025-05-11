@@ -6,11 +6,13 @@
 	70B0C3 winter
 	903BD8 diskette
 	51E08D spring
+     954eb1 purple 2
+     summer
 	*/
-     --accent: rgb(149, 78, 177);
-     --accentR: 149;
-     --accentG: 78;
-     --accentB: 177;
+     --accent: rgb(145, 216, 78);
+     --accentR: 145;
+     --accentG: 216;
+     --accentB: 78;
 }
 
 body,
@@ -346,16 +348,11 @@ a.night {
 }
 
 #links-logo {
-     position: absolute;
-     padding: 0;
-
-     z-index: 100;
+     position: relative;
+     padding-bottom: 64px;
 
      opacity: 0.8;
-     top: 37px;
-     left: 50%;
-     transform: translate(-50%, 0);
-
+     text-align: center;
      user-select: none;
      -moz-user-select: none;
      -khtml-user-select: none;
@@ -519,7 +516,7 @@ a.night {
      pointer-events: none;
 }
 
-#panel-title-gradient {
+#panel-title-gradient-links, #panel-title-gradient-links-mobile, #panel-title-gradient-air {
      width: 100%;
      height: 20px;
      position: absolute;
@@ -576,6 +573,10 @@ a.night {
           rgba(var(--accentR), var(--accentG), var(--accentB), 0.61) 100%
      );
      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#var(--accent)', endColorstr='#var(--accent)', GradientType=0 );
+}
+
+#panel-title-gradient-links-mobile{
+     display: none;
 }
 
 #panel-top-gradient {
@@ -695,11 +696,93 @@ a.night {
      opacity: 0.2;
 }
 
+
+#openPopup {
+     position: absolute;
+     top: 50px;
+     right: 50px;
+     width: 72px;
+     height: 72px;
+     background-size: 72px 72px;
+     background-position: center;
+     border: none;
+     cursor: pointer;
+     background-color: transparent;
+     background-image: url('/assets/sprites/set12apr.png');
+     background-repeat: no-repeat;
+     opacity: 0.75;
+     transition: all 0.2s ease;
+}
+
+#openPopup:hover {
+     opacity: 1;
+}
+
+.popup {
+     display: none;
+     position: fixed;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%) translateY(0px);
+     z-index: 10;
+     opacity: 0;
+     transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.popup.show {
+     display: flex;
+     transform: translate(-50%, -50%) translateY(-20px);
+     opacity: 1;
+}
+
+.popup-content {
+     background-color: rgb(0, 0, 0, 1);
+     width: 50vw;     
+     height: 48vh;     
+     bottom: 20px;
+     position: relative;
+     padding: 10px 10px 55px 10px;
+     box-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+     border-radius: 10px;
+}
+
+.popup-content iframe {
+     width: 100%;     
+     height: 100%;
+}
+
+.popup-links {
+     text-align: right;
+}
+
+
 /* S ВЁРСТКА - Прортретная для телефонов */
 @media (max-width: 800px), (max-height: 500px) {
-     #air-playlist::-webkit-scrollbar,
+     
      #links-center-back::-webkit-scrollbar {
+          width: 0px;
+          top: 0px;
+     }
+
+     #air-playlist::-webkit-scrollbar{
           width: 35px;
+          top: 0px;
+     }
+
+     #panel-title-gradient-links{
+          display: none;
+     }
+     #panel-title-gradient-links-mobile{
+          display: block;
+     }
+
+     
+     #links-center-back {
+          top: 0px;
+     }
+
+     #links-list {
+          margin-top: 36px;
      }
 
      #player-artist,
@@ -740,6 +823,12 @@ a.night {
 
      #bright-overlay {
           display: none;
+     }
+
+     #openPopup {
+          top: auto;
+          bottom: 100px;
+          right: 25px;
      }
 
      #panel-top-gradient {
@@ -804,73 +893,8 @@ a.night {
      #player {
           margin-top: 0px;
      }
-}
 
-#openPopup {
-     position: absolute;
-     top: 50px;
-     right: 50px;
-     width: 72px;
-     height: 72px;
-     background-size: 72px 72px;
-     background-position: center;
-     border: none;
-     cursor: pointer;
-     background-color: transparent;
-     background-image: url('/assets/sprites/set12apr.png');
-     background-repeat: no-repeat;
-     opacity: 0.75;
-     transition: all 0.2s ease;
-}
-/* Мобильная вёрстка для кнопки #openPopup */
-@media (max-width: 500px) {
      #openPopup {
-          top: 20px;
-          right: 20px;
-          width: 55px;
-          height: 55px;
-          background-size: 55px 55px;
-          transition: all 0.2s ease;
+          display: none;
      }
-}
-
-#openPopup:hover {
-     opacity: 1;
-}
-
-.popup {
-     display: none;
-     position: fixed;
-     top: 50%;
-     left: 50%;
-     transform: translate(-50%, -50%) translateY(0px);
-     z-index: 10;
-     opacity: 0;
-     transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-.popup.show {
-     display: flex;
-     transform: translate(-50%, -50%) translateY(-20px);
-     opacity: 1;
-}
-
-.popup-content {
-     background-color: rgb(0, 0, 0, 1);
-     width: 50vw;     
-     height: 48vh;     
-     bottom: 20px;
-     position: relative;
-     padding: 10px 10px 55px 10px;
-     box-shadow: 0 2px 5px rgba(0, 0, 0, 1);
-     border-radius: 10px;
-}
-
-.popup-content iframe {
-     width: 100%;     
-     height: 100%;
-}
-
-.popup-links {
-     text-align: right;
 }
