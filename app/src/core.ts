@@ -273,6 +273,24 @@ const modes = {
           times: '1:00 — 7:00 МСК',
      },
 
+     only_day: {
+          title: 'Только дневной эфир',
+          subtitle: '#chillwave #dreamwave #sovietwave',
+          times: 'Круглосуточно',
+     },
+
+     only_evening: {
+          title: 'Только вечерний эфир',
+          subtitle: '#synthpop #postpunk #sovietwave',
+          times: 'Круглосуточно',
+     },
+
+     only_night: {
+          title: 'Только ночной эфир',
+          subtitle: '#ambient #experimental #sovietwave',
+          times: 'Круглосуточно',
+     },
+
      midnight: {
           title: 'Полуночный эфир',
           subtitle: '#etherial #ambientpop #sovietwave',
