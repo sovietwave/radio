@@ -62,7 +62,7 @@ const backs = {
                '/assets/sprites/bg/night6.jpg',
                '/assets/sprites/bg/night7.jpg',
                '/assets/sprites/bg/night8.jpg',
-               '/assets/sprites/bg/night9.jpg',
+               '/assets/sprites/bg/night9.jpg'
           ],
 
           backs_mobile: [
@@ -118,7 +118,7 @@ const backs = {
                '/assets/sprites/bg/mobile/night6.jpg',
                '/assets/sprites/bg/mobile/night7.jpg',
                '/assets/sprites/bg/mobile/night8.jpg',
-               '/assets/sprites/bg/mobile/night9.jpg',
+               '/assets/sprites/bg/mobile/night9.jpg'
           ],
      },
 
@@ -135,7 +135,7 @@ const backs = {
                '/assets/sprites/bg/v1/night0.jpg',
                '/assets/sprites/bg/v1/night1.jpg',
                '/assets/sprites/bg/v1/night2.jpg',
-               '/assets/sprites/bg/v1/night3.jpg',
+               '/assets/sprites/bg/v1/night3.jpg'
           ],
 
           backs_mobile: [
@@ -150,63 +150,63 @@ const backs = {
                '/assets/sprites/bg/v1/night0.jpg',
                '/assets/sprites/bg/v1/night1.jpg',
                '/assets/sprites/bg/v1/night2.jpg',
-               '/assets/sprites/bg/v1/night3.jpg',
+               '/assets/sprites/bg/v1/night3.jpg'
           ],
      },
 
      day: {
           backs: [
-               '/assets/sprites/bg/day10.jpg',
-               '/assets/sprites/bg/day5.jpg',
-               '/assets/sprites/bg/day6.jpg',
+               '/assets/sprites/bg/day1.jpg',
+               '/assets/sprites/bg/day2.jpg',
+               '/assets/sprites/bg/day3.jpg'
           ],
 
           backs_mobile: [
-               '/assets/sprites/bg/mobile/day10.jpg',
-               '/assets/sprites/bg/mobile/day5.jpg',
-               '/assets/sprites/bg/mobile/day6.jpg',
+               '/assets/sprites/bg/mobile/day1.jpg',
+               '/assets/sprites/bg/mobile/day2.jpg',
+               '/assets/sprites/bg/mobile/day3.jpg'
           ],
      },
 
      evening: {
           backs: [
                '/assets/sprites/bg/evening1.jpg',
-               '/assets/sprites/bg/evening10.jpg',
-               '/assets/sprites/bg/evening6.jpg',
+               '/assets/sprites/bg/evening2.jpg',
+               '/assets/sprites/bg/evening3.jpg'
           ],
 
           backs_mobile: [
                '/assets/sprites/bg/mobile/evening1.jpg',
-               '/assets/sprites/bg/mobile/evening10.jpg',
-               '/assets/sprites/bg/mobile/evening6.jpg',
+               '/assets/sprites/bg/mobile/evening2.jpg',
+               '/assets/sprites/bg/mobile/evening3.jpg'
           ],
      },
 
      night: {
           backs: [
                '/assets/sprites/bg/night1.jpg',
-               '/assets/sprites/bg/midnight2.jpg',
-               '/assets/sprites/bg/night6.jpg',
+               '/assets/sprites/bg/night3.jpg',
+               '/assets/sprites/bg/night7.jpg'
           ],
 
           backs_mobile: [
                '/assets/sprites/bg/mobile/night1.jpg',
-               '/assets/sprites/bg/mobile/midnight2.jpg',
-               '/assets/sprites/bg/mobile/night6.jpg',
+               '/assets/sprites/bg/mobile/night3.jpg',
+               '/assets/sprites/bg/mobile/night7.jpg'
           ],
      },
 
      midnight: {
           backs: [
                '/assets/sprites/bg/midnight1.jpg',
-               '/assets/sprites/bg/night7.jpg',
-               '/assets/sprites/bg/midnight5.jpg',
+               '/assets/sprites/bg/midnight2.jpg',
+               '/assets/sprites/bg/midnight3.jpg'
           ],
 
           backs_mobile: [
                '/assets/sprites/bg/mobile/midnight1.jpg',
-               '/assets/sprites/bg/mobile/night7.jpg',
-               '/assets/sprites/bg/mobile/midnight5.jpg',
+               '/assets/sprites/bg/mobile/midnight2.jpg',
+               '/assets/sprites/bg/mobile/midnight3.jpg'
           ],
      },
 
@@ -221,7 +221,7 @@ const backs = {
                '/assets/sprites/bg/event_120425/7.jpg',
                '/assets/sprites/bg/event_120425/8.jpg',
                '/assets/sprites/bg/event_120425/9.jpg',
-               '/assets/sprites/bg/event_120425/10.jpg',
+               '/assets/sprites/bg/event_120425/10.jpg'
           ],
 
           backs_mobile: [
@@ -234,7 +234,7 @@ const backs = {
                '/assets/sprites/bg/event_120425/mobile/7.jpg',
                '/assets/sprites/bg/event_120425/mobile/8.jpg',
                '/assets/sprites/bg/event_120425/mobile/9.jpg',
-               '/assets/sprites/bg/event_120425/mobile/10.jpg',
+               '/assets/sprites/bg/event_120425/mobile/10.jpg'
           ],
      },
 
@@ -243,7 +243,7 @@ const backs = {
                '/stream/day.jpg',
                '/stream/evening.jpg',
                '/stream/midnight.jpg',
-               '/stream/night.jpg',
+               '/stream/night.jpg'
           ],
      },
 }

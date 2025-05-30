@@ -7,12 +7,12 @@
 	903BD8 diskette
 	51E08D spring
      954eb1 purple 2
-     summer
+     91d84e summer 
 	*/
-     --accent: rgb(145, 216, 78);
-     --accentR: 145;
-     --accentG: 216;
-     --accentB: 78;
+     --accent: rgb(255, 222, 128);
+     --accentR: 255;
+     --accentG: 222;
+     --accentB: 128;
 }
 
 body,
