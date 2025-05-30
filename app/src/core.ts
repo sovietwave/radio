@@ -158,27 +158,31 @@ const backs = {
           backs: [
                '/assets/sprites/bg/day1.jpg',
                '/assets/sprites/bg/day2.jpg',
-               '/assets/sprites/bg/day3.jpg'
+               '/assets/sprites/bg/day3.jpg',
+               '/assets/sprites/bg/day11.jpg'
           ],
 
           backs_mobile: [
                '/assets/sprites/bg/mobile/day1.jpg',
                '/assets/sprites/bg/mobile/day2.jpg',
-               '/assets/sprites/bg/mobile/day3.jpg'
+               '/assets/sprites/bg/mobile/day3.jpg',
+               '/assets/sprites/bg/mobile/day11.jpg'
           ],
      },
 
      evening: {
           backs: [
-               '/assets/sprites/bg/evening1.jpg',
                '/assets/sprites/bg/evening2.jpg',
-               '/assets/sprites/bg/evening3.jpg'
+               '/assets/sprites/bg/evening3.jpg',
+               '/assets/sprites/bg/evening11.jpg',
+               '/assets/sprites/bg/evening12.jpg'
           ],
 
           backs_mobile: [
-               '/assets/sprites/bg/mobile/evening1.jpg',
                '/assets/sprites/bg/mobile/evening2.jpg',
-               '/assets/sprites/bg/mobile/evening3.jpg'
+               '/assets/sprites/bg/mobile/evening3.jpg',
+               '/assets/sprites/bg/mobile/evening11.jpg',
+               '/assets/sprites/bg/mobile/evening12.jpg'
           ],
      },
 
@@ -186,13 +190,15 @@ const backs = {
           backs: [
                '/assets/sprites/bg/night1.jpg',
                '/assets/sprites/bg/night3.jpg',
-               '/assets/sprites/bg/night7.jpg'
+               '/assets/sprites/bg/night7.jpg',
+               '/assets/sprites/bg/evening1.jpg'
           ],
 
           backs_mobile: [
                '/assets/sprites/bg/mobile/night1.jpg',
                '/assets/sprites/bg/mobile/night3.jpg',
-               '/assets/sprites/bg/mobile/night7.jpg'
+               '/assets/sprites/bg/mobile/night7.jpg',
+               '/assets/sprites/bg/mobile/evening1.jpg'
           ],
      },
 
@@ -200,13 +206,15 @@ const backs = {
           backs: [
                '/assets/sprites/bg/midnight1.jpg',
                '/assets/sprites/bg/midnight2.jpg',
-               '/assets/sprites/bg/midnight3.jpg'
+               '/assets/sprites/bg/midnight3.jpg',
+               '/assets/sprites/bg/midnight7.jpg'
           ],
 
           backs_mobile: [
                '/assets/sprites/bg/mobile/midnight1.jpg',
                '/assets/sprites/bg/mobile/midnight2.jpg',
-               '/assets/sprites/bg/mobile/midnight3.jpg'
+               '/assets/sprites/bg/mobile/midnight3.jpg',
+               '/assets/sprites/bg/mobile/midnight7.jpg'
           ],
      },
 
