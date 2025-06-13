@@ -1023,3 +1023,19 @@ export function closePopup() {
           popup.style.display = 'none'
      }, 400)
 }
+
+// Carousel
+let carouselIndex = 0
+
+export function changeStream(direction: number) {
+     const track = document.getElementById('carouselTrack')
+     const totalSlides = track.children.length
+
+     carouselIndex += direction
+
+     // Looping carousel
+     if (carouselIndex < 0) carouselIndex = totalSlides - 1
+     if (carouselIndex >= totalSlides) carouselIndex = 0
+
+     track.style.transform = `translateX(-${carouselIndex * 25}%)`
+}

@@ -7,6 +7,7 @@ import {
      toggleNavi,
      initPWA,
      installPWA,
+     changeStream,
 } from './core'
 import { radioInit, radioToggle, radioStop } from './radio'
 
@@ -20,6 +21,7 @@ globalThis.hideLeftPanels = hideLeftPanels
 globalThis.toggleLinks = toggleLinks
 globalThis.toggleNavi = toggleNavi
 globalThis.installPWA = installPWA
+globalThis.changeStream = changeStream
 
 $(() => {
      init()
