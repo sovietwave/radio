@@ -398,6 +398,7 @@ a.night {
           rgba(var(--accentR), var(--accentG), var(--accentB), 1);
      text-align: center;
      font-size: 24pt;
+     margin-bottom: 2pt;
 }
 
 #air-tags {
@@ -408,7 +409,7 @@ a.night {
 #air-times {
      text-align: center;
      opacity: 0.5;
-     margin-bottom: 4pt;
+     margin-bottom: 2pt;
 }
 
 #air-start-time {
@@ -921,7 +922,7 @@ a.night {
      color: white;
 }
 
-/* .carousel-item:nth-child(1) {
+.carousel-item:nth-child(1) {
      background: #1abc9c;
 }
 .carousel-item:nth-child(2) {
@@ -932,7 +933,7 @@ a.night {
 }
 .carousel-item:nth-child(4) {
      background: #9b59b6;
-} */
+}
 
 .carousel-btn {
      position: absolute;
