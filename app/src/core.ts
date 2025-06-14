@@ -1025,8 +1025,8 @@ export function closePopup() {
 }
 
 // Carousel
-let carouselIndex = 0
 
+let carouselIndex = 0
 export function changeStream(direction: number) {
      const track = document.getElementById('carouselTrack')
      const totalSlides = track.children.length
