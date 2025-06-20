@@ -7,9 +7,8 @@ import {
      toggleNavi,
      initPWA,
      installPWA,
-     changeStream,
 } from './core'
-import { radioInit, radioToggle, radioStop } from './radio'
+import { radioInit, radioToggle, radioStop, changeStream } from './radio'
 
 // register external control functions for HTML
 globalThis.radioToggle = radioToggle

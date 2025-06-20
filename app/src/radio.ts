@@ -3,6 +3,7 @@ import { setVal } from "./statusSave";
 import { state } from "./core";
 
 const error = console.error;
+const channels = ["soviet", "provodach"]
 
 let lastTrack;
 let showingTrack;
@@ -83,10 +84,10 @@ export const radioInit = () => {
 
 				// Some androids can't play AAC too.
 				navigator.userAgent.indexOf("Android") == -1)) {
-			currentChannel = 'soviet';
+			currentChannel = "soviet";
 		}
 		else {
-			currentChannel = 'soviet.mp3';
+			currentChannel = "soviet.mp3";
 		}
 
 		// Restore volume settings
@@ -111,6 +112,7 @@ const radioPlay = (channel?: string) => {
 		// Create a player object
 		radioPlayer.src = `https://station.waveradio.org/${channel}?${randword()}`; // fixes buffering
 		radioPlayer.title = showingTrack;
+
 
 		radioPlayer.onerror = function () {
 			if (nowPlaying) {
@@ -181,7 +183,6 @@ export const radioToggle = (channel?: string) => {
 	}
 }
 
-
 function requestTrackInfo() {
 	setTimeout(requestTrackInfo, 5000);
 	getCurrentTrack(processBriefResult, true);
@@ -191,7 +192,7 @@ function getCurrentTrack(onSuccess, isBrief?: boolean) {
 	$.ajax({
 		url: "https://core.waveradio.org/public/current",
 		data: {
-			station: 'soviet',
+			station: currentChannel,
 			brief: (isBrief ? '1' : '0')
 		},
 		dataType: 'json',
@@ -210,7 +211,7 @@ const getTrackHistory = () => {
 	$.ajax({
 		url: "https://core.waveradio.org/public/history",
 		data: {
-			station: 'soviet',
+			station: currentChannel,
 			"amount": 100,
 			extend: 1 // to enable artist links
 		},
@@ -279,7 +280,6 @@ const processTrackHistory = (data) => {
 };
 
 const processBriefResult = (csRes) => {
-
 	if (tempShowing)
 		return;
 
@@ -451,3 +451,42 @@ const calculateListenersCount = (data) => {
 		}
 	});
 };
+
+// Карусель, переклюяающая между потоками
+
+let carouselIndex = 0
+
+export async function changeStream(direction: number) {
+	// if ((carouselIndex === 0 && direction < 0) || (carouselIndex === channels.length - 1 && direction > 0)) return;
+
+    const track = document.getElementById('carouselTrack')
+
+    const leftButton: HTMLElement = document.querySelector('.carousel-btn.left')
+    const rightButton: HTMLElement = document.querySelector('.carousel-btn.right')
+
+    const totalSlides = track.children.length
+
+    carouselIndex += direction
+     
+    carouselIndex === 0 ? leftButton.style.display = 'none' : leftButton.style.display = 'block'
+    carouselIndex === totalSlides - 1 ? rightButton.style.display = 'none' : rightButton.style.display = 'block' 
+     
+    for (let i = 0; i < totalSlides-1; i++){
+        const leftArrows = leftButton.children[i] as HTMLImageElement
+        const rightArrows = rightButton.children[i] as HTMLImageElement
+        leftArrows.style.display = i < carouselIndex ? "block" : "none";
+        rightArrows.style.display = i < carouselIndex ? "none" : "block";
+    }
+
+    track.style.transform = `translateX(-${carouselIndex * 25}%)`
+	
+	if (carouselIndex <= channels.length-1
+		&& currentChannel !== channels[carouselIndex]
+	) {
+		currentChannel = channels[carouselIndex]
+		radioPlay(currentChannel)
+		getCurrentTrack(setTrackInfo)
+		getTrackHistory()
+	}
+
+}
