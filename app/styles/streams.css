@@ -44,7 +44,7 @@
 
 .carousel-btn.left {
      display: none; 
-     left: 0;
+     left: 15%
 }
 .carousel-btn.left:active {
      transform: translateY(-30%) translateX(-20%);
@@ -52,7 +52,7 @@
 }
 
 .carousel-btn.right {
-     right: 0;
+     right: 15%
 }
 
 .carousel-btn.right:active {
@@ -60,3 +60,17 @@
      transition: transform 0.2s ease-in-out;
 }
 
+@media (max-width: 420px) {
+     .carousel-btn {
+          transform: translateY(-100%);
+     }
+}
+
+@media (max-width: 600px), (min-width: 800px) {
+     .carousel-btn.left {
+          left: 10px;
+     }
+     .carousel-btn.right {
+          right: 10px;
+     }
+}
