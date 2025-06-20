@@ -1,4 +1,3 @@
-/* Carousel */
 .carousel {
      position: relative;
      width: 100%;
@@ -13,9 +12,6 @@
 
 .carousel-item {
      flex: 0 0 25%;
-     display: flex;
-     align-items: center;
-     justify-content: center;
 }
 
 .carousel-btn {
@@ -28,6 +24,7 @@
      border: none;
      cursor: pointer;
      z-index: 1;
+     transition: opacity 0.3s ease;
 }
 
 .carousel-btn img {
@@ -35,7 +32,6 @@
      left: 0;
      top: 50%;
      transform: translateY(-50%);
-     filter: none;
      transition: transform 0.2s, filter 0.2s;
 }
 
@@ -47,17 +43,20 @@
 }
 
 .carousel-btn.left {
+     display: none; 
      left: 0;
-     margin-left: 30px;
+}
+.carousel-btn.left:active {
+     transform: translateY(-30%) translateX(-20%);
+     transition: transform 0.2s ease-in-out;
 }
 
 .carousel-btn.right {
      right: 0;
-     margin-right: 30px;
 }
 
-@media (max-width: 500px) {
-     .carousel-btn {
-          transform: translateY(-100%);
-     }
+.carousel-btn.right:active {
+     transform: translateY(-30%) translateX(20%);
+     transition: transform 0.2s ease-in-out;
 }
+

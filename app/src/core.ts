@@ -1024,18 +1024,32 @@ export function closePopup() {
      }, 400)
 }
 
-// Carousel
+// Карусель, переклюяающая между потоками
 
 let carouselIndex = 0
+
 export function changeStream(direction: number) {
      const track = document.getElementById('carouselTrack')
+
+     const leftButton: HTMLElement =
+          document.querySelector('.carousel-btn.left')
+     const rightButton: HTMLElement = document.querySelector(
+          '.carousel-btn.right'
+     )
+
      const totalSlides = track.children.length
 
      carouselIndex += direction
-
-     // Looping carousel
-     if (carouselIndex < 0) carouselIndex = totalSlides - 1
-     if (carouselIndex >= totalSlides) carouselIndex = 0
+     
+     carouselIndex === 0 ? leftButton.style.display = 'none' : leftButton.style.display = 'block'
+     carouselIndex === totalSlides - 1 ? rightButton.style.display = 'none' : rightButton.style.display = 'block' 
+     
+     for (let i = 0; i < totalSlides-1; i++){
+          const leftArrows = leftButton.children[i] as HTMLImageElement
+          const rightArrows = rightButton.children[i] as HTMLImageElement
+          leftArrows.style.display = i < carouselIndex ? "block" : "none";
+          rightArrows.style.display = i < carouselIndex ? "none" : "block";
+     }
 
      track.style.transform = `translateX(-${carouselIndex * 25}%)`
 }
