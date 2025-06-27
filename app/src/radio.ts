@@ -104,6 +104,16 @@ export const radioInit = () => {
           new Volume()
 
           playerReady = true
+
+          document.addEventListener('keydown', function (event) {
+               if (
+                    event.code === 'Space' ||
+                    event.key === ' ' ||
+                    event.key === 'Spacebar'
+               ) {
+                    radioToggle()
+               }
+          })
      } catch (e) {
           alert('Error: ' + e.message)
           playerReady = false
@@ -526,7 +536,7 @@ export async function changeStream(direction: number) {
           currentChannel !== channels[carouselIndex]
      ) {
           currentChannel = channels[carouselIndex]
-          radioPlay(currentChannel)
+          nowPlaying && radioPlay(currentChannel)
           getCurrentTrack(setTrackInfo)
           getTrackHistory()
      }
