@@ -77,7 +77,9 @@ a.night {
 
 #player {
      margin-top: 70px;
-
+	 padding-left: 35px;
+	 padding-right: 35px;
+	 
      position: relative;
      text-align: center;
 

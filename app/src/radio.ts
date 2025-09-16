@@ -75,6 +75,36 @@ class Volume {
 export const radioInit = () => {
 	try {
 		radioPlayer = document.createElement('audio');
+		
+		// Set audio attributes for background playback
+		radioPlayer.setAttribute('preload', 'auto');
+		radioPlayer.setAttribute('crossorigin', 'anonymous');
+		radioPlayer.setAttribute('playsinline', 'true');
+		radioPlayer.setAttribute('webkit-playsinline', 'true');
+		radioPlayer.setAttribute('x-webkit-airplay', 'allow');
+		
+		// Add event listeners for background playback
+		document.addEventListener('visibilitychange', () => {
+			if (document.hidden && radioPlayer && !radioPlayer.paused) {
+				// Keep playing when app goes to background
+				radioPlayer.play().catch(() => {});
+			}
+		});
+		
+		window.addEventListener('blur', () => {
+			if (radioPlayer && !radioPlayer.paused) {
+				// Keep playing when window loses focus
+				radioPlayer.play().catch(() => {});
+			}
+		});
+		
+		window.addEventListener('beforeunload', () => {
+			if (radioPlayer && !radioPlayer.paused) {
+				// Keep playing when page is about to unload
+				radioPlayer.play().catch(() => {});
+			}
+		});
+		
 		if (radioPlayer.canPlayType('audio/aac') != 'no' &&
 
 			// Opera has broken AAC decoder
@@ -114,7 +144,7 @@ const radioPlay = (channel?: string) => {
 
 		radioPlayer.onerror = function () {
 			if (nowPlaying) {
-				setTempTitle('Сигнал потерян...');
+				setTempTitle('Сингал потерян...');
 				radioStop();
 
 				clearTimeout(playerRestartTimer);
