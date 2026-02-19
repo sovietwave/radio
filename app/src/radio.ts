@@ -144,7 +144,7 @@ const radioPlay = (channel?: string) => {
 
 		radioPlayer.onerror = function () {
 			if (nowPlaying) {
-				setTempTitle('Сингал потерян...');
+				setTempTitle('Сигнал потерян...');
 				radioStop();
 
 				clearTimeout(playerRestartTimer);
