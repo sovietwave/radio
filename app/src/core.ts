@@ -6,6 +6,7 @@ let frameIndex: number = 0
 let framesCount: number = 3
 let SITE_MODE: string = ''
 let OVERRIDE_MODE: string = ''
+let OVERRIDE_BG: string | null = null
 
 const backs = {
      full: {
@@ -156,9 +157,9 @@ const backs = {
 
      day: {
           backs: [
-               '/assets/sprites/bg/day16.jpg',
-               '/assets/sprites/bg/day17.jpg',
-               '/assets/sprites/bg/day18.jpg',
+               '/assets/sprites/bg/new/1.jpg',
+               '/assets/sprites/bg/new/2.jpg',
+               '/assets/sprites/bg/new/7.jpg',
           ],
 
           backs_mobile: [
@@ -421,6 +422,10 @@ export const init = () => {
      frameIndex = rnd(framesCount) + 1
 
      OVERRIDE_MODE = getUrlSearchParam('mode') || ''
+     const bgParam = getUrlSearchParam('bg')
+     if (bgParam && !bgParam.includes('..')) {
+          OVERRIDE_BG = bgParam
+     }
      //OVERRIDE_MODE = 'event';
 
      if (OVERRIDE_MODE == 'stream') {
@@ -459,6 +464,13 @@ function requestThemeMode() {
 }
 
 function switchBackground(mode) {
+     if (OVERRIDE_BG) {
+          coverImage.css({
+               'background-image': 'url(/assets/sprites/bg/' + OVERRIDE_BG + ')',
+          })
+          switchFrame()
+          return
+     }
      if (OVERRIDE_MODE == 'stream') {
           let bg = 0
           console.log(backs['stream'].backs[0])
