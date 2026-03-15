@@ -59,7 +59,7 @@ export default ({ command }) =>
                          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
                     },
                     manifest: {
-                         name: 'Советская Волна',
+                         name: 'Советская Волна #sovietwave',
                          short_name: 'SW',
                          start_url: '/',
                          theme_color: '#ffffff',
