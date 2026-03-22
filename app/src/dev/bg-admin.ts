@@ -21,6 +21,7 @@ type DomRefs = {
      missingCheckbox: HTMLInputElement
      reloadButton: HTMLButtonElement
      saveButton: HTMLButtonElement
+     cardsViewport: HTMLElement
      cards: HTMLElement
 }
 
@@ -84,6 +85,7 @@ style.textContent = `
           min-height: 100vh;
           color: var(--text);
           background: var(--bg);
+          overflow: hidden;
      }
 
      button,
@@ -99,9 +101,12 @@ style.textContent = `
      }
 
      .shell {
-          width: calc(100vw - 140px);
-          margin: 14px auto;
+          width: min(calc(100vw - 28px), 1500px);
+          height: 100vh;
+          margin: 0 auto;
+          padding: 14px 0;
           display: grid;
+          grid-template-rows: auto minmax(0, 1fr) auto;
           gap: 12px;
      }
 
@@ -111,21 +116,41 @@ style.textContent = `
           box-shadow: var(--shadow);
      }
 
-     .hero {
+     .topbar,
+     .bottombar {
           padding: 14px;
+          display: grid;
+          gap: 10px;
+          position: sticky;
+          z-index: 2;
+     }
+
+     .topbar {
+          top: 0;
+     }
+
+     .bottombar {
+          bottom: 0;
+     }
+
+     .topbar-row,
+     .bottombar-row {
           display: grid;
           gap: 10px;
      }
 
-     .hero-top {
-          display: grid;
-          gap: 10px;
+     .bottombar-row {
+          grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+          align-items: start;
      }
 
      .status {
           padding: 10px 12px;
           border-radius: var(--radius-md);
           background: rgba(127, 208, 255, 0.08);
+          min-height: 39px;
+          display: flex;
+          align-items: center;
      }
 
      .status-label,
@@ -145,12 +170,6 @@ style.textContent = `
      .status-value {
           font-size: 13px;
           color: var(--muted);
-     }
-
-     .toolbar {
-          padding: 14px;
-          display: grid;
-          gap: 12px;
      }
 
      .toolbar-grid {
@@ -259,6 +278,8 @@ style.textContent = `
           gap: 8px;
           padding: 0 12px;
           background: var(--panel-soft);
+          min-height: 40px;
+          border-radius: var(--radius-md);
      }
 
      .tag-filter,
@@ -278,16 +299,26 @@ style.textContent = `
      }
 
      .tag-badge {
-          min-height: 32px;
-          border-radius: var(--radius-sm);
           color: var(--muted);
+     }
+
+     .content {
+          min-height: 0;
+          overflow: hidden;
+     }
+
+     .cards-viewport {
+          height: 100%;
+          overflow: auto;
+          padding: 2px 4px;
      }
 
      .cards {
           display: grid;
           grid-template-columns: repeat(auto-fill, 300px);
           gap: 14px;
-          justify-content: start;
+          justify-content: center;
+          padding: 2px;
      }
 
      .card {
@@ -328,6 +359,16 @@ style.textContent = `
           gap: 10px;
      }
 
+     .card .tag-options {
+          gap: 6px;
+     }
+
+     .card .tag-option {
+          min-height: 30px;
+          padding: 0 10px;
+          border-radius: var(--radius-sm);
+      }
+
      .path-row {
           display: flex;
           align-items: center;
@@ -342,21 +383,21 @@ style.textContent = `
 
      @media (max-width: 960px) {
           .shell {
-               width: min(100vw - 18px, 1500px);
-               margin: 10px auto 18px;
+               width: min(calc(100vw - 18px), 1500px);
+               padding: 10px 0;
           }
 
-          .hero-top {
-               flex-direction: column;
-               align-items: stretch;
+          .bottombar-row {
+               grid-template-columns: 1fr;
           }
 
           .toolbar-grid {
                grid-template-columns: 1fr;
           }
 
-          .cards {
-               justify-content: center;
+          .cards-viewport {
+               padding-left: 0;
+               padding-right: 0;
           }
      }
 `
@@ -399,6 +440,40 @@ const createElement = <K extends keyof HTMLElementTagNameMap>(
 }
 
 const dom = {} as DomRefs
+let persistedTagsByPath = new Map<string, string[]>()
+
+const cloneTags = (tags: string[]) => [...tags].sort(compareText)
+
+const areTagsEqual = (left: string[], right: string[]) =>
+     left.length == right.length && left.every((tag, index) => tag == right[index])
+
+const snapshotEntries = (entries: BackgroundAdminEntry[]) =>
+     new Map(entries.map((entry) => [entry.path, cloneTags(entry.tags)]))
+
+const getDirtyEntryCount = () => {
+     let count = 0
+
+     for (const entry of state.entries) {
+          const persistedTags = persistedTagsByPath.get(entry.path) ?? []
+          if (!areTagsEqual(cloneTags(entry.tags), persistedTags)) {
+               count += 1
+          }
+     }
+
+     return count
+}
+
+const formatEntryCount = (count: number) => {
+     const mod10 = count % 10
+     const mod100 = count % 100
+
+     if (mod10 == 1 && mod100 != 11) return `${count} карточка`
+     if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+          return `${count} карточки`
+     }
+
+     return `${count} карточек`
+}
 
 const syncSelectedTags = (knownTags = getKnownTags()) => {
      const knownTagSet = new Set(knownTags)
@@ -455,6 +530,7 @@ const syncFromPayload = (payload: BackgroundAdminPayload) => {
      state.entries = payload.entries.map(cloneEntry)
      state.folders = payload.folders
      state.tags = payload.tags
+     persistedTagsByPath = snapshotEntries(state.entries)
 
      if (state.folder != 'all' && !state.folders.includes(state.folder)) {
           state.folder = 'all'
@@ -497,6 +573,7 @@ const toggleSelectedTag = (tag: string) => {
 
 const createCard = (entry: BackgroundAdminEntry, knownTags: string[]) => {
      const card = createElement('article', 'panel card')
+     card.dataset.path = entry.path
      const thumb = createElement('div', 'thumb')
      const image = document.createElement('img')
      image.src = entry.path
@@ -504,7 +581,6 @@ const createCard = (entry: BackgroundAdminEntry, knownTags: string[]) => {
      thumb.append(image)
 
      const body = createElement('div', 'card-body')
-     body.append(createElement('div', 'folder', entry.folder))
      const pathRow = createElement('div', 'path-row')
      pathRow.append(createElement('div', 'path', entry.path))
      if (!entry.hasMobile) {
@@ -533,6 +609,37 @@ const createCard = (entry: BackgroundAdminEntry, knownTags: string[]) => {
      return card
 }
 
+const hasActiveFilters = () =>
+     state.folder != 'all' ||
+     state.onlyMissingMobile ||
+     state.selectedTags.length > 0 ||
+     state.search.trim().length > 0
+
+const findRenderedCard = (path: string) => {
+     for (const child of dom.cards.children) {
+          if (child instanceof HTMLElement && child.dataset.path == path) {
+               return child
+          }
+     }
+
+     return null
+}
+
+const syncRenderedCardTags = (path: string) => {
+     const entry = state.entries.find((value) => value.path == path)
+     const renderedCard = findRenderedCard(path)
+
+     if (!entry || !renderedCard) return false
+
+     const tagSet = new Set(entry.tags)
+     for (const option of renderedCard.querySelectorAll('.tag-option')) {
+          if (!(option instanceof HTMLButtonElement)) continue
+          option.classList.toggle('tag-option-active', tagSet.has(option.textContent || ''))
+     }
+
+     return true
+}
+
 const renderCards = (entries: BackgroundAdminEntry[], knownTags: string[]) => {
      dom.cards.replaceChildren()
 
@@ -552,19 +659,16 @@ const renderCards = (entries: BackgroundAdminEntry[], knownTags: string[]) => {
      }
 }
 
-const updateView = () => {
-     const knownTags = getKnownTags()
-     syncSelectedTags(knownTags)
-     const entries = getFilteredEntries()
-
+const updateChrome = (knownTags: string[]) => {
+     const dirtyEntryCount = getDirtyEntryCount()
      const statusText = state.loading
-          ? 'Загрузка...'
+          ? `Загрузка... ${formatEntryCount(dirtyEntryCount)} с изменениями`
           : state.saving
-          ? 'Сохранение...'
+          ? `Сохранение... ${formatEntryCount(dirtyEntryCount)} с изменениями`
           : state.dirty
-          ? 'Есть изменения'
+          ? `${formatEntryCount(dirtyEntryCount)} с изменениями`
           : 'Синхронизировано'
-     dom.statusValue.textContent = `${statusText} ${entries.length} из ${state.entries.length} карточек`
+     dom.statusValue.textContent = statusText
 
      dom.feedback.replaceChildren()
      if (state.error) {
@@ -602,26 +706,40 @@ const updateView = () => {
      dom.saveButton.textContent = state.saving
           ? 'Сохранение...'
           : 'Сохранить manifest'
+}
 
-     renderCards(entries, knownTags)
+const updateView = () => {
+     const knownTags = getKnownTags()
+     syncSelectedTags(knownTags)
+     updateChrome(knownTags)
+     renderCards(getFilteredEntries(), knownTags)
+}
+
+const updateChangedEntry = (path: string, previousKnownTags: string[]) => {
+     const knownTags = getKnownTags()
+     const knownTagsChanged = !areTagsEqual(
+          cloneTags(previousKnownTags),
+          cloneTags(knownTags)
+     )
+
+     syncSelectedTags(knownTags)
+     updateChrome(knownTags)
+
+     if (knownTagsChanged || hasActiveFilters()) {
+          renderCards(getFilteredEntries(), knownTags)
+          return
+     }
+
+     if (!syncRenderedCardTags(path)) {
+          renderCards(getFilteredEntries(), knownTags)
+     }
 }
 
 const setupLayout = () => {
      const shell = createElement('div', 'shell')
 
-     const hero = createElement('section', 'panel hero')
-     const heroTop = createElement('div', 'hero-top')
-     const status = createElement('div', 'status')
-     const statusValue = createElement('div', 'status-value')
-     status.append(statusValue)
-     heroTop.append(status)
-
-     const feedback = createElement('div')
+     const topbar = createElement('section', 'panel topbar')
      const tagFilters = createElement('div', 'tag-cloud')
-
-     hero.append(heroTop, feedback, tagFilters)
-
-     const toolbar = createElement('section', 'panel toolbar')
      const controls = createElement('div', 'toolbar-grid')
 
      const folderSelect = createElement('select', 'field') as HTMLSelectElement
@@ -678,11 +796,24 @@ const setupLayout = () => {
           reloadButton,
           saveButton
      )
-     toolbar.append(controls)
+     topbar.append(tagFilters, controls)
 
+     const content = createElement('main', 'content')
+     const cardsViewport = createElement('section', 'cards-viewport')
      const cards = createElement('section', 'cards')
+     cardsViewport.append(cards)
+     content.append(cardsViewport)
 
-     shell.append(hero, toolbar, cards)
+     const bottombar = createElement('section', 'panel bottombar')
+     const bottombarRow = createElement('div', 'bottombar-row')
+     const status = createElement('div', 'status')
+     const statusValue = createElement('div', 'status-value')
+     status.append(statusValue)
+     const feedback = createElement('div')
+     bottombarRow.append(status, feedback)
+     bottombar.append(bottombarRow)
+
+     shell.append(topbar, content, bottombar)
      app.replaceChildren(shell)
 
      dom.statusValue = statusValue
@@ -693,13 +824,13 @@ const setupLayout = () => {
      dom.missingCheckbox = missingCheckbox
      dom.reloadButton = reloadButton
      dom.saveButton = saveButton
+     dom.cardsViewport = cardsViewport
      dom.cards = cards
 }
 
 const markDirty = () => {
-     state.dirty = true
+     state.dirty = getDirtyEntryCount() > 0
      setFeedback('')
-     updateView()
 }
 
 const updateEntry = (
@@ -715,6 +846,7 @@ const addTag = (path: string, rawTag: string) => {
      const tag = rawTag.trim()
      if (!tag) return
 
+     const previousKnownTags = getKnownTags()
      let changed = false
      updateEntry(path, (entry) => {
           if (entry.tags.includes(tag)) return entry
@@ -726,9 +858,11 @@ const addTag = (path: string, rawTag: string) => {
      if (!changed) return
      state.tags = getKnownTags()
      markDirty()
+     updateChangedEntry(path, previousKnownTags)
 }
 
 const removeTag = (path: string, tag: string) => {
+     const previousKnownTags = getKnownTags()
      let changed = false
      updateEntry(path, (entry) => {
           if (!entry.tags.includes(tag)) return entry
@@ -741,6 +875,7 @@ const removeTag = (path: string, tag: string) => {
      state.tags = getKnownTags()
      syncSelectedTags()
      markDirty()
+     updateChangedEntry(path, previousKnownTags)
 }
 
 const toggleTag = (path: string, tag: string) => {
