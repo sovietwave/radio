@@ -1,253 +1,14 @@
 import { rnd } from './common'
+import { backgroundAssetsByMode as backs } from './backgrounds'
 import { radioStop } from './radio'
 
 let currentIndex: number = 0
 let frameIndex: number = 0
 let framesCount: number = 3
 let SITE_MODE: string = ''
+let SITE_BG_MODE: string = ''
 let OVERRIDE_MODE: string = ''
 let OVERRIDE_BG: string | null = null
-
-const backs = {
-     full: {
-          backs: [
-               '/assets/sprites/bg/v1/day0.jpg',
-               '/assets/sprites/bg/v1/day1.jpg',
-               '/assets/sprites/bg/v1/day2.jpg',
-               '/assets/sprites/bg/v1/day3.jpg',
-
-               '/assets/sprites/bg/day1.jpg',
-               '/assets/sprites/bg/day2.jpg',
-               '/assets/sprites/bg/day3.jpg',
-               '/assets/sprites/bg/day4.jpg',
-               '/assets/sprites/bg/day5.jpg',
-               '/assets/sprites/bg/day6.jpg',
-               '/assets/sprites/bg/day7.jpg',
-               '/assets/sprites/bg/day8.jpg',
-               '/assets/sprites/bg/day9.jpg',
-               '/assets/sprites/bg/day10.jpg',
-
-               '/assets/sprites/bg/evening1.jpg',
-               '/assets/sprites/bg/evening2.jpg',
-               '/assets/sprites/bg/evening3.jpg',
-               '/assets/sprites/bg/evening4.jpg',
-               '/assets/sprites/bg/evening5.jpg',
-               '/assets/sprites/bg/evening6.jpg',
-               '/assets/sprites/bg/evening7.jpg',
-               '/assets/sprites/bg/evening8.jpg',
-               '/assets/sprites/bg/evening9.jpg',
-               '/assets/sprites/bg/evening10.jpg',
-
-               '/assets/sprites/bg/v1/evening0.jpg',
-               '/assets/sprites/bg/v1/evening1.jpg',
-               '/assets/sprites/bg/v1/evening2.jpg',
-               '/assets/sprites/bg/v1/evening3.jpg',
-
-               '/assets/sprites/bg/midnight1.jpg',
-               '/assets/sprites/bg/midnight2.jpg',
-               '/assets/sprites/bg/midnight3.jpg',
-               '/assets/sprites/bg/midnight4.jpg',
-               '/assets/sprites/bg/midnight5.jpg',
-               '/assets/sprites/bg/midnight6.jpg',
-
-               '/assets/sprites/bg/v1/night0.jpg',
-               '/assets/sprites/bg/v1/night1.jpg',
-               '/assets/sprites/bg/v1/night2.jpg',
-               '/assets/sprites/bg/v1/night3.jpg',
-
-               '/assets/sprites/bg/night1.jpg',
-               '/assets/sprites/bg/night2.jpg',
-               '/assets/sprites/bg/night3.jpg',
-               '/assets/sprites/bg/night4.jpg',
-               '/assets/sprites/bg/night5.jpg',
-               '/assets/sprites/bg/night6.jpg',
-               '/assets/sprites/bg/night7.jpg',
-               '/assets/sprites/bg/night8.jpg',
-               '/assets/sprites/bg/night9.jpg'
-          ],
-
-          backs_mobile: [
-               '/assets/sprites/bg/v1/day0.jpg',
-               '/assets/sprites/bg/v1/day1.jpg',
-               '/assets/sprites/bg/v1/day2.jpg',
-               '/assets/sprites/bg/v1/day3.jpg',
-
-               '/assets/sprites/bg/mobile/day1.jpg',
-               '/assets/sprites/bg/mobile/day2.jpg',
-               '/assets/sprites/bg/mobile/day3.jpg',
-               '/assets/sprites/bg/mobile/day4.jpg',
-               '/assets/sprites/bg/mobile/day5.jpg',
-               '/assets/sprites/bg/mobile/day6.jpg',
-               '/assets/sprites/bg/mobile/day7.jpg',
-               '/assets/sprites/bg/mobile/day8.jpg',
-               '/assets/sprites/bg/mobile/day9.jpg',
-               '/assets/sprites/bg/mobile/day10.jpg',
-
-               '/assets/sprites/bg/v1/evening0.jpg',
-               '/assets/sprites/bg/v1/evening1.jpg',
-               '/assets/sprites/bg/v1/evening2.jpg',
-               '/assets/sprites/bg/v1/evening3.jpg',
-
-               '/assets/sprites/bg/mobile/evening1.jpg',
-               '/assets/sprites/bg/mobile/evening2.jpg',
-               '/assets/sprites/bg/mobile/evening3.jpg',
-               '/assets/sprites/bg/mobile/evening4.jpg',
-               '/assets/sprites/bg/mobile/evening5.jpg',
-               '/assets/sprites/bg/mobile/evening6.jpg',
-               '/assets/sprites/bg/mobile/evening7.jpg',
-               '/assets/sprites/bg/mobile/evening8.jpg',
-               '/assets/sprites/bg/mobile/evening9.jpg',
-               '/assets/sprites/bg/mobile/evening10.jpg',
-
-               '/assets/sprites/bg/mobile/midnight1.jpg',
-               '/assets/sprites/bg/mobile/midnight2.jpg',
-               '/assets/sprites/bg/mobile/midnight3.jpg',
-               '/assets/sprites/bg/mobile/midnight4.jpg',
-               '/assets/sprites/bg/mobile/midnight5.jpg',
-               '/assets/sprites/bg/mobile/midnight6.jpg',
-
-               '/assets/sprites/bg/v1/night0.jpg',
-               '/assets/sprites/bg/v1/night1.jpg',
-               '/assets/sprites/bg/v1/night2.jpg',
-               '/assets/sprites/bg/v1/night3.jpg',
-
-               '/assets/sprites/bg/mobile/night1.jpg',
-               '/assets/sprites/bg/mobile/night2.jpg',
-               '/assets/sprites/bg/mobile/night3.jpg',
-               '/assets/sprites/bg/mobile/night4.jpg',
-               '/assets/sprites/bg/mobile/night5.jpg',
-               '/assets/sprites/bg/mobile/night6.jpg',
-               '/assets/sprites/bg/mobile/night7.jpg',
-               '/assets/sprites/bg/mobile/night8.jpg',
-               '/assets/sprites/bg/mobile/night9.jpg'
-          ],
-     },
-
-     v1: {
-          backs: [
-               '/assets/sprites/bg/v1/day0.jpg',
-               '/assets/sprites/bg/v1/day1.jpg',
-               '/assets/sprites/bg/v1/day2.jpg',
-               '/assets/sprites/bg/v1/day3.jpg',
-               '/assets/sprites/bg/v1/evening0.jpg',
-               '/assets/sprites/bg/v1/evening1.jpg',
-               '/assets/sprites/bg/v1/evening2.jpg',
-               '/assets/sprites/bg/v1/evening3.jpg',
-               '/assets/sprites/bg/v1/night0.jpg',
-               '/assets/sprites/bg/v1/night1.jpg',
-               '/assets/sprites/bg/v1/night2.jpg',
-               '/assets/sprites/bg/v1/night3.jpg'
-          ],
-
-          backs_mobile: [
-               '/assets/sprites/bg/v1/day0.jpg',
-               '/assets/sprites/bg/v1/day1.jpg',
-               '/assets/sprites/bg/v1/day2.jpg',
-               '/assets/sprites/bg/v1/day3.jpg',
-               '/assets/sprites/bg/v1/evening0.jpg',
-               '/assets/sprites/bg/v1/evening1.jpg',
-               '/assets/sprites/bg/v1/evening2.jpg',
-               '/assets/sprites/bg/v1/evening3.jpg',
-               '/assets/sprites/bg/v1/night0.jpg',
-               '/assets/sprites/bg/v1/night1.jpg',
-               '/assets/sprites/bg/v1/night2.jpg',
-               '/assets/sprites/bg/v1/night3.jpg'
-          ],
-     },
-
-     day: {
-          backs: [
-               '/assets/sprites/bg/new/1.jpg',
-               '/assets/sprites/bg/new/2.jpg',
-               '/assets/sprites/bg/new/7.jpg',
-          ],
-
-          backs_mobile: [
-               '/assets/sprites/bg/mobile/day16.jpg',
-               '/assets/sprites/bg/mobile/day17.jpg',
-               '/assets/sprites/bg/mobile/day18.jpg',
-          ],
-     },
-
-     evening: {
-          backs: [
-                '/assets/sprites/bg/evening13.jpg',
-               '/assets/sprites/bg/evening14.jpg',
-               '/assets/sprites/bg/evening15.jpg',
-          ],
-
-          backs_mobile: [
-                '/assets/sprites/bg/mobile/evening13.jpg',
-               '/assets/sprites/bg/mobile/evening14.jpg',
-               '/assets/sprites/bg/mobile/evening15.jpg',
-          ],
-     },
-
-     night: {
-          backs: [
-               '/assets/sprites/bg/night10.jpg',
-               '/assets/sprites/bg/night11.jpg',
-               '/assets/sprites/bg/night12.jpg',
-          ],
-
-          backs_mobile: [
-               '/assets/sprites/bg/mobile/night10.jpg',
-               '/assets/sprites/bg/mobile/night11.jpg',
-               '/assets/sprites/bg/mobile/night12.jpg',
-          ],
-     },
-
-     midnight: {
-          backs: [
-               '/assets/sprites/bg/midnight1.jpg',
-               '/assets/sprites/bg/midnight2.jpg',
-               '/assets/sprites/bg/midnight3.jpg',
-          ],
-
-          backs_mobile: [
-               '/assets/sprites/bg/mobile/midnight1.jpg',
-               '/assets/sprites/bg/mobile/midnight2.jpg',
-               '/assets/sprites/bg/mobile/midnight3.jpg',
-          ],
-     },
-
-     event: {
-          backs: [
-               '/assets/sprites/bg/event_120425/1.jpg',
-               '/assets/sprites/bg/event_120425/2.jpg',
-               '/assets/sprites/bg/event_120425/3.jpg',
-               '/assets/sprites/bg/event_120425/4.jpg',
-               '/assets/sprites/bg/event_120425/5.jpg',
-               '/assets/sprites/bg/event_120425/6.jpg',
-               '/assets/sprites/bg/event_120425/7.jpg',
-               '/assets/sprites/bg/event_120425/8.jpg',
-               '/assets/sprites/bg/event_120425/9.jpg',
-               '/assets/sprites/bg/event_120425/10.jpg'
-          ],
-
-          backs_mobile: [
-               '/assets/sprites/bg/event_120425/mobile/1.jpg',
-               '/assets/sprites/bg/event_120425/mobile/2.jpg',
-               '/assets/sprites/bg/event_120425/mobile/3.jpg',
-               '/assets/sprites/bg/event_120425/mobile/4.jpg',
-               '/assets/sprites/bg/event_120425/mobile/5.jpg',
-               '/assets/sprites/bg/event_120425/mobile/6.jpg',
-               '/assets/sprites/bg/event_120425/mobile/7.jpg',
-               '/assets/sprites/bg/event_120425/mobile/8.jpg',
-               '/assets/sprites/bg/event_120425/mobile/9.jpg',
-               '/assets/sprites/bg/event_120425/mobile/10.jpg'
-          ],
-     },
-
-     stream: {
-          backs: [
-               '/stream/day.jpg',
-               '/stream/evening.jpg',
-               '/stream/midnight.jpg',
-               '/stream/night.jpg'
-          ],
-     },
-}
 
 const modes = {
      day: {
@@ -393,6 +154,20 @@ const getUrlSearchParam = (key: string): string | null => {
      return null
 }
 
+const getBackgroundMode = (mode: string): string => {
+     const requestedModeAssets = backs[mode]
+
+     if (requestedModeAssets && requestedModeAssets.backs.length > 0) {
+          return mode
+     }
+
+     if (backs.full && backs.full.backs.length > 0) {
+          return 'full'
+     }
+
+     return mode
+}
+
 export const init = () => {
      window.addEventListener('resize', () => {
           onResize()
@@ -424,7 +199,11 @@ export const init = () => {
      OVERRIDE_MODE = getUrlSearchParam('mode') || ''
      const bgParam = getUrlSearchParam('bg')
      if (bgParam && !bgParam.includes('..')) {
-          OVERRIDE_BG = bgParam
+          let value = bgParam
+          if (value.endsWith('.jpg')) {
+               value = value.substring(0, value.length - 4)
+          }
+          OVERRIDE_BG = value
      }
      //OVERRIDE_MODE = 'event';
 
@@ -439,9 +218,14 @@ function setTheme() {
      let mode = OVERRIDE_MODE
      if (mode == '') mode = getCurrentMode()
 
-     if (SITE_MODE == mode) return
+     const backgroundMode = getBackgroundMode(mode)
+     const backgroundAssets = backs[backgroundMode]
+
+     if (!backgroundAssets || backgroundAssets.backs.length == 0) return
+     if (SITE_MODE == mode && SITE_BG_MODE == backgroundMode) return
 
      SITE_MODE = mode
+     SITE_BG_MODE = backgroundMode
      console.log('SITE_MODE: ' + SITE_MODE)
 
      if (modes[mode]) {
@@ -454,8 +238,8 @@ function setTheme() {
           $('#air-times').text(modeContent['times'])
      }
 
-     currentIndex = rnd(backs[mode].backs.length) // Randomize fist pic
-     switchBackground(mode)
+     currentIndex = rnd(backgroundAssets.backs.length) // Randomize fist pic
+     switchBackground(backgroundMode)
 }
 
 function requestThemeMode() {
@@ -466,7 +250,8 @@ function requestThemeMode() {
 function switchBackground(mode) {
      if (OVERRIDE_BG) {
           coverImage.css({
-               'background-image': 'url(/assets/sprites/bg/' + OVERRIDE_BG + ')',
+               'background-image':
+                    'url(/assets/sprites/bg/' + OVERRIDE_BG + '.jpg)',
           })
           switchFrame()
           return
@@ -485,6 +270,7 @@ function switchBackground(mode) {
      }
 
      const currentModeAssets = backs[mode]
+     if (!currentModeAssets || currentModeAssets.backs.length == 0) return
      const backsCount = currentModeAssets.backs.length
      let nextIndex = 0
 
@@ -548,7 +334,7 @@ const switchFrame = () => {
 
 export const switchCurrentBackground = () => {
      sfxPlayCamera()
-     switchBackground(SITE_MODE)
+     switchBackground(SITE_BG_MODE || SITE_MODE)
 
      if (portraitOrientation) hideLeftPanels()
 }

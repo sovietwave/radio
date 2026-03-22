@@ -3,6 +3,8 @@
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "Bundler",
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
         "types": [
             "vite/client"
         ]

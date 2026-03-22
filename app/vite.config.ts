@@ -1,7 +1,6 @@
 import { defineConfig, Terser } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import fs from 'fs'
-import path from 'path'
+import { backgroundAdminPlugin } from './backgroundAdminPlugin'
 
 const getTerserOptions = (command: string): Terser.MinifyOptions => {
      if (command === 'build') {
@@ -51,6 +50,7 @@ export default ({ command }) =>
                open: true,
           },
           plugins: [
+               ...(command === 'serve' ? [backgroundAdminPlugin()] : []),
                VitePWA({
                     registerType: 'autoUpdate',
                     workbox: {

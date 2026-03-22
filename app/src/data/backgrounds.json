@@ -1,0 +1,675 @@
+{
+    "entries": [
+        {
+            "path": "/assets/sprites/bg/v1/day0.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/v1/day1.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/v1/day2.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/v1/day3.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/day1.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day1.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day2.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day2.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day3.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day3.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day4.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day4.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day5.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day5.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day6.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day6.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day7.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day7.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day8.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day8.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day9.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day9.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day10.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/day10.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening1.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening1.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening2.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening2.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening3.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening3.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening4.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening4.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening5.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening5.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening6.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening6.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening7.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening7.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening8.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening8.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening9.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening9.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening10.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening10.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/v1/evening0.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/v1/evening1.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/v1/evening2.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/v1/evening3.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/midnight1.jpg",
+            "tags": [
+                "full",
+                "midnight"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/midnight1.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/midnight2.jpg",
+            "tags": [
+                "full",
+                "midnight"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/midnight2.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/midnight3.jpg",
+            "tags": [
+                "full",
+                "midnight"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/midnight3.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/midnight4.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/midnight4.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/midnight5.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/midnight5.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/midnight6.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/midnight6.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/v1/night0.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/v1/night1.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/v1/night2.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/v1/night3.jpg",
+            "tags": [
+                "full",
+                "v1"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/night1.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night1.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night2.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night2.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night3.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night3.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night4.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night4.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night5.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night5.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night6.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night6.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night7.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night7.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night8.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night8.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night9.jpg",
+            "tags": [
+                "full"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night9.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/new/2.jpg",
+            "tags": [
+                "day"
+            ],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/evening13.jpg",
+            "tags": [
+                "evening"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening13.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening14.jpg",
+            "tags": [
+                "evening"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/evening14.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night10.jpg",
+            "tags": [
+                "night"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night10.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night11.jpg",
+            "tags": [
+                "night"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night11.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/night12.jpg",
+            "tags": [
+                "night"
+            ],
+            "mobilePath": "/assets/sprites/bg/mobile/night12.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/1.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/1.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/2.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/2.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/3.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/3.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/4.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/4.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/5.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/5.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/6.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/6.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/7.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/7.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/8.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/8.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/9.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/9.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_120425/10.jpg",
+            "tags": [
+                "event"
+            ],
+            "mobilePath": "/assets/sprites/bg/event_120425/mobile/10.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day11.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/day11.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day12.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/day12.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day13.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/day13.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day14.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/day14.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day15.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/day15.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day16.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/day16.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day17.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/day17.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/day18.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/day18.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening11.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/evening11.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/evening12.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/evening12.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/event_diskette/1.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_diskette/2.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/1.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/10.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/11.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/2.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/3.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/4.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/5.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/6.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/7.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/8.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_space/9.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_vnuku/1.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_vnuku/1m.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_vnuku/2.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_vnuku/2m.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_vnuku/3.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/event_vnuku/3m.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/midnight7.jpg",
+            "tags": [],
+            "mobilePath": "/assets/sprites/bg/mobile/midnight7.jpg"
+        },
+        {
+            "path": "/assets/sprites/bg/new/1day.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/3.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/4.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/5.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/6.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/out/106.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/out/108.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/out/109.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/out/110.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/out/112.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/out/day24.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/out/evening20.jpg",
+            "tags": [],
+            "mobilePath": null
+        },
+        {
+            "path": "/assets/sprites/bg/new/out/evening22.jpg",
+            "tags": [],
+            "mobilePath": null
+        }
+    ]
+}
