@@ -97,6 +97,13 @@ style.textContent = `
           overflow: hidden;
      }
 
+     #app {
+          height: 100vh;
+          display: grid;
+          grid-template-rows: auto minmax(0, 1fr) auto;
+          gap: 12px;
+     }
+
      button,
      input,
      select {
@@ -109,16 +116,6 @@ style.textContent = `
           border: 0;
      }
 
-     .shell {
-          width: min(calc(100vw - 28px), 1500px);
-          height: 100vh;
-          margin: 0 auto;
-          padding: 14px 0;
-          display: grid;
-          grid-template-rows: auto minmax(0, 1fr) auto;
-          gap: 12px;
-     }
-
      .panel {
           background: var(--panel);
           border-radius: var(--radius-lg);
@@ -127,25 +124,47 @@ style.textContent = `
 
      .topbar,
      .bottombar {
-          padding: 14px;
+          width: 100%;
+          padding: 14px 18px;
           display: grid;
           gap: 10px;
           position: sticky;
           z-index: 2;
           background: var(--chrome);
           box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
+          border-radius: 0;
      }
 
      .topbar {
           top: 0;
-          grid-template-columns: minmax(0, 1fr) 220px minmax(220px, 1fr) auto auto auto;
-          align-items: center;
-     }
+          grid-template-columns: 1fr;
+          justify-items: center;
+      }
 
      .bottombar {
           bottom: 0;
           grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
           align-items: start;
+     }
+
+     .topbar-main,
+     .topbar-tags {
+          width: 100%;
+          gap: 10px;
+     }
+
+     .topbar-main {
+          display: grid;
+          grid-template-columns: 220px minmax(320px, 720px) auto auto auto;
+          align-items: center;
+          justify-content: center;
+     }
+
+     .topbar-tags {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
      }
 
      .status {
@@ -267,6 +286,10 @@ style.textContent = `
           gap: 8px;
      }
 
+     .tag-cloud {
+          justify-content: center;
+     }
+
      .tag-filter,
      .tag-option,
      .tag-badge {
@@ -299,15 +322,40 @@ style.textContent = `
           color: var(--muted);
      }
 
-     .content {
-          min-height: 0;
-          overflow: hidden;
-     }
-
      .cards-viewport {
           height: 100%;
           overflow: auto;
-          padding: 2px 4px;
+          min-height: 0;
+          padding: 0 18px;
+          background: rgba(16, 22, 31, 0.42);
+          scrollbar-width: thin;
+          scrollbar-color: rgba(127, 208, 255, 0.5) rgba(11, 17, 25, 0.88);
+     }
+
+     .cards-viewport::-webkit-scrollbar {
+          width: 12px;
+     }
+
+     .cards-viewport::-webkit-scrollbar-track {
+          background: rgba(11, 17, 25, 0.88);
+     }
+
+     .cards-viewport::-webkit-scrollbar-thumb {
+          background: linear-gradient(
+               180deg,
+               rgba(127, 208, 255, 0.62),
+               rgba(79, 179, 239, 0.42)
+          );
+          border-radius: 999px;
+          border: 2px solid rgba(11, 17, 25, 0.88);
+     }
+
+     .cards-viewport::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(
+               180deg,
+               rgba(127, 208, 255, 0.78),
+               rgba(79, 179, 239, 0.58)
+          );
      }
 
      .cards {
@@ -315,12 +363,13 @@ style.textContent = `
           grid-template-columns: repeat(auto-fill, 300px);
           gap: 14px;
           justify-content: center;
-          padding: 2px;
+          padding: 2px 0 14px;
      }
 
      .card {
           overflow: hidden;
           width: 300px;
+          background: rgba(7, 11, 17, 0.98);
      }
 
      .thumb {
@@ -382,6 +431,18 @@ style.textContent = `
           word-break: break-word;
      }
 
+     .path-button {
+          padding: 0;
+          background: transparent;
+          color: var(--text);
+          cursor: pointer;
+          text-align: left;
+      }
+
+     .path-button:hover {
+          color: var(--accent);
+     }
+
      .icon-button {
           width: 30px;
           height: 30px;
@@ -409,19 +470,25 @@ style.textContent = `
      }
 
      @media (max-width: 960px) {
-          .shell {
-               width: min(calc(100vw - 18px), 1500px);
-               padding: 10px 0;
-          }
-
           .topbar,
           .bottombar {
+               grid-template-columns: 1fr;
+               padding-left: 12px;
+               padding-right: 12px;
+          }
+
+          .topbar-main,
+          .topbar-tags {
+               justify-content: stretch;
+          }
+
+          .topbar-main {
                grid-template-columns: 1fr;
           }
 
           .cards-viewport {
-               padding-left: 0;
-               padding-right: 0;
+               padding-left: 12px;
+               padding-right: 12px;
           }
      }
 `
@@ -445,6 +512,11 @@ const openPreview = (entry: BackgroundAdminEntry) => {
      const url = new URL('/', window.location.origin)
      url.searchParams.set('bg', bg)
      window.open(url.toString(), '_blank', 'noopener,noreferrer')
+}
+
+const openEntryFolder = (entry: BackgroundAdminEntry) => {
+     state.folder = entry.folder
+     updateView()
 }
 
 const cloneEntry = (entry: BackgroundAdminEntry): BackgroundAdminEntry => ({
@@ -637,7 +709,6 @@ const createCard = (entry: BackgroundAdminEntry) => {
 
      const body = createElement('div', 'card-body')
      const pathRow = createElement('div', 'path-row')
-     pathRow.append(createElement('div', 'path', entry.path))
      const previewButton = createElement('button', 'icon-button') as HTMLButtonElement
      previewButton.type = 'button'
      previewButton.title = 'Открыть фон на основном сайте'
@@ -645,6 +716,11 @@ const createCard = (entry: BackgroundAdminEntry) => {
      previewButton.innerHTML = eyeIcon
      previewButton.addEventListener('click', () => openPreview(entry))
      pathRow.append(previewButton)
+     const pathButton = createElement('button', 'path path-button', entry.path) as HTMLButtonElement
+     pathButton.type = 'button'
+     pathButton.title = `Открыть папку ${entry.folder}`
+     pathButton.addEventListener('click', () => openEntryFolder(entry))
+     pathRow.append(pathButton)
      if (!entry.hasMobile) {
           const warning = createElement('div', 'mobile-warning')
           warning.title =
@@ -832,10 +908,10 @@ const updateChangedEntry = (path: string, previousKnownTags: string[]) => {
 }
 
 const setupLayout = () => {
-     const shell = createElement('div', 'shell')
-
      const topbar = createElement('section', 'panel topbar')
      const tagFilters = createElement('div', 'tag-cloud')
+     const topbarMain = createElement('div', 'topbar-main')
+     const topbarTags = createElement('div', 'topbar-tags')
 
      const folderSelect = createElement('select', 'field') as HTMLSelectElement
      folderSelect.addEventListener('change', () => {
@@ -884,20 +960,19 @@ const setupLayout = () => {
           void save()
      })
 
-     topbar.append(
-          tagFilters,
+     topbarMain.append(
           folderSelect,
           searchInput,
           missingToggle,
           reloadButton,
           saveButton
      )
+     topbarTags.append(tagFilters)
+     topbar.append(topbarMain, topbarTags)
 
-     const content = createElement('main', 'content')
      const cardsViewport = createElement('section', 'cards-viewport')
      const cards = createElement('section', 'cards')
      cardsViewport.append(cards)
-     content.append(cardsViewport)
 
      const bottombar = createElement('section', 'panel bottombar')
      const status = createElement('div', 'status')
@@ -906,8 +981,7 @@ const setupLayout = () => {
      const feedback = createElement('div')
      bottombar.append(status, feedback)
 
-     shell.append(topbar, content, bottombar)
-     app.replaceChildren(shell)
+     app.replaceChildren(topbar, cardsViewport, bottombar)
 
      dom.statusValue = statusValue
      dom.feedback = feedback
