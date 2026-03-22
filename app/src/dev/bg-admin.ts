@@ -440,7 +440,16 @@ const createElement = <K extends keyof HTMLElementTagNameMap>(
 }
 
 const dom = {} as DomRefs
+type CardDomRef = {
+     root: HTMLElement
+     options: HTMLDivElement
+     optionButtons: Map<string, HTMLButtonElement>
+}
+
 let persistedTagsByPath = new Map<string, string[]>()
+let tagFilterButtons = new Map<string, HTMLButtonElement>()
+let cardDomByPath = new Map<string, CardDomRef>()
+let renderedKnownTags: string[] = []
 
 const cloneTags = (tags: string[]) => [...tags].sort(compareText)
 
@@ -479,6 +488,9 @@ const syncSelectedTags = (knownTags = getKnownTags()) => {
      const knownTagSet = new Set(knownTags)
      state.selectedTags = state.selectedTags.filter((tag) => knownTagSet.has(tag))
 }
+
+const areStringListsEqual = (left: string[], right: string[]) =>
+     left.length == right.length && left.every((value, index) => value == right[index])
 
 const getFilteredEntries = () => {
      const needle = state.search.trim().toLowerCase()
@@ -531,6 +543,8 @@ const syncFromPayload = (payload: BackgroundAdminPayload) => {
      state.folders = payload.folders
      state.tags = payload.tags
      persistedTagsByPath = snapshotEntries(state.entries)
+     cardDomByPath = new Map()
+     renderedKnownTags = []
 
      if (state.folder != 'all' && !state.folders.includes(state.folder)) {
           state.folder = 'all'
@@ -571,7 +585,7 @@ const toggleSelectedTag = (tag: string) => {
      updateView()
 }
 
-const createCard = (entry: BackgroundAdminEntry, knownTags: string[]) => {
+const createCard = (entry: BackgroundAdminEntry) => {
      const card = createElement('article', 'panel card')
      card.dataset.path = entry.path
      const thumb = createElement('div', 'thumb')
@@ -593,20 +607,14 @@ const createCard = (entry: BackgroundAdminEntry, knownTags: string[]) => {
      body.append(pathRow)
 
      const options = createElement('div', 'tag-options')
-     for (const tag of knownTags) {
-          const option = createElement(
-               'button',
-               `tag-option${entry.tags.includes(tag) ? ' tag-option-active' : ''}`,
-               tag
-          ) as HTMLButtonElement
-          option.type = 'button'
-          option.addEventListener('click', () => toggleTag(entry.path, tag))
-          options.append(option)
-     }
      body.append(options)
 
      card.append(thumb, body)
-     return card
+     return {
+          root: card,
+          options,
+          optionButtons: new Map<string, HTMLButtonElement>(),
+     }
 }
 
 const hasActiveFilters = () =>
@@ -616,35 +624,58 @@ const hasActiveFilters = () =>
      state.search.trim().length > 0
 
 const findRenderedCard = (path: string) => {
-     for (const child of dom.cards.children) {
-          if (child instanceof HTMLElement && child.dataset.path == path) {
-               return child
+     return cardDomByPath.get(path) ?? null
+}
+
+const ensureTagOptionButtons = (
+     cardRef: CardDomRef,
+     entry: BackgroundAdminEntry,
+     knownTags: string[]
+) => {
+     if (!areStringListsEqual([...cardRef.optionButtons.keys()], knownTags)) {
+          cardRef.options.replaceChildren()
+          cardRef.optionButtons = new Map()
+
+          for (const tag of knownTags) {
+               const option = createElement('button', 'tag-option', tag) as HTMLButtonElement
+               option.type = 'button'
+               option.addEventListener('click', () => toggleTag(entry.path, tag))
+               cardRef.optionButtons.set(tag, option)
+               cardRef.options.append(option)
           }
      }
 
-     return null
+     const tagSet = new Set(entry.tags)
+     for (const [tag, option] of cardRef.optionButtons) {
+          option.classList.toggle('tag-option-active', tagSet.has(tag))
+     }
 }
 
-const syncRenderedCardTags = (path: string) => {
+const syncRenderedCardTags = (path: string, knownTags: string[]) => {
      const entry = state.entries.find((value) => value.path == path)
      const renderedCard = findRenderedCard(path)
 
      if (!entry || !renderedCard) return false
 
-     const tagSet = new Set(entry.tags)
-     for (const option of renderedCard.querySelectorAll('.tag-option')) {
-          if (!(option instanceof HTMLButtonElement)) continue
-          option.classList.toggle('tag-option-active', tagSet.has(option.textContent || ''))
-     }
+     ensureTagOptionButtons(renderedCard, entry, knownTags)
 
      return true
 }
 
-const renderCards = (entries: BackgroundAdminEntry[], knownTags: string[]) => {
-     dom.cards.replaceChildren()
+const ensureCardDom = (entry: BackgroundAdminEntry, knownTags: string[]) => {
+     let cardRef = cardDomByPath.get(entry.path)
+     if (!cardRef) {
+          cardRef = createCard(entry)
+          cardDomByPath.set(entry.path, cardRef)
+     }
 
+     ensureTagOptionButtons(cardRef, entry, knownTags)
+     return cardRef
+}
+
+const renderCards = (entries: BackgroundAdminEntry[], knownTags: string[]) => {
      if (entries.length == 0) {
-          dom.cards.append(
+          dom.cards.replaceChildren(
                createElement(
                     'div',
                     'panel hero',
@@ -654,9 +685,33 @@ const renderCards = (entries: BackgroundAdminEntry[], knownTags: string[]) => {
           return
      }
 
+     const roots: HTMLElement[] = []
      for (const entry of entries) {
-          dom.cards.append(createCard(entry, knownTags))
+          roots.push(ensureCardDom(entry, knownTags).root)
      }
+
+     dom.cards.replaceChildren(...roots)
+}
+
+const syncTagFilterButtons = (knownTags: string[]) => {
+     if (!areStringListsEqual([...tagFilterButtons.keys()], knownTags)) {
+          dom.tagFilters.replaceChildren()
+          tagFilterButtons = new Map()
+
+          for (const tag of knownTags) {
+               const button = createElement('button', 'tag-filter', tag) as HTMLButtonElement
+               button.type = 'button'
+               button.addEventListener('click', () => toggleSelectedTag(tag))
+               tagFilterButtons.set(tag, button)
+               dom.tagFilters.append(button)
+          }
+     }
+
+     for (const [tag, button] of tagFilterButtons) {
+          button.classList.toggle('tag-filter-active', state.selectedTags.includes(tag))
+     }
+
+     renderedKnownTags = [...knownTags]
 }
 
 const updateChrome = (knownTags: string[]) => {
@@ -683,20 +738,13 @@ const updateChrome = (knownTags: string[]) => {
           dom.feedback.append(createElement('div', 'message message-empty', '.'))
      }
 
-     dom.tagFilters.replaceChildren()
      if (knownTags.length == 0) {
-          dom.tagFilters.append(createElement('div', 'tag-badge', 'Тегов пока нет'))
-     } else {
-          for (const tag of knownTags) {
-               const button = createElement(
-                    'button',
-                    `tag-filter${state.selectedTags.includes(tag) ? ' tag-filter-active' : ''}`,
-                    tag
-               ) as HTMLButtonElement
-               button.type = 'button'
-               button.addEventListener('click', () => toggleSelectedTag(tag))
-               dom.tagFilters.append(button)
+          if (tagFilterButtons.size > 0 || dom.tagFilters.childElementCount == 0) {
+               dom.tagFilters.replaceChildren(createElement('div', 'tag-badge', 'Тегов пока нет'))
+               tagFilterButtons = new Map()
           }
+     } else {
+          syncTagFilterButtons(knownTags)
      }
 
      updateFolderOptions()
@@ -725,12 +773,12 @@ const updateChangedEntry = (path: string, previousKnownTags: string[]) => {
      syncSelectedTags(knownTags)
      updateChrome(knownTags)
 
-     if (knownTagsChanged || hasActiveFilters()) {
+     if (knownTagsChanged || hasActiveFilters() || !areStringListsEqual(renderedKnownTags, knownTags)) {
           renderCards(getFilteredEntries(), knownTags)
           return
      }
 
-     if (!syncRenderedCardTags(path)) {
+     if (!syncRenderedCardTags(path, knownTags)) {
           renderCards(getFilteredEntries(), knownTags)
      }
 }
