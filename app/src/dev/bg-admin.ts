@@ -12,6 +12,18 @@ type BackgroundAdminPayload = {
      tags: string[]
 }
 
+type DomRefs = {
+     statusValue: HTMLDivElement
+     feedback: HTMLDivElement
+     tagFilters: HTMLDivElement
+     folderSelect: HTMLSelectElement
+     searchInput: HTMLInputElement
+     missingCheckbox: HTMLInputElement
+     reloadButton: HTMLButtonElement
+     saveButton: HTMLButtonElement
+     cards: HTMLElement
+}
+
 const API_URL = '/__bg-admin/api/manifest'
 
 const state = {
@@ -20,6 +32,7 @@ const state = {
      tags: [] as string[],
      folder: 'all',
      search: '',
+     selectedTags: [] as string[],
      onlyMissingMobile: false,
      dirty: false,
      saving: false,
@@ -43,18 +56,22 @@ const style = document.createElement('style')
 style.textContent = `
      :root {
           color-scheme: dark;
-          --bg: #13181f;
-          --panel: rgba(11, 18, 28, 0.88);
-          --panel-strong: rgba(15, 24, 37, 0.98);
-          --line: rgba(145, 172, 207, 0.24);
+          --bg: #10151c;
+          --panel: rgba(16, 22, 31, 0.96);
+          --panel-soft: rgba(20, 28, 38, 0.96);
+          --panel-strong: rgba(9, 14, 21, 0.98);
           --text: #edf4ff;
-          --muted: #9fb0c9;
+          --muted: #98a8be;
           --accent: #7fd0ff;
+          --accent-soft: rgba(127, 208, 255, 0.16);
           --accent-strong: #4fb3ef;
-          --danger: #ff5d69;
-          --success: #7ce2ab;
-          --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-          --radius: 22px;
+          --danger: #ff7480;
+          --danger-soft: rgba(255, 116, 128, 0.14);
+          --success-soft: rgba(124, 226, 171, 0.14);
+          --shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+          --radius-lg: 10px;
+          --radius-md: 8px;
+          --radius-sm: 6px;
           font-family: "Segoe UI", "Trebuchet MS", sans-serif;
      }
 
@@ -66,129 +83,129 @@ style.textContent = `
           margin: 0;
           min-height: 100vh;
           color: var(--text);
-          background:
-               radial-gradient(circle at top left, rgba(65, 132, 188, 0.22), transparent 30%),
-               radial-gradient(circle at top right, rgba(199, 76, 93, 0.16), transparent 22%),
-               linear-gradient(180deg, #18212d 0%, #0b1119 100%);
+          background: var(--bg);
      }
 
      button,
      input,
      select {
           font: inherit;
+          border: 0;
+          outline: none;
+     }
+
+     button {
+          border: 0;
      }
 
      .shell {
-          width: min(1500px, calc(100vw - 32px));
-          margin: 20px auto;
+          width: calc(100vw - 140px);
+          margin: 14px auto;
           display: grid;
-          gap: 18px;
+          gap: 12px;
      }
 
      .panel {
           background: var(--panel);
-          border: 1px solid var(--line);
-          border-radius: var(--radius);
+          border-radius: var(--radius-lg);
           box-shadow: var(--shadow);
-          backdrop-filter: blur(18px);
      }
 
      .hero {
-          padding: 26px 28px 22px;
+          padding: 14px;
           display: grid;
-          gap: 16px;
+          gap: 10px;
      }
 
      .hero-top {
-          display: flex;
-          justify-content: space-between;
-          gap: 18px;
-          align-items: flex-start;
-     }
-
-     .title {
-          margin: 0;
-          font-size: clamp(30px, 5vw, 52px);
-          line-height: 0.95;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
-     }
-
-     .subtitle {
-          margin: 10px 0 0;
-          max-width: 760px;
-          color: var(--muted);
-          line-height: 1.5;
+          display: grid;
+          gap: 10px;
      }
 
      .status {
-          min-width: 220px;
-          padding: 14px 16px;
-          border-radius: 18px;
-          background: var(--panel-strong);
-          border: 1px solid var(--line);
-          display: grid;
-          gap: 6px;
+          padding: 10px 12px;
+          border-radius: var(--radius-md);
+          background: rgba(127, 208, 255, 0.08);
      }
 
-     .status-label {
+     .status-label,
+     .folder,
+     .empty {
           color: var(--muted);
           font-size: 12px;
+          line-height: 1.45;
+     }
+
+     .status-label,
+     .folder {
           text-transform: uppercase;
           letter-spacing: 0.08em;
      }
 
      .status-value {
-          font-size: 16px;
+          font-size: 13px;
+          color: var(--muted);
      }
 
      .toolbar {
-          padding: 18px 20px;
+          padding: 14px;
           display: grid;
-          gap: 14px;
+          gap: 12px;
      }
 
      .toolbar-grid {
           display: grid;
           grid-template-columns: 220px minmax(220px, 1fr) auto auto auto;
-          gap: 12px;
+          gap: 10px;
           align-items: center;
      }
 
      .field,
      .search,
-     .button {
-          min-height: 46px;
-          border-radius: 14px;
-          border: 1px solid var(--line);
-          background: rgba(11, 17, 26, 0.88);
+     .button,
+     .tag-filter,
+     .tag-option {
+          min-height: 40px;
+          border-radius: var(--radius-md);
           color: var(--text);
      }
 
      .field,
      .search {
           width: 100%;
-          padding: 0 14px;
+          padding: 0 12px;
+          background: var(--panel-strong);
+     }
+
+     .field::placeholder,
+     .search::placeholder {
+          color: var(--muted);
      }
 
      .button {
-          padding: 0 18px;
+          padding: 0 16px;
           cursor: pointer;
-          transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+          background: var(--panel-soft);
+          transition: background 120ms ease, transform 120ms ease;
      }
 
-     .button:hover {
+     .button:hover,
+     .tag-filter:hover,
+     .tag-option:hover {
           transform: translateY(-1px);
-          border-color: rgba(127, 208, 255, 0.6);
      }
 
      .button-primary {
-          background: linear-gradient(135deg, rgba(79, 179, 239, 0.26), rgba(127, 208, 255, 0.16));
-          border-color: rgba(127, 208, 255, 0.5);
+          background: var(--accent-soft);
+          color: #dff4ff;
+     }
+
+     .button-primary:hover {
+          background: rgba(127, 208, 255, 0.24);
      }
 
      .button-ghost {
-          background: rgba(12, 18, 27, 0.62);
+          background: var(--panel-strong);
      }
 
      .toggle {
@@ -197,6 +214,8 @@ style.textContent = `
           gap: 10px;
           color: var(--muted);
           user-select: none;
+          min-height: 40px;
+          padding: 0 2px;
      }
 
      .toggle input {
@@ -204,87 +223,76 @@ style.textContent = `
      }
 
      .message {
-          padding: 12px 14px;
-          border-radius: 14px;
-          font-size: 14px;
+          min-height: 39px;
+          padding: 10px 12px;
+          border-radius: var(--radius-md);
+          font-size: 13px;
      }
 
      .message-info {
           color: var(--muted);
           background: rgba(127, 208, 255, 0.08);
-          border: 1px solid rgba(127, 208, 255, 0.22);
      }
 
      .message-error {
           color: #ffd9dc;
-          background: rgba(255, 93, 105, 0.12);
-          border: 1px solid rgba(255, 93, 105, 0.32);
+          background: var(--danger-soft);
+     }
+
+     .message-empty {
+          background: rgba(127, 208, 255, 0.08);
+          color: transparent;
      }
 
      .tag-cloud,
-     .tag-options,
-     .chips {
+     .tag-options {
           display: flex;
           flex-wrap: wrap;
           gap: 8px;
      }
 
-     .tag-badge,
-     .chip,
-     .tag-option {
-          min-height: 32px;
-          padding: 0 12px;
-          border-radius: 999px;
-          border: 1px solid var(--line);
+     .tag-filter,
+     .tag-option,
+     .tag-badge {
           display: inline-flex;
           align-items: center;
           gap: 8px;
+          padding: 0 12px;
+          background: var(--panel-soft);
      }
 
-     .tag-badge {
-          background: rgba(127, 208, 255, 0.1);
-          border-color: rgba(127, 208, 255, 0.22);
-     }
-
-     .chip {
-          padding-right: 10px;
-          border-color: rgba(124, 226, 171, 0.34);
-          background: rgba(124, 226, 171, 0.12);
-     }
-
-     .chip-remove,
+     .tag-filter,
      .tag-option {
           cursor: pointer;
      }
 
-     .chip-remove {
-          width: 20px;
-          height: 20px;
-          border: 0;
-          border-radius: 999px;
-          background: rgba(255, 255, 255, 0.14);
-          color: inherit;
-     }
-
-     .tag-option {
+     .tag-filter {
           color: var(--muted);
-          background: transparent;
      }
 
+     .tag-filter-active,
      .tag-option-active {
           color: var(--text);
-          border-color: rgba(127, 208, 255, 0.46);
-          background: rgba(127, 208, 255, 0.14);
+          background: rgba(79, 179, 239, 0.34);
+          box-shadow: inset 0 0 0 1px rgba(127, 208, 255, 0.22);
+     }
+
+     .tag-badge {
+          min-height: 32px;
+          border-radius: var(--radius-sm);
+          color: var(--muted);
      }
 
      .cards {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 18px;
+          grid-template-columns: repeat(auto-fill, 300px);
+          gap: 14px;
+          justify-content: start;
      }
 
      .card {
           overflow: hidden;
+          width: 300px;
      }
 
      .thumb {
@@ -302,17 +310,10 @@ style.textContent = `
      }
 
      .mobile-warning {
-          position: absolute;
-          top: 12px;
-          right: 12px;
-          width: 40px;
-          height: 40px;
-          padding: 8px;
-          border-radius: 999px;
-          border: 1px solid rgba(255, 93, 105, 0.44);
-          background: rgba(255, 93, 105, 0.16);
+          width: 16px;
+          height: 16px;
+          flex: 0 0 auto;
           color: var(--danger);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
      }
 
      .mobile-warning svg {
@@ -322,9 +323,15 @@ style.textContent = `
      }
 
      .card-body {
-          padding: 16px;
+          padding: 14px;
           display: grid;
-          gap: 14px;
+          gap: 10px;
+     }
+
+     .path-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
      }
 
      .path {
@@ -333,38 +340,23 @@ style.textContent = `
           word-break: break-word;
      }
 
-     .folder,
-     .hint,
-     .empty {
-          color: var(--muted);
-          font-size: 13px;
-          line-height: 1.45;
-     }
-
-     .folder {
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          font-size: 12px;
-     }
-
-     .tag-form {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) auto;
-          gap: 10px;
-     }
-
      @media (max-width: 960px) {
           .shell {
-               width: min(100vw - 20px, 1500px);
-               margin: 10px auto 20px;
+               width: min(100vw - 18px, 1500px);
+               margin: 10px auto 18px;
           }
 
           .hero-top {
                flex-direction: column;
+               align-items: stretch;
           }
 
           .toolbar-grid {
                grid-template-columns: 1fr;
+          }
+
+          .cards {
+               justify-content: center;
           }
      }
 `
@@ -406,6 +398,36 @@ const createElement = <K extends keyof HTMLElementTagNameMap>(
      return element
 }
 
+const dom = {} as DomRefs
+
+const syncSelectedTags = (knownTags = getKnownTags()) => {
+     const knownTagSet = new Set(knownTags)
+     state.selectedTags = state.selectedTags.filter((tag) => knownTagSet.has(tag))
+}
+
+const getFilteredEntries = () => {
+     const needle = state.search.trim().toLowerCase()
+     const selectedTagSet = new Set(state.selectedTags)
+
+     return state.entries.filter((entry) => {
+          if (state.folder != 'all' && entry.folder != state.folder) return false
+          if (state.onlyMissingMobile && entry.hasMobile) return false
+
+          if (
+               selectedTagSet.size > 0 &&
+               !entry.tags.some((tag) => selectedTagSet.has(tag))
+          ) {
+               return false
+          }
+
+          if (!needle) return true
+
+          return `${entry.path} ${entry.tags.join(' ')}`
+               .toLowerCase()
+               .includes(needle)
+     })
+}
+
 const requestData = async (method = 'GET', body?: object) => {
      const response = await fetch(API_URL, {
           method,
@@ -433,92 +455,179 @@ const syncFromPayload = (payload: BackgroundAdminPayload) => {
      state.entries = payload.entries.map(cloneEntry)
      state.folders = payload.folders
      state.tags = payload.tags
+
+     if (state.folder != 'all' && !state.folders.includes(state.folder)) {
+          state.folder = 'all'
+     }
+
+     syncSelectedTags()
 }
 
-const render = () => {
-     const entries = state.entries.filter((entry) => {
-          if (state.folder != 'all' && entry.folder != state.folder) return false
-          if (state.onlyMissingMobile && entry.hasMobile) return false
-
-          const needle = state.search.trim().toLowerCase()
-          if (!needle) return true
-
-          return `${entry.path} ${entry.tags.join(' ')}`
-               .toLowerCase()
-               .includes(needle)
-     })
-     const knownTags = getKnownTags()
-
-     app.replaceChildren()
-
-     const shell = createElement('div', 'shell')
-     const hero = createElement('section', 'panel hero')
-     const heroTop = createElement('div', 'hero-top')
-     const heroText = document.createElement('div')
-     heroText.append(
-          createElement(
-               'h1',
-               'title',
-               `Background Admin${state.dirty ? ' *' : ''}`
-          ),
-          createElement(
-               'p',
-               'subtitle',
-               'Dev-only инструмент для тегирования desktop-фонов из /assets/sprites/bg. Чтобы режим собирался в приложении, тег должен совпадать с его именем.'
-          )
+const updateFolderOptions = () => {
+     const currentOptions = Array.from(dom.folderSelect.options).map(
+          (option) => option.value
      )
+     const nextOptions = ['all', ...state.folders]
 
-     const status = createElement('div', 'status')
-     status.append(
-          createElement('div', 'status-label', 'Состояние'),
-          createElement(
-               'div',
-               'status-value',
-               state.loading
-                    ? 'Загрузка...'
-                    : state.saving
-                    ? 'Сохранение...'
-                    : state.dirty
-                    ? 'Есть изменения'
-                    : 'Синхронизировано'
-          ),
-          createElement(
-               'div',
-               'status-label',
-               `${entries.length} из ${state.entries.length} карточек`
-          )
-     )
-     heroTop.append(heroText, status)
-     hero.append(heroTop)
+     const sameOptions =
+          currentOptions.length == nextOptions.length &&
+          currentOptions.every((value, index) => value == nextOptions[index])
 
-     if (state.error) {
-          hero.append(createElement('div', 'message message-error', state.error))
-     } else if (state.message) {
-          hero.append(createElement('div', 'message message-info', state.message))
-     }
+     if (!sameOptions) {
+          dom.folderSelect.replaceChildren()
+          dom.folderSelect.append(new Option('Все папки', 'all'))
 
-     const legend = createElement('div', 'tag-cloud')
-     if (knownTags.length == 0) {
-          legend.append(createElement('div', 'tag-badge', 'Тегов пока нет'))
-     } else {
-          for (const tag of knownTags) {
-               legend.append(createElement('div', 'tag-badge', tag))
+          for (const folder of state.folders) {
+               dom.folderSelect.append(new Option(folder, folder))
           }
      }
-     hero.append(legend)
+
+     dom.folderSelect.value = state.folder
+}
+
+const toggleSelectedTag = (tag: string) => {
+     if (state.selectedTags.includes(tag)) {
+          state.selectedTags = state.selectedTags.filter((value) => value != tag)
+     } else {
+          state.selectedTags = [...state.selectedTags, tag].sort(compareText)
+     }
+
+     updateView()
+}
+
+const createCard = (entry: BackgroundAdminEntry, knownTags: string[]) => {
+     const card = createElement('article', 'panel card')
+     const thumb = createElement('div', 'thumb')
+     const image = document.createElement('img')
+     image.src = entry.path
+     image.alt = entry.path
+     thumb.append(image)
+
+     const body = createElement('div', 'card-body')
+     body.append(createElement('div', 'folder', entry.folder))
+     const pathRow = createElement('div', 'path-row')
+     pathRow.append(createElement('div', 'path', entry.path))
+     if (!entry.hasMobile) {
+          const warning = createElement('div', 'mobile-warning')
+          warning.title =
+               'smartphone-charging: для этого desktop-файла не найден mobile-дубликат'
+          warning.innerHTML = phoneIcon
+          pathRow.append(warning)
+     }
+     body.append(pathRow)
+
+     const options = createElement('div', 'tag-options')
+     for (const tag of knownTags) {
+          const option = createElement(
+               'button',
+               `tag-option${entry.tags.includes(tag) ? ' tag-option-active' : ''}`,
+               tag
+          ) as HTMLButtonElement
+          option.type = 'button'
+          option.addEventListener('click', () => toggleTag(entry.path, tag))
+          options.append(option)
+     }
+     body.append(options)
+
+     card.append(thumb, body)
+     return card
+}
+
+const renderCards = (entries: BackgroundAdminEntry[], knownTags: string[]) => {
+     dom.cards.replaceChildren()
+
+     if (entries.length == 0) {
+          dom.cards.append(
+               createElement(
+                    'div',
+                    'panel hero',
+                    'По текущим фильтрам ничего не найдено.'
+               )
+          )
+          return
+     }
+
+     for (const entry of entries) {
+          dom.cards.append(createCard(entry, knownTags))
+     }
+}
+
+const updateView = () => {
+     const knownTags = getKnownTags()
+     syncSelectedTags(knownTags)
+     const entries = getFilteredEntries()
+
+     const statusText = state.loading
+          ? 'Загрузка...'
+          : state.saving
+          ? 'Сохранение...'
+          : state.dirty
+          ? 'Есть изменения'
+          : 'Синхронизировано'
+     dom.statusValue.textContent = `${statusText} ${entries.length} из ${state.entries.length} карточек`
+
+     dom.feedback.replaceChildren()
+     if (state.error) {
+          dom.feedback.append(
+               createElement('div', 'message message-error', state.error)
+          )
+     } else if (state.message) {
+          dom.feedback.append(
+               createElement('div', 'message message-info', state.message)
+          )
+     } else {
+          dom.feedback.append(createElement('div', 'message message-empty', '.'))
+     }
+
+     dom.tagFilters.replaceChildren()
+     if (knownTags.length == 0) {
+          dom.tagFilters.append(createElement('div', 'tag-badge', 'Тегов пока нет'))
+     } else {
+          for (const tag of knownTags) {
+               const button = createElement(
+                    'button',
+                    `tag-filter${state.selectedTags.includes(tag) ? ' tag-filter-active' : ''}`,
+                    tag
+               ) as HTMLButtonElement
+               button.type = 'button'
+               button.addEventListener('click', () => toggleSelectedTag(tag))
+               dom.tagFilters.append(button)
+          }
+     }
+
+     updateFolderOptions()
+     dom.missingCheckbox.checked = state.onlyMissingMobile
+     dom.reloadButton.disabled = state.loading || state.saving
+     dom.saveButton.disabled = state.loading || state.saving
+     dom.saveButton.textContent = state.saving
+          ? 'Сохранение...'
+          : 'Сохранить manifest'
+
+     renderCards(entries, knownTags)
+}
+
+const setupLayout = () => {
+     const shell = createElement('div', 'shell')
+
+     const hero = createElement('section', 'panel hero')
+     const heroTop = createElement('div', 'hero-top')
+     const status = createElement('div', 'status')
+     const statusValue = createElement('div', 'status-value')
+     status.append(statusValue)
+     heroTop.append(status)
+
+     const feedback = createElement('div')
+     const tagFilters = createElement('div', 'tag-cloud')
+
+     hero.append(heroTop, feedback, tagFilters)
 
      const toolbar = createElement('section', 'panel toolbar')
      const controls = createElement('div', 'toolbar-grid')
 
      const folderSelect = createElement('select', 'field') as HTMLSelectElement
-     folderSelect.append(new Option('Все папки', 'all'))
-     for (const folder of state.folders) {
-          folderSelect.append(new Option(folder, folder))
-     }
-     folderSelect.value = state.folder
      folderSelect.addEventListener('change', () => {
           state.folder = folderSelect.value
-          render()
+          updateView()
      })
 
      const searchInput = createElement('input', 'search') as HTMLInputElement
@@ -526,7 +635,7 @@ const render = () => {
      searchInput.value = state.search
      searchInput.addEventListener('input', () => {
           state.search = searchInput.value
-          render()
+          updateView()
      })
 
      const missingToggle = createElement('label', 'toggle')
@@ -535,7 +644,7 @@ const render = () => {
      missingCheckbox.checked = state.onlyMissingMobile
      missingCheckbox.addEventListener('change', () => {
           state.onlyMissingMobile = missingCheckbox.checked
-          render()
+          updateView()
      })
      missingToggle.append(
           missingCheckbox,
@@ -546,9 +655,8 @@ const render = () => {
           'button',
           'button button-ghost',
           'Перезагрузить'
-     )
+     ) as HTMLButtonElement
      reloadButton.type = 'button'
-     reloadButton.disabled = state.loading || state.saving
      reloadButton.addEventListener('click', () => {
           void load()
      })
@@ -556,10 +664,9 @@ const render = () => {
      const saveButton = createElement(
           'button',
           'button button-primary',
-          state.saving ? 'Сохранение...' : 'Сохранить manifest'
-     )
+          'Сохранить manifest'
+     ) as HTMLButtonElement
      saveButton.type = 'button'
-     saveButton.disabled = state.loading || state.saving
      saveButton.addEventListener('click', () => {
           void save()
      })
@@ -575,28 +682,24 @@ const render = () => {
 
      const cards = createElement('section', 'cards')
 
-     if (entries.length == 0) {
-          cards.append(
-               createElement(
-                    'div',
-                    'panel hero',
-                    'По текущим фильтрам ничего не найдено.'
-               )
-          )
-     } else {
-          for (const entry of entries) {
-               cards.append(createCard(entry, knownTags))
-          }
-     }
-
      shell.append(hero, toolbar, cards)
-     app.append(shell)
+     app.replaceChildren(shell)
+
+     dom.statusValue = statusValue
+     dom.feedback = feedback
+     dom.tagFilters = tagFilters
+     dom.folderSelect = folderSelect
+     dom.searchInput = searchInput
+     dom.missingCheckbox = missingCheckbox
+     dom.reloadButton = reloadButton
+     dom.saveButton = saveButton
+     dom.cards = cards
 }
 
 const markDirty = () => {
      state.dirty = true
-     setFeedback('Есть несохранённые изменения.')
-     render()
+     setFeedback('')
+     updateView()
 }
 
 const updateEntry = (
@@ -636,6 +739,7 @@ const removeTag = (path: string, tag: string) => {
 
      if (!changed) return
      state.tags = getKnownTags()
+     syncSelectedTags()
      markDirty()
 }
 
@@ -650,88 +754,9 @@ const toggleTag = (path: string, tag: string) => {
      }
 }
 
-const createCard = (entry: BackgroundAdminEntry, knownTags: string[]) => {
-     const card = createElement('article', 'panel card')
-     const thumb = createElement('div', 'thumb')
-     const image = document.createElement('img')
-     image.src = entry.path
-     image.alt = entry.path
-     thumb.append(image)
-
-     if (!entry.hasMobile) {
-          const warning = createElement('div', 'mobile-warning')
-          warning.title =
-               'smartphone-charging: для этого desktop-файла не найден mobile-дубликат'
-          warning.innerHTML = phoneIcon
-          thumb.append(warning)
-     }
-
-     const body = createElement('div', 'card-body')
-     body.append(createElement('div', 'folder', entry.folder))
-     body.append(createElement('div', 'path', entry.path))
-
-     const chips = createElement('div', 'chips')
-     if (entry.tags.length == 0) {
-          chips.append(createElement('div', 'empty', 'Без тегов'))
-     } else {
-          for (const tag of entry.tags) {
-               const chip = createElement('div', 'chip')
-               chip.append(createElement('span', '', tag))
-
-               const removeButton = createElement('button', 'chip-remove', '×')
-               removeButton.type = 'button'
-               removeButton.addEventListener('click', () => removeTag(entry.path, tag))
-               chip.append(removeButton)
-               chips.append(chip)
-          }
-     }
-     body.append(chips)
-
-     const options = createElement('div', 'tag-options')
-     for (const tag of knownTags) {
-          const option = createElement(
-               'button',
-               `tag-option${entry.tags.includes(tag) ? ' tag-option-active' : ''}`,
-               tag
-          )
-          option.type = 'button'
-          option.addEventListener('click', () => toggleTag(entry.path, tag))
-          options.append(option)
-     }
-     body.append(options)
-
-     const form = createElement('form', 'tag-form')
-     const input = createElement('input', 'field') as HTMLInputElement
-     input.placeholder = 'Новый тег'
-
-     const submit = createElement('button', 'button button-ghost', 'Добавить')
-     submit.type = 'submit'
-
-     form.addEventListener('submit', (event) => {
-          event.preventDefault()
-          addTag(entry.path, input.value)
-          input.value = ''
-     })
-
-     form.append(input, submit)
-     body.append(form)
-     body.append(
-          createElement(
-               'div',
-               'hint',
-               entry.hasMobile
-                    ? `Mobile: ${entry.mobilePath}`
-                    : 'Mobile fallback: в рантайме будет использован desktop-файл.'
-          )
-     )
-
-     card.append(thumb, body)
-     return card
-}
-
 const load = async () => {
      state.loading = true
-     render()
+     updateView()
 
      try {
           const payload = await requestData()
@@ -745,13 +770,13 @@ const load = async () => {
           )
      } finally {
           state.loading = false
-          render()
+          updateView()
      }
 }
 
 const save = async () => {
      state.saving = true
-     render()
+     updateView()
 
      try {
           const payload = await requestData('POST', {
@@ -770,13 +795,15 @@ const save = async () => {
           )
      } finally {
           state.saving = false
-          render()
+          updateView()
      }
 }
+
+setupLayout()
+updateView()
+void load()
 
 window.addEventListener('beforeunload', (event) => {
      if (!state.dirty) return
      event.preventDefault()
 })
-
-void load()
