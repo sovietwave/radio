@@ -26,6 +26,8 @@ type DomRefs = {
 }
 
 const API_URL = '/__bg-admin/api/manifest'
+const PUBLIC_BG_PREFIX = '/assets/sprites/bg/'
+const FILE_EXTENSION_RE = /\.[^/.]+$/
 
 const state = {
      entries: [] as BackgroundAdminEntry[],
@@ -53,6 +55,11 @@ const phoneIcon = `
      <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm0 3v14h10V5H7Zm5 12.25a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm-.9-12.25 1.5 3h-1.7l.7 1.8-2.1 4.2h1.7l-.7 3 4.4-6h-1.8l1.2-3H11.1Z"/>
 </svg>`
 
+const eyeIcon = `
+<svg viewBox="0 0 24 24" aria-hidden="true">
+     <path d="M12 5c5.54 0 9.7 4.08 10.87 6.43a1.2 1.2 0 0 1 0 1.14C21.7 14.92 17.54 19 12 19S2.3 14.92 1.13 12.57a1.2 1.2 0 0 1 0-1.14C2.3 9.08 6.46 5 12 5Zm0 2c-4.55 0-8.02 3.19-9.09 5 .98 1.69 4.44 5 9.09 5 4.55 0 8.02-3.19 9.09-5C20.11 10.31 16.65 7 12 7Zm0 1.75A3.25 3.25 0 1 1 8.75 12 3.25 3.25 0 0 1 12 8.75Zm0 2A1.25 1.25 0 1 0 13.25 12 1.25 1.25 0 0 0 12 10.75Z"/>
+</svg>`
+
 const style = document.createElement('style')
 style.textContent = `
      :root {
@@ -61,6 +68,8 @@ style.textContent = `
           --panel: rgba(16, 22, 31, 0.96);
           --panel-soft: rgba(20, 28, 38, 0.96);
           --panel-strong: rgba(9, 14, 21, 0.98);
+          --chrome: rgba(6, 10, 16, 0.98);
+          --chrome-soft: rgba(11, 17, 25, 0.98);
           --text: #edf4ff;
           --muted: #98a8be;
           --accent: #7fd0ff;
@@ -123,23 +132,18 @@ style.textContent = `
           gap: 10px;
           position: sticky;
           z-index: 2;
+          background: var(--chrome);
+          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
      }
 
      .topbar {
           top: 0;
+          grid-template-columns: minmax(0, 1fr) 220px minmax(220px, 1fr) auto auto auto;
+          align-items: center;
      }
 
      .bottombar {
           bottom: 0;
-     }
-
-     .topbar-row,
-     .bottombar-row {
-          display: grid;
-          gap: 10px;
-     }
-
-     .bottombar-row {
           grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
           align-items: start;
      }
@@ -172,13 +176,6 @@ style.textContent = `
           color: var(--muted);
      }
 
-     .toolbar-grid {
-          display: grid;
-          grid-template-columns: 220px minmax(220px, 1fr) auto auto auto;
-          gap: 10px;
-          align-items: center;
-     }
-
      .field,
      .search,
      .button,
@@ -193,7 +190,7 @@ style.textContent = `
      .search {
           width: 100%;
           padding: 0 12px;
-          background: var(--panel-strong);
+          background: var(--chrome-soft);
      }
 
      .field::placeholder,
@@ -224,7 +221,7 @@ style.textContent = `
      }
 
      .button-ghost {
-          background: var(--panel-strong);
+          background: var(--chrome-soft);
      }
 
      .toggle {
@@ -277,7 +274,7 @@ style.textContent = `
           align-items: center;
           gap: 8px;
           padding: 0 12px;
-          background: var(--panel-soft);
+          background: var(--chrome-soft);
           min-height: 40px;
           border-radius: var(--radius-md);
      }
@@ -375,10 +372,40 @@ style.textContent = `
           gap: 8px;
      }
 
+     .path-row .path {
+          flex: 1 1 auto;
+     }
+
      .path {
           font-size: 13px;
           line-height: 1.45;
           word-break: break-word;
+     }
+
+     .icon-button {
+          width: 30px;
+          height: 30px;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: var(--radius-sm);
+          background: var(--panel-strong);
+          color: var(--muted);
+          cursor: pointer;
+          transition: background 120ms ease, color 120ms ease, transform 120ms ease;
+     }
+
+     .icon-button:hover {
+          color: var(--text);
+          background: rgba(79, 179, 239, 0.2);
+          transform: translateY(-1px);
+     }
+
+     .icon-button svg {
+          width: 16px;
+          height: 16px;
+          fill: currentColor;
      }
 
      @media (max-width: 960px) {
@@ -387,11 +414,8 @@ style.textContent = `
                padding: 10px 0;
           }
 
-          .bottombar-row {
-               grid-template-columns: 1fr;
-          }
-
-          .toolbar-grid {
+          .topbar,
+          .bottombar {
                grid-template-columns: 1fr;
           }
 
@@ -405,6 +429,23 @@ document.head.append(style)
 
 const compareText = (left: string, right: string) =>
      left.localeCompare(right, 'ru')
+
+const getPreviewBackgroundValue = (publicPath: string) => {
+     if (!publicPath.startsWith(PUBLIC_BG_PREFIX)) return ''
+
+     return publicPath
+          .slice(PUBLIC_BG_PREFIX.length)
+          .replace(FILE_EXTENSION_RE, '')
+}
+
+const openPreview = (entry: BackgroundAdminEntry) => {
+     const bg = getPreviewBackgroundValue(entry.path)
+     if (!bg) return
+
+     const url = new URL('/', window.location.origin)
+     url.searchParams.set('bg', bg)
+     window.open(url.toString(), '_blank', 'noopener,noreferrer')
+}
 
 const cloneEntry = (entry: BackgroundAdminEntry): BackgroundAdminEntry => ({
      ...entry,
@@ -597,6 +638,13 @@ const createCard = (entry: BackgroundAdminEntry) => {
      const body = createElement('div', 'card-body')
      const pathRow = createElement('div', 'path-row')
      pathRow.append(createElement('div', 'path', entry.path))
+     const previewButton = createElement('button', 'icon-button') as HTMLButtonElement
+     previewButton.type = 'button'
+     previewButton.title = 'Открыть фон на основном сайте'
+     previewButton.setAttribute('aria-label', 'Открыть фон на основном сайте')
+     previewButton.innerHTML = eyeIcon
+     previewButton.addEventListener('click', () => openPreview(entry))
+     pathRow.append(previewButton)
      if (!entry.hasMobile) {
           const warning = createElement('div', 'mobile-warning')
           warning.title =
@@ -788,7 +836,6 @@ const setupLayout = () => {
 
      const topbar = createElement('section', 'panel topbar')
      const tagFilters = createElement('div', 'tag-cloud')
-     const controls = createElement('div', 'toolbar-grid')
 
      const folderSelect = createElement('select', 'field') as HTMLSelectElement
      folderSelect.addEventListener('change', () => {
@@ -837,14 +884,14 @@ const setupLayout = () => {
           void save()
      })
 
-     controls.append(
+     topbar.append(
+          tagFilters,
           folderSelect,
           searchInput,
           missingToggle,
           reloadButton,
           saveButton
      )
-     topbar.append(tagFilters, controls)
 
      const content = createElement('main', 'content')
      const cardsViewport = createElement('section', 'cards-viewport')
@@ -853,13 +900,11 @@ const setupLayout = () => {
      content.append(cardsViewport)
 
      const bottombar = createElement('section', 'panel bottombar')
-     const bottombarRow = createElement('div', 'bottombar-row')
      const status = createElement('div', 'status')
      const statusValue = createElement('div', 'status-value')
      status.append(statusValue)
      const feedback = createElement('div')
-     bottombarRow.append(status, feedback)
-     bottombar.append(bottombarRow)
+     bottombar.append(status, feedback)
 
      shell.append(topbar, content, bottombar)
      app.replaceChildren(shell)
