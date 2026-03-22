@@ -28,6 +28,7 @@ type DomRefs = {
 const API_URL = '/__bg-admin/api/manifest'
 const PUBLIC_BG_PREFIX = '/assets/sprites/bg/'
 const FILE_EXTENSION_RE = /\.[^/.]+$/
+const TAG_SORT_ORDER = ['day', 'evening', 'midnight', 'night', 'event', 'v1', 'full']
 
 const state = {
      entries: [] as BackgroundAdminEntry[],
@@ -101,7 +102,7 @@ style.textContent = `
           height: 100vh;
           display: grid;
           grid-template-rows: auto minmax(0, 1fr) auto;
-          gap: 12px;
+          gap: 0;
      }
 
      button,
@@ -360,7 +361,7 @@ style.textContent = `
 
      .cards {
           display: grid;
-          grid-template-columns: repeat(auto-fill, 300px);
+          grid-template-columns: repeat(auto-fill, 320px);
           gap: 14px;
           justify-content: center;
           padding: 2px 0 14px;
@@ -368,7 +369,7 @@ style.textContent = `
 
      .card {
           overflow: hidden;
-          width: 300px;
+          width: 320px;
           background: rgba(7, 11, 17, 0.98);
      }
 
@@ -379,11 +380,44 @@ style.textContent = `
           overflow: hidden;
      }
 
+     .thumb::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background:
+               linear-gradient(
+                    135deg,
+                    rgba(127, 208, 255, 0.08),
+                    rgba(79, 179, 239, 0.02)
+               ),
+               linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0.02) 0%,
+                    rgba(255, 255, 255, 0.12) 35%,
+                    rgba(255, 255, 255, 0.02) 70%
+               );
+          background-size: 100% 100%, 220% 100%;
+          background-position: 0 0, 100% 0;
+          transition: opacity 160ms ease;
+          animation: thumb-placeholder-shift 1.8s linear infinite;
+     }
+
      .thumb img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           display: block;
+          opacity: 0;
+          transition: opacity 160ms ease;
+     }
+
+     .thumb-loaded::before {
+          opacity: 0;
+          animation: none;
+     }
+
+     .thumb-loaded img {
+          opacity: 1;
      }
 
      .mobile-warning {
@@ -407,6 +441,7 @@ style.textContent = `
 
      .card .tag-options {
           gap: 6px;
+          justify-content: center;
      }
 
      .card .tag-option {
@@ -469,6 +504,16 @@ style.textContent = `
           fill: currentColor;
      }
 
+     @keyframes thumb-placeholder-shift {
+          from {
+               background-position: 0 0, 100% 0;
+          }
+
+          to {
+               background-position: 0 0, -120% 0;
+          }
+     }
+
      @media (max-width: 960px) {
           .topbar,
           .bottombar {
@@ -496,6 +541,17 @@ document.head.append(style)
 
 const compareText = (left: string, right: string) =>
      left.localeCompare(right, 'ru')
+
+const getTagSortRank = (tag: string) => {
+     const rank = TAG_SORT_ORDER.indexOf(tag)
+     return rank == -1 ? TAG_SORT_ORDER.length : rank
+}
+
+const compareTags = (left: string, right: string) => {
+     const rankDiff = getTagSortRank(left) - getTagSortRank(right)
+     if (rankDiff != 0) return rankDiff
+     return compareText(left, right)
+}
 
 const getPreviewBackgroundValue = (publicPath: string) => {
      if (!publicPath.startsWith(PUBLIC_BG_PREFIX)) return ''
@@ -526,7 +582,7 @@ const cloneEntry = (entry: BackgroundAdminEntry): BackgroundAdminEntry => ({
 
 const getKnownTags = () =>
      [...new Set([...state.tags, ...state.entries.flatMap((entry) => entry.tags)])].sort(
-          compareText
+          compareTags
      )
 
 const setFeedback = (message: string, isError = false) => {
@@ -552,9 +608,64 @@ const createElement = <K extends keyof HTMLElementTagNameMap>(
      return element
 }
 
+const hydrateCardImage = (image: HTMLImageElement) => {
+     if (image.dataset.loaded == 'true') return
+
+     const src = image.dataset.src
+     if (!src) return
+
+     image.dataset.loaded = 'true'
+     image.src = src
+
+     if (image.complete) {
+          image.closest('.thumb')?.classList.add('thumb-loaded')
+     }
+}
+
+const getCardImageObserver = () => {
+     if (!('IntersectionObserver' in window)) return null
+
+     if (!cardImageObserver) {
+          cardImageObserver = new IntersectionObserver(
+               (entries) => {
+                    for (const entry of entries) {
+                         if (!entry.isIntersecting) continue
+
+                         hydrateCardImage(entry.target as HTMLImageElement)
+                         cardImageObserver?.unobserve(entry.target)
+                    }
+               },
+               {
+                    root: dom.cardsViewport,
+                    rootMargin: '600px 0px',
+               }
+          )
+     }
+
+     return cardImageObserver
+}
+
+const queueCardImageLoad = (image: HTMLImageElement) => {
+     if (image.dataset.loaded == 'true') return
+
+     const observer = getCardImageObserver()
+     if (!observer) {
+          hydrateCardImage(image)
+          return
+     }
+
+     observer.observe(image)
+}
+
+const resetCardImageObserver = () => {
+     cardImageObserver?.disconnect()
+     cardImageObserver = null
+}
+
 const dom = {} as DomRefs
 type CardDomRef = {
      root: HTMLElement
+     image: HTMLImageElement
      options: HTMLDivElement
      optionButtons: Map<string, HTMLButtonElement>
 }
@@ -563,8 +674,9 @@ let persistedTagsByPath = new Map<string, string[]>()
 let tagFilterButtons = new Map<string, HTMLButtonElement>()
 let cardDomByPath = new Map<string, CardDomRef>()
 let renderedKnownTags: string[] = []
+let cardImageObserver: IntersectionObserver | null = null
 
-const cloneTags = (tags: string[]) => [...tags].sort(compareText)
+const cloneTags = (tags: string[]) => [...tags].sort(compareTags)
 
 const areTagsEqual = (left: string[], right: string[]) =>
      left.length == right.length && left.every((tag, index) => tag == right[index])
@@ -604,6 +716,8 @@ const syncSelectedTags = (knownTags = getKnownTags()) => {
 
 const areStringListsEqual = (left: string[], right: string[]) =>
      left.length == right.length && left.every((value, index) => value == right[index])
+
+const getEntryPaths = (entries: BackgroundAdminEntry[]) => entries.map((entry) => entry.path)
 
 const getFilteredEntries = () => {
      const needle = state.search.trim().toLowerCase()
@@ -658,6 +772,7 @@ const syncFromPayload = (payload: BackgroundAdminPayload) => {
      persistedTagsByPath = snapshotEntries(state.entries)
      cardDomByPath = new Map()
      renderedKnownTags = []
+     resetCardImageObserver()
 
      if (state.folder != 'all' && !state.folders.includes(state.folder)) {
           state.folder = 'all'
@@ -692,7 +807,7 @@ const toggleSelectedTag = (tag: string) => {
      if (state.selectedTags.includes(tag)) {
           state.selectedTags = state.selectedTags.filter((value) => value != tag)
      } else {
-          state.selectedTags = [...state.selectedTags, tag].sort(compareText)
+          state.selectedTags = [...state.selectedTags, tag].sort(compareTags)
      }
 
      updateView()
@@ -703,8 +818,16 @@ const createCard = (entry: BackgroundAdminEntry) => {
      card.dataset.path = entry.path
      const thumb = createElement('div', 'thumb')
      const image = document.createElement('img')
-     image.src = entry.path
      image.alt = entry.path
+     image.loading = 'lazy'
+     image.decoding = 'async'
+     image.dataset.src = entry.path
+     image.addEventListener('load', () => {
+          thumb.classList.add('thumb-loaded')
+     })
+     image.addEventListener('error', () => {
+          thumb.classList.add('thumb-loaded')
+     })
      thumb.append(image)
 
      const body = createElement('div', 'card-body')
@@ -736,16 +859,11 @@ const createCard = (entry: BackgroundAdminEntry) => {
      card.append(thumb, body)
      return {
           root: card,
+          image,
           options,
           optionButtons: new Map<string, HTMLButtonElement>(),
      }
 }
-
-const hasActiveFilters = () =>
-     state.folder != 'all' ||
-     state.onlyMissingMobile ||
-     state.selectedTags.length > 0 ||
-     state.search.trim().length > 0
 
 const findRenderedCard = (path: string) => {
      return cardDomByPath.get(path) ?? null
@@ -799,6 +917,7 @@ const ensureCardDom = (entry: BackgroundAdminEntry, knownTags: string[]) => {
 
 const renderCards = (entries: BackgroundAdminEntry[], knownTags: string[]) => {
      if (entries.length == 0) {
+          resetCardImageObserver()
           dom.cards.replaceChildren(
                createElement(
                     'div',
@@ -811,10 +930,18 @@ const renderCards = (entries: BackgroundAdminEntry[], knownTags: string[]) => {
 
      const roots: HTMLElement[] = []
      for (const entry of entries) {
-          roots.push(ensureCardDom(entry, knownTags).root)
+          const cardRef = ensureCardDom(entry, knownTags)
+          roots.push(cardRef.root)
      }
 
      dom.cards.replaceChildren(...roots)
+
+     for (const entry of entries) {
+          const cardRef = cardDomByPath.get(entry.path)
+          if (!cardRef) continue
+
+          queueCardImageLoad(cardRef.image)
+     }
 }
 
 const syncTagFilterButtons = (knownTags: string[]) => {
@@ -887,18 +1014,32 @@ const updateView = () => {
      renderCards(getFilteredEntries(), knownTags)
 }
 
-const updateChangedEntry = (path: string, previousKnownTags: string[]) => {
+const updateChangedEntry = (
+     path: string,
+     previousKnownTags: string[],
+     previousFilteredPaths: string[]
+) => {
      const knownTags = getKnownTags()
      const knownTagsChanged = !areTagsEqual(
           cloneTags(previousKnownTags),
           cloneTags(knownTags)
      )
+     const nextFilteredEntries = getFilteredEntries()
+     const nextFilteredPaths = getEntryPaths(nextFilteredEntries)
+     const filteredEntriesChanged = !areStringListsEqual(
+          previousFilteredPaths,
+          nextFilteredPaths
+     )
 
      syncSelectedTags(knownTags)
      updateChrome(knownTags)
 
-     if (knownTagsChanged || hasActiveFilters() || !areStringListsEqual(renderedKnownTags, knownTags)) {
-          renderCards(getFilteredEntries(), knownTags)
+     if (
+          knownTagsChanged ||
+          filteredEntriesChanged ||
+          !areStringListsEqual(renderedKnownTags, knownTags)
+     ) {
+          renderCards(nextFilteredEntries, knownTags)
           return
      }
 
@@ -1014,10 +1155,11 @@ const addTag = (path: string, rawTag: string) => {
      if (!tag) return
 
      const previousKnownTags = getKnownTags()
+     const previousFilteredPaths = getEntryPaths(getFilteredEntries())
      let changed = false
      updateEntry(path, (entry) => {
           if (entry.tags.includes(tag)) return entry
-          entry.tags = [...entry.tags, tag].sort(compareText)
+          entry.tags = [...entry.tags, tag].sort(compareTags)
           changed = true
           return entry
      })
@@ -1025,11 +1167,12 @@ const addTag = (path: string, rawTag: string) => {
      if (!changed) return
      state.tags = getKnownTags()
      markDirty()
-     updateChangedEntry(path, previousKnownTags)
+     updateChangedEntry(path, previousKnownTags, previousFilteredPaths)
 }
 
 const removeTag = (path: string, tag: string) => {
      const previousKnownTags = getKnownTags()
+     const previousFilteredPaths = getEntryPaths(getFilteredEntries())
      let changed = false
      updateEntry(path, (entry) => {
           if (!entry.tags.includes(tag)) return entry
@@ -1042,7 +1185,7 @@ const removeTag = (path: string, tag: string) => {
      state.tags = getKnownTags()
      syncSelectedTags()
      markDirty()
-     updateChangedEntry(path, previousKnownTags)
+     updateChangedEntry(path, previousKnownTags, previousFilteredPaths)
 }
 
 const toggleTag = (path: string, tag: string) => {
