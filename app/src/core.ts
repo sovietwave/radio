@@ -53,8 +53,8 @@ const modes = {
           title: 'День Космонавтики',
           subtitle: '#sovietwave',
           start: '12 апреля',
-          finish: '14 апреля',
-          times: '12 — 14 апреля',
+          finish: '12 апреля',
+          times: '12 апреля',
      },
 
      event2_ssw: {
@@ -205,7 +205,7 @@ export const init = () => {
           }
           OVERRIDE_BG = value
      }
-     //OVERRIDE_MODE = 'event';
+     OVERRIDE_MODE = 'event';
 
      if (OVERRIDE_MODE == 'stream') {
           console.log('streamOverride')

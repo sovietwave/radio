@@ -514,17 +514,23 @@
         },
         {
             "path": "/assets/sprites/bg/event_space/1.jpg",
-            "tags": [],
+            "tags": [
+                "event"
+            ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/event_space/10.jpg",
-            "tags": [],
+            "tags": [
+                "event"
+            ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/event_space/11.jpg",
-            "tags": [],
+            "tags": [
+                "event"
+            ],
             "mobilePath": null
         },
         {
@@ -534,32 +540,44 @@
         },
         {
             "path": "/assets/sprites/bg/event_space/3.jpg",
-            "tags": [],
+            "tags": [
+                "event"
+            ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/event_space/4.jpg",
-            "tags": [],
+            "tags": [
+                "event"
+            ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/event_space/5.jpg",
-            "tags": [],
+            "tags": [
+                "event"
+            ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/event_space/6.jpg",
-            "tags": [],
+            "tags": [
+                "event"
+            ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/event_space/7.jpg",
-            "tags": [],
+            "tags": [
+                "event"
+            ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/event_space/8.jpg",
-            "tags": [],
+            "tags": [
+                "event"
+            ],
             "mobilePath": null
         },
         {
