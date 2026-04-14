@@ -205,7 +205,7 @@ export const init = () => {
           }
           OVERRIDE_BG = value
      }
-     OVERRIDE_MODE = 'event';
+     //OVERRIDE_MODE = 'event';
 
      if (OVERRIDE_MODE == 'stream') {
           console.log('streamOverride')
