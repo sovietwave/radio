@@ -57,6 +57,7 @@ export default ({ command }) =>
                          clientsClaim: true,
                          skipWaiting: true,
                          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+                         globIgnores: ['feed/media/**/*'],
                     },
                     manifest: {
                          name: 'Советская Волна #sovietwave',
