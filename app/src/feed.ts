@@ -3,12 +3,10 @@ import type { PublicFeedPost, PublicFeedTrack } from './feedTypes'
 import type { AppRoute } from './router'
 
 const MAX_PAGE_SIZE = 12
-const MAX_VISIBLE_TRACKS = 3
 const MAX_VISIBLE_TAGS = 3
 const SITE_TITLE = 'Советская Волна #sovietwave'
 
 let renderToken = 0
-let feedPlayStatus: HTMLElement | null = null
 
 const createElement = <K extends keyof HTMLElementTagNameMap>(
      tagName: K,
@@ -52,11 +50,8 @@ const createTopChrome = () => {
      logoLink.className = 'feed-logo-link'
      logoLink.append(logo)
 
-     feedPlayStatus = createElement('div', 'feed-play-status')
-     feedPlayStatus.setAttribute('aria-live', 'polite')
-
      nav.append(radioLink)
-     chrome.append(nav, logoLink, feedPlayStatus)
+     chrome.append(nav, logoLink)
 
      return chrome
 }
@@ -100,38 +95,13 @@ const getDisplayTitle = (post: PublicFeedPost): string => {
      return title || post.tracks[0]?.title || 'Без названия'
 }
 
-const formatTrackCount = (count: number): string => {
-     const lastDigit = count % 10
-     const lastTwoDigits = count % 100
-
-     if (lastDigit === 1 && lastTwoDigits !== 11) return `${count} трек`
-     if (
-          lastDigit >= 2 &&
-          lastDigit <= 4 &&
-          (lastTwoDigits < 12 || lastTwoDigits > 14)
-     ) {
-          return `${count} трека`
-     }
-
-     return `${count} треков`
-}
-
-const createCoverPlaceholder = (post: PublicFeedPost): HTMLElement => {
-     const placeholder = createElement('div', 'feed-cover-placeholder')
-     const artist = createElement('span', 'feed-cover-placeholder-artist')
-     const title = createElement('span', 'feed-cover-placeholder-title')
-
-     artist.textContent = getDisplayArtist(post)
-     title.textContent = getDisplayTitle(post)
-     placeholder.append(artist, title)
-
-     return placeholder
-}
+const createCoverPlaceholder = (): HTMLElement =>
+     createElement('div', 'feed-cover-placeholder')
 
 const createCover = (post: PublicFeedPost): HTMLElement => {
      const cover = createElement('div', 'feed-cover')
 
-     cover.append(createCoverPlaceholder(post))
+     cover.append(createCoverPlaceholder())
 
      if (post.image) {
           const image = createElement('img', 'feed-cover-image')
@@ -157,12 +127,12 @@ const createCover = (post: PublicFeedPost): HTMLElement => {
 const createTrackList = (post: PublicFeedPost): HTMLElement => {
      const list = createElement('ul', 'feed-post-tracks')
      const tracks = post.tracks.length
-          ? post.tracks.slice(0, MAX_VISIBLE_TRACKS)
-          : [{ title: getDisplayTitle(post) }]
+          ? post.tracks.map((track) => normalizeText(track.title) || getDisplayTitle(post))
+          : [getDisplayTitle(post)]
 
-     tracks.forEach((track, index) => {
+     tracks.forEach((trackTitle, index) => {
           const item = createElement('li', 'feed-post-track')
-          item.textContent = normalizeText(track.title) || getDisplayTitle(post)
+          item.textContent = trackTitle
 
           if (index === 0 && post.tracks.length > 0) {
                item.classList.add('feed-post-track-primary')
@@ -171,47 +141,26 @@ const createTrackList = (post: PublicFeedPost): HTMLElement => {
           list.append(item)
      })
 
-     if (post.tracks.length > MAX_VISIBLE_TRACKS) {
-          const rest = createElement(
-               'li',
-               'feed-post-track feed-post-track-more',
-               `+${post.tracks.length - MAX_VISIBLE_TRACKS}`
-          )
-          list.append(rest)
-     }
-
      return list
 }
 
 const createMeta = (post: PublicFeedPost): HTMLElement => {
-     const meta = createElement('div', 'feed-post-meta')
-     const location = [post.city, post.date].map(normalizeText).filter(Boolean)
+     const meta = createElement('div', 'feed-post-footer')
+     const city = normalizeText(post.city)
 
-     if (location.length > 0) {
-          meta.append(createElement('span', 'feed-post-location', location.join(' / ')))
-     }
-
-     if (post.tracks.length > 0) {
-          meta.append(
-               createElement(
-                    'span',
-                    'feed-post-track-count',
-                    formatTrackCount(post.tracks.length)
-               )
-          )
-     }
+     if (city) meta.append(createElement('span', 'feed-post-location', city))
 
      return meta
 }
 
-const createTags = (post: PublicFeedPost): HTMLElement => {
-     const tags = createElement('div', 'feed-post-tags')
+const createTags = (post: PublicFeedPost): HTMLElement[] => {
+     const tags: HTMLElement[] = []
 
      post.tags.slice(0, MAX_VISIBLE_TAGS).forEach((tag) => {
           const value = normalizeText(tag)
           if (!value) return
 
-          tags.append(createElement('span', 'feed-post-tag', `#${value}`))
+          tags.push(createElement('span', 'feed-post-tag', `#${value}`))
      })
 
      return tags
@@ -222,51 +171,24 @@ export const handleFeedCardPlay = (
      track: PublicFeedTrack
 ) => {
      const detail = { post, track }
-     const title = normalizeText(track.title) || getDisplayTitle(post)
-     const artist = normalizeText(track.artist) || getDisplayArtist(post)
 
      window.dispatchEvent(new CustomEvent('feed:play-track-request', { detail }))
-
-     if (feedPlayStatus) {
-          feedPlayStatus.textContent = `${artist} - ${title}`
-     }
-}
-
-const createPlayButton = (post: PublicFeedPost): HTMLButtonElement | null => {
-     const firstTrack = post.tracks[0]
-     if (!firstTrack) return null
-
-     const button = createElement('button', 'feed-post-play')
-     const icon = createElement('span', 'feed-post-play-icon')
-
-     button.type = 'button'
-     button.title = 'Выбрать трек'
-     button.setAttribute('aria-label', 'Выбрать первый трек')
-     button.append(icon)
-     button.addEventListener('click', (event) => {
-          event.preventDefault()
-          event.stopPropagation()
-          handleFeedCardPlay(post, firstTrack)
-     })
-
-     return button
 }
 
 const createPostCard = (post: PublicFeedPost): HTMLAnchorElement => {
      const link = createElement('a', 'feed-post')
      const content = createElement('div', 'feed-post-content')
+     const main = createElement('div', 'feed-post-main')
      const artist = createElement('h2', 'feed-post-artist', getDisplayArtist(post))
-     const playButton = createPlayButton(post)
      const meta = createMeta(post)
-     const tags = createTags(post)
 
      link.href = `/feed/${post.slug}`
      link.setAttribute('aria-label', `${getDisplayArtist(post)} - ${getDisplayTitle(post)}`)
 
-     content.append(artist, createTrackList(post))
+     main.append(artist, createTrackList(post))
+     content.append(main)
+     createTags(post).forEach((tag) => meta.append(tag))
      if (meta.childNodes.length > 0) content.append(meta)
-     if (tags.childNodes.length > 0) content.append(tags)
-     if (playButton) content.append(playButton)
 
      link.append(createCover(post), content)
 
@@ -282,13 +204,16 @@ const createPagination = (page: number, totalPages: number): HTMLElement => {
 
      const previous =
           page > 1
-               ? createLink(getPageHref(page - 1), 'Назад')
-               : createElement('span', 'feed-action feed-action-disabled', 'Назад')
+               ? createLink(getPageHref(page - 1), '←')
+               : createElement('span', 'feed-action feed-action-disabled', '←')
+     previous.setAttribute('aria-label', 'Предыдущая страница')
+
      const pageList = createElement('div', 'feed-page-list')
      const next =
           page < totalPages
-               ? createLink(getPageHref(page + 1), 'Дальше')
-               : createElement('span', 'feed-action feed-action-disabled', 'Дальше')
+               ? createLink(getPageHref(page + 1), '→')
+               : createElement('span', 'feed-action feed-action-disabled', '→')
+     next.setAttribute('aria-label', 'Следующая страница')
 
      for (let index = 1; index <= totalPages; index++) {
           const item =
@@ -296,6 +221,7 @@ const createPagination = (page: number, totalPages: number): HTMLElement => {
                     ? createElement('span', 'feed-page-link feed-page-link-current', `${index}`)
                     : createLink(getPageHref(index), `${index}`)
 
+          if (index === page) item.setAttribute('aria-current', 'page')
           item.classList.add('feed-page-link')
           pageList.append(item)
      }

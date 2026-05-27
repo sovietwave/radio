@@ -28,6 +28,24 @@
                rgba(255, 255, 255, 0) 34%
           ),
           linear-gradient(180deg, rgba(58, 58, 58, 0.9), #181818 42%, #111111);
+     scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
+
+#feed-view::-webkit-scrollbar {
+     width: 15px;
+}
+
+#feed-view::-webkit-scrollbar-thumb {
+     border-radius: 4px;
+     background: rgba(255, 255, 255, 0.5);
+}
+
+#feed-view::-webkit-scrollbar-thumb:hover {
+     background: rgba(255, 255, 255, 0.8);
+}
+
+#feed-view::-webkit-scrollbar-thumb:active {
+     background: rgba(255, 255, 255, 0.3);
 }
 
 body[data-view='feed'] #radio-view,
@@ -129,20 +147,6 @@ body[data-view='feed'] #cover-image {
      max-height: 54px;
 }
 
-.feed-play-status {
-     position: absolute;
-     right: 44px;
-     max-width: 28vw;
-     overflow: hidden;
-     color: rgba(255, 255, 255, 0.72);
-     font-size: 11pt;
-     line-height: 1.25;
-     text-align: right;
-     text-overflow: ellipsis;
-     text-transform: uppercase;
-     white-space: nowrap;
-}
-
 .feed-list-view {
      box-sizing: border-box;
      width: min(100%, 1060px);
@@ -179,6 +183,7 @@ body[data-view='feed'] #cover-image {
      display: flex;
      flex-direction: column;
      gap: 112px;
+     min-width: 0;
 }
 
 .feed-post {
@@ -186,6 +191,8 @@ body[data-view='feed'] #cover-image {
      grid-template-columns: minmax(260px, 360px) minmax(320px, 1fr);
      gap: clamp(48px, 6vw, 86px);
      align-items: center;
+     min-width: 0;
+     max-width: 100%;
      color: #ffffff;
      text-decoration: none;
      opacity: 1;
@@ -208,6 +215,8 @@ body[data-view='feed'] #cover-image {
      position: relative;
      overflow: hidden;
      width: 100%;
+     min-width: 0;
+     max-width: 100%;
      aspect-ratio: 1 / 1;
      background:
           linear-gradient(135deg, rgba(var(--accentR), var(--accentG), var(--accentB), 0.16), transparent),
@@ -235,14 +244,12 @@ body[data-view='feed'] #cover-image {
 .feed-cover-placeholder {
      position: absolute;
      inset: 0;
-     display: flex;
-     flex-direction: column;
-     justify-content: flex-end;
-     gap: 8px;
-     box-sizing: border-box;
-     padding: 22px;
      background:
-          linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.58)),
+          radial-gradient(
+               circle at 50% 42%,
+               rgba(255, 255, 255, 0.08),
+               rgba(255, 255, 255, 0) 42%
+          ),
           repeating-linear-gradient(
                90deg,
                rgba(255, 255, 255, 0.04) 0,
@@ -252,28 +259,20 @@ body[data-view='feed'] #cover-image {
           );
 }
 
-.feed-cover-placeholder-artist {
-     font-size: 20pt;
-     line-height: 1;
-     overflow-wrap: anywhere;
-     text-transform: uppercase;
-}
-
-.feed-cover-placeholder-title {
-     font-size: 12pt;
-     line-height: 1.25;
-     opacity: 0.68;
-     overflow-wrap: anywhere;
-     text-transform: uppercase;
-}
-
 .feed-post-content {
      position: relative;
-     display: grid;
+     display: flex;
+     flex-direction: column;
+     align-self: stretch;
+     min-width: 0;
+     max-width: 100%;
      min-height: 260px;
-     grid-template-rows: auto auto 1fr auto auto;
-     align-content: center;
      color: rgba(255, 255, 255, 0.84);
+}
+
+.feed-post-main {
+     margin-top: auto;
+     margin-bottom: auto;
 }
 
 .feed-post-artist {
@@ -305,67 +304,34 @@ body[data-view='feed'] #cover-image {
      margin-right: 12px;
 }
 
-.feed-post-track-more {
-     opacity: 0.48;
-}
-
-.feed-post-meta {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 12px 22px;
-     margin-top: 34px;
+.feed-post-footer {
+     display: block;
+     align-self: flex-end;
+     box-sizing: border-box;
+     width: 100%;
+     max-width: 100%;
+     margin-top: auto;
+     padding-top: 48px;
      color: rgba(255, 255, 255, 0.52);
-     font-size: 13pt;
-     line-height: 1.3;
-     text-transform: uppercase;
-}
-
-.feed-post-tags {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 12px;
-     margin-top: 58px;
-}
-
-.feed-post-tag {
-     color: rgba(255, 255, 255, 0.46);
      font-size: clamp(14pt, 1.5vw, 18pt);
      line-height: 1.2;
-     overflow-wrap: anywhere;
+     text-align: right;
      text-transform: uppercase;
 }
 
-.feed-post-play {
-     position: absolute;
-     right: 0;
-     bottom: 0;
-     display: inline-flex;
-     width: 54px;
-     height: 54px;
-     align-items: center;
-     justify-content: center;
-     padding: 0;
-     border: 0;
-     background: transparent;
-     cursor: pointer;
-     opacity: 0.54;
-     transition:
-          opacity 0.2s ease,
-          transform 0.2s ease;
+.feed-post-location,
+.feed-post-tag {
+     display: inline;
+     color: inherit;
+     font-size: inherit;
+     line-height: inherit;
+     margin-left: 16px;
+     overflow-wrap: anywhere;
 }
 
-.feed-post-play:hover {
-     opacity: 0.95;
-     transform: scale(1.04);
-}
-
-.feed-post-play-icon {
-     width: 0;
-     height: 0;
-     margin-left: 5px;
-     border-top: 15px solid transparent;
-     border-bottom: 15px solid transparent;
-     border-left: 23px solid #ffffff;
+.feed-post-location:first-child,
+.feed-post-tag:first-child {
+     margin-left: 0;
 }
 
 .feed-pagination {
@@ -389,9 +355,18 @@ body[data-view='feed'] #cover-image {
      min-height: 44px;
      align-items: center;
      color: #ffffff;
-     opacity: 0.68;
      text-decoration: none;
      text-transform: uppercase;
+}
+
+.feed-action {
+     opacity: 0.68;
+     font-size: 24pt;
+     line-height: 1;
+}
+
+.feed-page-link {
+     opacity: 0.36;
 }
 
 .feed-action:hover,
@@ -404,8 +379,8 @@ body[data-view='feed'] #cover-image {
 }
 
 .feed-page-link-current {
-     color: var(--accent);
-     opacity: 1;
+     color: #ffffff;
+     opacity: 0.92;
 }
 
 .feed-route {
@@ -495,10 +470,6 @@ body[data-view='feed'] #cover-image {
           width: 86px;
      }
 
-     .feed-play-status {
-          display: none;
-     }
-
      .feed-list-view {
           padding-top: 48px;
      }
@@ -530,7 +501,6 @@ body[data-view='feed'] #cover-image {
 
      .feed-post-content {
           min-height: 0;
-          padding-right: 62px;
      }
 
      .feed-post-artist {
@@ -542,17 +512,16 @@ body[data-view='feed'] #cover-image {
           font-size: 17pt;
      }
 
-     .feed-post-meta {
-          margin-top: 24px;
+     .feed-post-footer {
+          align-self: flex-end;
+          padding-top: 28px;
+          padding-right: clamp(0px, calc((800px - 100vw) * 0.18), 72px);
           font-size: 12pt;
      }
 
-     .feed-post-tags {
-          margin-top: 28px;
-     }
-
-     .feed-post-tag {
-          font-size: 13pt;
+     .feed-post-location {
+          display: block;
+          margin: 0 0 8px;
      }
 
      .feed-pagination {
@@ -588,10 +557,5 @@ body[data-view='feed'] #cover-image {
 
      .feed-post-content {
           padding-right: 0;
-     }
-
-     .feed-post-play {
-          position: relative;
-          margin-top: 18px;
      }
 }
