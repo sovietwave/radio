@@ -9,6 +9,8 @@ const SITE_TITLE = 'Советская Волна #sovietwave'
 const ICON_LINK_TYPES = new Set(['soundcloud', 'telegram', 'vk', 'youtube'])
 const activeListTrackClass = 'feed-post-track-active'
 const activeDetailTrackClass = 'feed-detail-track-active'
+const playingListTrackClass = 'feed-post-track-playing'
+const playingDetailTrackClass = 'feed-detail-track-playing'
 
 let renderToken = 0
 
@@ -125,11 +127,16 @@ const updateActiveTrackElements = (state: FeedPlayerState) => {
           .querySelectorAll<HTMLButtonElement>('[data-feed-track-key]')
           .forEach((button) => {
                const isActive = button.dataset.feedTrackKey === activeTrackKey
+               const isPlaying = isActive && state.status === 'playing'
                const isDetailTrack = button.classList.contains('feed-detail-track')
 
                button.classList.toggle(
                     isDetailTrack ? activeDetailTrackClass : activeListTrackClass,
                     isActive
+               )
+               button.classList.toggle(
+                    isDetailTrack ? playingDetailTrackClass : playingListTrackClass,
+                    isPlaying
                )
                button.setAttribute('aria-pressed', isActive ? 'true' : 'false')
           })
@@ -162,6 +169,28 @@ const applyCoverImageRatio = (
      cover.classList.add('feed-cover-loaded')
 }
 
+const applyCoverAssetRatio = (
+     cover: HTMLElement,
+     post: PublicFeedPost
+) => {
+     const width = post.image?.width
+     const height = post.image?.height
+
+     if (
+          typeof width !== 'number' ||
+          typeof height !== 'number' ||
+          !Number.isFinite(width) ||
+          !Number.isFinite(height) ||
+          width <= 0 ||
+          height <= 0
+     ) {
+          return
+     }
+
+     cover.style.setProperty('--feed-cover-ratio', `${width} / ${height}`)
+     cover.style.setProperty('--feed-cover-ratio-value', `${width / height}`)
+}
+
 const createCover = (post: PublicFeedPost): HTMLElement => {
      const cover = createElement('div', 'feed-cover')
 
@@ -170,6 +199,7 @@ const createCover = (post: PublicFeedPost): HTMLElement => {
      if (post.image) {
           const image = createElement('img', 'feed-cover-image')
 
+          applyCoverAssetRatio(cover, post)
           image.alt = `${getDisplayArtist(post)} - ${getDisplayTitle(post)}`
           image.loading = 'lazy'
           image.addEventListener('load', () => {

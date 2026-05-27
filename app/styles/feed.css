@@ -351,6 +351,7 @@ body[data-view='feed'] #feed-player-bar {
      z-index: 0;
      overflow: hidden;
      width: 100%;
+     height: auto;
      min-width: 0;
      max-width: 100%;
      aspect-ratio: var(--feed-cover-ratio, 1 / 1);
@@ -369,7 +370,7 @@ body[data-view='feed'] #feed-player-bar {
      inset: 0;
      width: 100%;
      height: 100%;
-     object-fit: cover;
+     object-fit: contain;
      opacity: 0;
      transition: opacity 0.25s ease;
 }
@@ -464,7 +465,7 @@ body[data-view='feed'] #feed-player-bar {
           rgba(var(--accentR), var(--accentG), var(--accentB), 0.45);
 }
 
-.feed-post-track-active::before {
+.feed-post-track-playing::before {
      content: '•';
      margin-right: 12px;
 }
@@ -534,6 +535,8 @@ body[data-view='feed'] #feed-player-bar {
 }
 
 .feed-detail-cover.feed-cover {
+     justify-self: center;
+     align-self: center;
      width: min(
           100%,
           calc(min(72vh, 820px) * var(--feed-cover-ratio-value, 1))
@@ -604,7 +607,7 @@ body[data-view='feed'] #feed-player-bar {
           rgba(var(--accentR), var(--accentG), var(--accentB), 0.45);
 }
 
-.feed-detail-track-active::before {
+.feed-detail-track-playing::before {
      content: '•';
      flex: 0 0 auto;
 }
@@ -942,8 +945,11 @@ body[data-view='feed'] #feed-player-bar {
      }
 
      .feed-detail-cover.feed-cover {
-          width: 100%;
-          max-height: none;
+          width: min(
+               100%,
+               calc(min(68vh, 720px) * var(--feed-cover-ratio-value, 1))
+          );
+          max-height: min(68vh, 720px);
           aspect-ratio: var(--feed-cover-ratio, 1 / 1);
      }
 
