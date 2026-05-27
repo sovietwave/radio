@@ -1,10 +1,11 @@
 import { loadPublicFeedIndex } from './feedData'
-import type { PublicFeedPost, PublicFeedTrack } from './feedTypes'
+import type { PublicFeedLink, PublicFeedPost, PublicFeedTrack } from './feedTypes'
 import type { AppRoute } from './router'
 
 const MAX_PAGE_SIZE = 12
 const MAX_VISIBLE_TAGS = 3
 const SITE_TITLE = 'Советская Волна #sovietwave'
+const ICON_LINK_TYPES = new Set(['soundcloud', 'telegram', 'vk', 'youtube'])
 
 let renderToken = 0
 
@@ -95,6 +96,19 @@ const getDisplayTitle = (post: PublicFeedPost): string => {
      return title || post.tracks[0]?.title || 'Без названия'
 }
 
+const getPostDocumentTitle = (post: PublicFeedPost): string => {
+     const artist = normalizeText(post.artist)
+     const title = getDisplayTitle(post)
+
+     return artist ? `${getDisplayArtist(post)} - ${title}` : title
+}
+
+const getTrackTitle = (post: PublicFeedPost, track: PublicFeedTrack): string =>
+     normalizeText(track.title) || getDisplayTitle(post)
+
+const getTrackArtist = (post: PublicFeedPost, track: PublicFeedTrack): string =>
+     normalizeText(track.artist) || getDisplayArtist(post)
+
 const createCoverPlaceholder = (): HTMLElement =>
      createElement('div', 'feed-cover-placeholder')
 
@@ -153,10 +167,14 @@ const createMeta = (post: PublicFeedPost): HTMLElement => {
      return meta
 }
 
-const createTags = (post: PublicFeedPost): HTMLElement[] => {
+const createTags = (
+     post: PublicFeedPost,
+     limit: number | null = MAX_VISIBLE_TAGS
+): HTMLElement[] => {
      const tags: HTMLElement[] = []
+     const sourceTags = limit === null ? post.tags : post.tags.slice(0, limit)
 
-     post.tags.slice(0, MAX_VISIBLE_TAGS).forEach((tag) => {
+     sourceTags.forEach((tag) => {
           const value = normalizeText(tag)
           if (!value) return
 
@@ -173,6 +191,164 @@ export const handleFeedCardPlay = (
      const detail = { post, track }
 
      window.dispatchEvent(new CustomEvent('feed:play-track-request', { detail }))
+}
+
+const createDetailMetaItem = (className: string, text: string): HTMLElement | null => {
+     const value = normalizeText(text)
+     if (!value) return null
+
+     return createElement('span', className, value)
+}
+
+const getExternalLinkLabel = (link: PublicFeedLink): string =>
+     normalizeText(link.label) || link.type
+
+const createExternalLink = (link: PublicFeedLink): HTMLAnchorElement | null => {
+     const url = normalizeText(link.url)
+     if (!url) return null
+
+     const anchor = createElement('a', 'feed-detail-link')
+     const label = getExternalLinkLabel(link)
+
+     anchor.href = url
+     anchor.target = '_blank'
+     anchor.rel = 'noopener noreferrer'
+     anchor.title = label
+     anchor.setAttribute('aria-label', label)
+
+     if (ICON_LINK_TYPES.has(link.type)) {
+          const icon = createElement('img', 'feed-detail-link-icon')
+
+          icon.src = `/assets/sprites/icons/${link.type}.svg`
+          icon.alt = ''
+          icon.loading = 'lazy'
+          anchor.append(icon)
+     } else {
+          anchor.classList.add('feed-detail-link-text')
+          anchor.textContent = label
+     }
+
+     return anchor
+}
+
+const createExternalLinks = (post: PublicFeedPost): HTMLElement | null => {
+     const links = createElement('nav', 'feed-detail-links')
+     const anchors = post.links
+          .map(createExternalLink)
+          .filter((link): link is HTMLAnchorElement => link !== null)
+
+     if (anchors.length === 0) return null
+
+     links.setAttribute('aria-label', 'Внешние ссылки')
+     links.replaceChildren(...anchors)
+
+     return links
+}
+
+const createDetailFooter = (post: PublicFeedPost): HTMLElement | null => {
+     const footer = createElement('footer', 'feed-detail-footer')
+     const meta = createElement('div', 'feed-detail-meta')
+     const city = createDetailMetaItem('feed-detail-meta-item', post.city)
+     const date = createDetailMetaItem('feed-detail-meta-item', post.date)
+     const tags = createElement('div', 'feed-detail-tags')
+     const links = createExternalLinks(post)
+
+     if (city) meta.append(city)
+     if (date) meta.append(date)
+
+     createTags(post, null).forEach((tag) => {
+          tag.classList.add('feed-detail-tag')
+          tags.append(tag)
+     })
+
+     if (meta.childNodes.length > 0) footer.append(meta)
+     if (tags.childNodes.length > 0) footer.append(tags)
+     if (links) footer.append(links)
+
+     return footer.childNodes.length > 0 ? footer : null
+}
+
+const setActiveTrackButton = (
+     list: HTMLElement,
+     button: HTMLButtonElement
+) => {
+     list.querySelectorAll<HTMLButtonElement>('.feed-detail-track-active').forEach(
+          (trackButton) => {
+               trackButton.classList.remove('feed-detail-track-active')
+               trackButton.setAttribute('aria-pressed', 'false')
+          }
+     )
+
+     button.classList.add('feed-detail-track-active')
+     button.setAttribute('aria-pressed', 'true')
+}
+
+const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
+     const section = createElement('section', 'feed-detail-tracks-section')
+
+     section.setAttribute('aria-label', 'Треки поста')
+
+     if (post.tracks.length === 0) {
+          section.append(createElement('p', 'feed-detail-empty-tracks', 'Треков нет'))
+          return section
+     }
+
+     const list = createElement('ol', 'feed-detail-tracks')
+
+     post.tracks.forEach((track, index) => {
+          const item = createElement('li', 'feed-detail-track-item')
+          const button = createElement('button', 'feed-detail-track')
+          const title = createElement('span', 'feed-detail-track-title', getTrackTitle(post, track))
+          const artist = getTrackArtist(post, track)
+
+          button.type = 'button'
+          button.setAttribute('aria-pressed', 'false')
+          button.append(title)
+
+          if (
+               post.tracks.length > 1 &&
+               artist.toLowerCase() !== getDisplayArtist(post).toLowerCase()
+          ) {
+               button.append(createElement('span', 'feed-detail-track-artist', artist))
+          }
+
+          button.addEventListener('click', () => {
+               setActiveTrackButton(list, button)
+               handleFeedCardPlay(post, track)
+          })
+
+          if (index === 0) button.classList.add('feed-detail-track-primary')
+
+          item.append(button)
+          list.append(item)
+     })
+
+     section.append(list)
+
+     return section
+}
+
+const createPostDetail = (post: PublicFeedPost): HTMLElement => {
+     const layout = createElement('section', 'feed-detail-view')
+     const backLink = createElement('a', 'feed-detail-back', '← Лента')
+     const article = createElement('article', 'feed-detail')
+     const cover = createCover(post)
+     const content = createElement('div', 'feed-detail-content')
+     const main = createElement('div', 'feed-detail-main')
+     const artist = createElement('h1', 'feed-detail-artist', getDisplayArtist(post))
+     const footer = createDetailFooter(post)
+
+     backLink.href = '/feed'
+     cover.classList.add('feed-detail-cover')
+
+     main.append(artist, createDetailTrackList(post))
+     content.append(main)
+     if (footer) content.append(footer)
+
+     article.append(cover, content)
+     layout.append(backLink, article)
+
+     return layout
 }
 
 const createPostCard = (post: PublicFeedPost): HTMLAnchorElement => {
@@ -282,6 +458,35 @@ const renderFeedListRoute = async (route: { page: number }) => {
      }
 }
 
+const renderFeedPostRoute = async (route: { slug: string }) => {
+     const token = ++renderToken
+
+     renderShell('Загрузка поста...', 'Получаем публикацию', [])
+
+     try {
+          const index = await loadPublicFeedIndex()
+
+          if (token !== renderToken) return
+
+          const post = index.posts.find((item) => item.slug === route.slug)
+
+          if (!post) {
+               document.title = `Пост не найден | ${SITE_TITLE}`
+               renderShell('Пост не найден', route.slug, [createLink('/feed', 'К ленте')])
+               return
+          }
+
+          document.title = `${getPostDocumentTitle(post)} | ${SITE_TITLE}`
+          renderView([createPostDetail(post)])
+     } catch {
+          if (token !== renderToken) return
+          renderShell('Не удалось загрузить пост', 'Попробуйте обновить страницу', [
+               createLink('/feed', 'Лента'),
+               createLink('/radio', 'Радио'),
+          ])
+     }
+}
+
 export const renderFeedRoute = (route: AppRoute) => {
      switch (route.kind) {
           case 'feedList':
@@ -289,10 +494,7 @@ export const renderFeedRoute = (route: AppRoute) => {
                return
 
           case 'feedPost':
-               ++renderToken
-               renderShell(`Пост ${route.slug}`, 'Страница поста будет в Milestone 5', [
-                    createLink('/feed', 'Лента'),
-               ])
+               void renderFeedPostRoute(route)
                return
 
           case 'notFound':
