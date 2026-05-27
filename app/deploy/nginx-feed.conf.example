@@ -1,0 +1,88 @@
+# Sovietwave Radio static app + public feed.
+# Replace example.com, SITE_ROOT and FEED_MEDIA_ROOT before using this config.
+
+server {
+    listen 80;
+    server_name example.com;
+
+    root /var/www/sovietwave-radio;
+    index index.html;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # Vite hashed assets. This app builds assets into the site root rather than
+    # a nested /assets directory, so keep this extension-based cache rule before
+    # the generic SPA fallback.
+    location ~* \.(?:js|css|woff2?|ttf|otf|eot|ico|png|jpe?g|gif|webp|svg)$ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+    }
+
+    # App shell and service worker files must revalidate so clients see new
+    # deploys and PWA updates quickly.
+    location = /index.html {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache" always;
+    }
+
+    location ~* ^/(?:sw|workbox)-.*\.js$ {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache" always;
+    }
+
+    location = /manifest.webmanifest {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache" always;
+    }
+
+    # Public feed index is updated independently from the Vite build.
+    location = /feed/index.json {
+        try_files $uri =404;
+        default_type application/json;
+        add_header Cache-Control "no-cache" always;
+    }
+
+    # Feed media is a separate mirror. Missing media must return 404 and must
+    # never fall back to /index.html.
+    location ^~ /feed/media/ {
+        alias /srv/sovietwave-feed-media/;
+        types {
+            audio/mpeg mp3;
+            image/jpeg jpg jpeg;
+            image/png png;
+            image/webp webp;
+            image/gif gif;
+        }
+        default_type application/octet-stream;
+        add_header Accept-Ranges bytes always;
+        add_header Cache-Control "public, max-age=2592000" always;
+    }
+
+    # Clean URL entry points handled by the client router.
+    location = /radio {
+        try_files /index.html =404;
+        add_header Cache-Control "no-cache" always;
+    }
+
+    location = /feed {
+        try_files /index.html =404;
+        add_header Cache-Control "no-cache" always;
+    }
+
+    location /feed/page/ {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache" always;
+    }
+
+    location /feed/ {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache" always;
+    }
+
+    # Existing static files first, then the app shell for root/client routes.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
