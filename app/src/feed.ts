@@ -142,6 +142,26 @@ window.addEventListener('feed-player:state-change', (event) => {
 const createCoverPlaceholder = (): HTMLElement =>
      createElement('div', 'feed-cover-placeholder')
 
+const applyCoverImageRatio = (
+     cover: HTMLElement,
+     image: HTMLImageElement
+) => {
+     const { naturalWidth, naturalHeight } = image
+
+     if (naturalWidth > 0 && naturalHeight > 0) {
+          cover.style.setProperty(
+               '--feed-cover-ratio',
+               `${naturalWidth} / ${naturalHeight}`
+          )
+          cover.style.setProperty(
+               '--feed-cover-ratio-value',
+               `${naturalWidth / naturalHeight}`
+          )
+     }
+
+     cover.classList.add('feed-cover-loaded')
+}
+
 const createCover = (post: PublicFeedPost): HTMLElement => {
      const cover = createElement('div', 'feed-cover')
 
@@ -150,16 +170,19 @@ const createCover = (post: PublicFeedPost): HTMLElement => {
      if (post.image) {
           const image = createElement('img', 'feed-cover-image')
 
-          image.src = post.image.url
           image.alt = `${getDisplayArtist(post)} - ${getDisplayTitle(post)}`
           image.loading = 'lazy'
           image.addEventListener('load', () => {
-               cover.classList.add('feed-cover-loaded')
+               applyCoverImageRatio(cover, image)
           })
           image.addEventListener('error', () => {
                cover.classList.add('feed-cover-missing')
                image.remove()
           })
+          image.src = post.image.url
+
+          if (image.complete) applyCoverImageRatio(cover, image)
+
           cover.append(image)
      } else {
           cover.classList.add('feed-cover-missing')
@@ -179,7 +202,7 @@ const createTrackList = (post: PublicFeedPost): HTMLElement => {
           return list
      }
 
-     post.tracks.forEach((track, index) => {
+     post.tracks.forEach((track) => {
           const item = createElement('li', 'feed-post-track')
           const button = createElement(
                'button',
@@ -195,8 +218,6 @@ const createTrackList = (post: PublicFeedPost): HTMLElement => {
                event.stopPropagation()
                handleFeedCardPlay(post, track)
           })
-
-          if (index === 0) item.classList.add('feed-post-track-primary')
 
           item.append(button)
           list.append(item)
@@ -327,7 +348,7 @@ const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
 
      const list = createElement('ol', 'feed-detail-tracks')
 
-     post.tracks.forEach((track, index) => {
+     post.tracks.forEach((track) => {
           const item = createElement('li', 'feed-detail-track-item')
           const button = createElement('button', 'feed-detail-track')
           const title = createElement('span', 'feed-detail-track-title', getTrackTitle(post, track))
@@ -348,8 +369,6 @@ const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
           button.addEventListener('click', () => {
                handleFeedCardPlay(post, track)
           })
-
-          if (index === 0) button.classList.add('feed-detail-track-primary')
 
           item.append(button)
           list.append(item)

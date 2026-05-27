@@ -353,7 +353,7 @@ body[data-view='feed'] #feed-player-bar {
      width: 100%;
      min-width: 0;
      max-width: 100%;
-     aspect-ratio: 1 / 1;
+     aspect-ratio: var(--feed-cover-ratio, 1 / 1);
      background:
           linear-gradient(135deg, rgba(var(--accentR), var(--accentG), var(--accentB), 0.16), transparent),
           #171717;
@@ -464,7 +464,7 @@ body[data-view='feed'] #feed-player-bar {
           rgba(var(--accentR), var(--accentG), var(--accentB), 0.45);
 }
 
-.feed-post-track-primary::before {
+.feed-post-track-active::before {
      content: '•';
      margin-right: 12px;
 }
@@ -528,14 +528,18 @@ body[data-view='feed'] #feed-player-bar {
 .feed-detail {
      display: grid;
      min-height: min(760px, calc(100vh - 270px));
-     grid-template-columns: minmax(420px, 760px) minmax(360px, 1fr);
+     grid-template-columns: minmax(420px, 820px) minmax(360px, 1fr);
      gap: clamp(56px, 7vw, 120px);
      align-items: center;
 }
 
 .feed-detail-cover.feed-cover {
-     width: 100%;
-     aspect-ratio: 1 / 1;
+     width: min(
+          100%,
+          calc(min(72vh, 820px) * var(--feed-cover-ratio-value, 1))
+     );
+     max-height: min(72vh, 820px);
+     aspect-ratio: var(--feed-cover-ratio, 1 / 1);
      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.58);
 }
 
@@ -593,16 +597,16 @@ body[data-view='feed'] #feed-player-bar {
      text-transform: uppercase;
 }
 
-.feed-detail-track::before {
-     content: '•';
-     flex: 0 0 auto;
-}
-
 .feed-detail-track:hover,
 .feed-detail-track-active {
      color: rgba(255, 255, 255, 1);
      text-shadow: 0 0 4px
           rgba(var(--accentR), var(--accentG), var(--accentB), 0.45);
+}
+
+.feed-detail-track-active::before {
+     content: '•';
+     flex: 0 0 auto;
 }
 
 .feed-detail-track-title {
@@ -893,7 +897,7 @@ body[data-view='feed'] #feed-player-bar {
      }
 
      .feed-cover {
-          aspect-ratio: 4 / 3;
+          aspect-ratio: var(--feed-cover-ratio, 1 / 1);
      }
 
      .feed-post-content {
@@ -938,7 +942,9 @@ body[data-view='feed'] #feed-player-bar {
      }
 
      .feed-detail-cover.feed-cover {
-          aspect-ratio: 4 / 3;
+          width: 100%;
+          max-height: none;
+          aspect-ratio: var(--feed-cover-ratio, 1 / 1);
      }
 
      .feed-detail-content {
