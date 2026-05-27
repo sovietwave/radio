@@ -1,0 +1,118 @@
+#app-main {
+     position: relative;
+     z-index: 1;
+}
+
+#radio-view[hidden],
+#feed-view[hidden] {
+     display: none !important;
+}
+
+#feed-view {
+     position: fixed;
+     top: 0;
+     right: 0;
+     bottom: 70px;
+     left: 0;
+     z-index: 15;
+     overflow-x: hidden;
+     overflow-y: auto;
+     box-sizing: border-box;
+     padding: 56px 48px 96px;
+     padding-top: calc(56px + env(safe-area-inset-top));
+     padding-right: calc(48px + env(safe-area-inset-right));
+     padding-left: calc(48px + env(safe-area-inset-left));
+     background: rgba(0, 0, 0, 0.94);
+}
+
+body[data-view='feed'] #radio-view,
+body[data-view='feed'] #frame-overlay,
+body[data-view='feed'] #bright-overlay,
+body[data-view='feed'] #panel,
+body[data-view='feed'] #air-panel,
+body[data-view='feed'] #panel-active-links,
+body[data-view='feed'] #panel-active-air {
+     display: none !important;
+}
+
+body[data-view='feed'] #cover-image {
+     opacity: 0.18;
+}
+
+.feed-route {
+     min-height: 100%;
+     max-width: 1120px;
+     margin: 0 auto;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     gap: 24px;
+     box-sizing: border-box;
+}
+
+.feed-title {
+     margin: 0;
+     font-size: 42pt;
+     line-height: 1.05;
+     font-weight: normal;
+     text-shadow: 0 0 4px
+          rgba(var(--accentR), var(--accentG), var(--accentB), 0.7);
+}
+
+.feed-summary {
+     margin: 0;
+     max-width: 760px;
+     font-size: 18pt;
+     line-height: 1.4;
+     opacity: 0.72;
+     overflow-wrap: anywhere;
+}
+
+.feed-actions {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 16px;
+}
+
+.feed-action {
+     display: inline-flex;
+     min-height: 44px;
+     align-items: center;
+     color: #ffffff;
+     opacity: 0.82;
+     text-decoration: none;
+     border-bottom: 2px solid rgba(var(--accentR), var(--accentG), var(--accentB), 0.65);
+}
+
+.feed-action:hover {
+     opacity: 1;
+}
+
+@media (max-width: 800px), (max-height: 500px) {
+     #feed-view {
+          padding: 32px 24px 88px;
+          padding-top: calc(32px + env(safe-area-inset-top));
+          padding-right: calc(24px + env(safe-area-inset-right));
+          padding-left: calc(24px + env(safe-area-inset-left));
+     }
+
+     .feed-route {
+          justify-content: flex-start;
+          padding-top: 24px;
+     }
+
+     .feed-title {
+          font-size: 30pt;
+     }
+
+     .feed-summary {
+          font-size: 16pt;
+     }
+}
+
+@media (max-width: 300px), (max-height: 400px) {
+     #feed-view {
+          bottom: 0;
+          padding-bottom: 40px;
+     }
+}

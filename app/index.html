@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./styles/rangeinput.css">
     <link rel="stylesheet" href="./styles/soviet.css">
     <link rel="stylesheet" href="./styles/navi.css">
+    <link rel="stylesheet" href="./styles/feed.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/sprites/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/sprites/favicons/favicon-32x32.png">
@@ -32,7 +33,7 @@
     <title>Советская Волна #sovietwave</title>
 </head>
 
-<body>
+<body data-view="radio">
     <div id="cover-image"></div>
 
     <div id="hide-on-micro">
@@ -40,16 +41,22 @@
         <div id="frame-overlay"></div>
     </div>
 
-    <div id="player-wrapper">
-        <div id="player">
-            <div id="player-artist" class="player-track">
-                <a target="_blank" title="Cтраница артиста" id="player-artist-link"></a>
+    <main id="app-main">
+        <section id="radio-view">
+            <div id="player-wrapper">
+                <div id="player">
+                    <div id="player-artist" class="player-track">
+                        <a target="_blank" title="Cтраница артиста" id="player-artist-link"></a>
+                    </div>
+                    <div id="player-title" class="player-track"></div>
+                    <div id="player-switch" class="player-switch-stalled" onclick="radioToggle()"></div>
+                    <div id="player-city" class="player-track"></div>
+                </div>
             </div>
-            <div id="player-title" class="player-track"></div>
-            <div id="player-switch" class="player-switch-stalled" onclick="radioToggle()"></div>
-            <div id="player-city" class="player-track"></div>
-        </div>
-    </div>
+        </section>
+
+        <section id="feed-view" hidden></section>
+    </main>
 
 
     <!--
@@ -100,7 +107,15 @@
                     <div id="links-list">
                         <div id="links-logo"><img src="/assets/sprites/logo.svg"></div>
 
-                        <div id="listeners-alt-container">					
+                        <div class="links-label">Разделы</div>
+
+                        <a href="/radio" class="links-button" onclick="hideLeftPanels()">Радио</a>
+
+                        <a href="/feed" class="links-button" onclick="hideLeftPanels()">Лента</a>
+
+                        <div class="links-space"></div>
+
+                        <div id="listeners-alt-container">
                             <div id="links-button-heart" class="links-label link" target="_blank">
                                 Сейчас слушают
                                 <img src="/assets/sprites/icons/listeners.svg" class="mobile-button" hspace="5" />
