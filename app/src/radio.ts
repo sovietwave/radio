@@ -17,39 +17,58 @@ let nowPlaying = false;
 let playerRestartTimer = null;
 let tempShowing = false;
 let trackTimer = null;
+const volumeChangeEventName = 'swr:volume-change';
+
+const dispatchVolumeChange = (volume: number) => {
+	window.dispatchEvent(
+		new CustomEvent(volumeChangeEventName, {
+			detail: { volume }
+		})
+	);
+};
 
 class Volume {
-	speakerLogo: JQuery;
+	speakerButton: JQuery;
+	speakerLogo: JQuery<HTMLImageElement>;
 	slider: JQuery<HTMLInputElement>;
 	lastVolumeValue: number = 0;
 
 	constructor() {
 		const DEFAULT_VOLUME_VALUE = 0.75;
 
-		this.speakerLogo = $("#volume-speaker");
-		this.speakerLogo.click(() => {
+		this.speakerButton = $("#volume-speaker");
+		this.speakerLogo = $("#volume-speaker-logo");
+		this.speakerButton.click(() => {
 			this.toggleVolume();
 		});
 
 		this.slider = $("#volume-range");
 		this.slider.on("input", () => {
+			const vol = +this.slider.val() / 100;
+
 			if (playerReady) {
-				const vol = +this.slider.val() / 100;
 				radioPlayer.volume = vol;
 				state.volumeValue = vol;
 			}
 
-			if (radioPlayer.volume != 0) {
-				this.speakerLogo.attr("src", "/assets/sprites/icons/volume.png");
-			} else {
-				this.speakerLogo.attr("src", "/assets/sprites/icons/mute.png");
-			}
+			this.setVolumeIcon(vol);
+			dispatchVolumeChange(vol);
 		});
 		this.slider.val(DEFAULT_VOLUME_VALUE * 100);
 
 		radioPlayer.volume = DEFAULT_VOLUME_VALUE;
+		state.volumeValue = DEFAULT_VOLUME_VALUE;
+		dispatchVolumeChange(DEFAULT_VOLUME_VALUE);
 
 		this.lastVolumeValue = DEFAULT_VOLUME_VALUE;
+	}
+
+	setVolumeIcon(volume: number) {
+		if (volume != 0) {
+			this.speakerLogo.attr("src", "/assets/sprites/icons/volume.svg");
+		} else {
+			this.speakerLogo.attr("src", "/assets/sprites/icons/mute.svg");
+		}
 	}
 
 	toggleVolume() {
@@ -60,14 +79,16 @@ class Volume {
 			radioPlayer.volume = 0;
 			state.volumeValue = 0;
 			this.slider.val(0.);
-			this.speakerLogo.attr("src", "/assets/sprites/icons/mute.png");
+			this.setVolumeIcon(0);
+			dispatchVolumeChange(0);
 		} else {
 			// unmute
 
 			radioPlayer.volume = this.lastVolumeValue;
 			state.volumeValue = this.lastVolumeValue;
 			this.slider.val(radioPlayer.volume * 100);
-			this.speakerLogo.attr("src", "/assets/sprites/icons/volume.png");
+			this.setVolumeIcon(radioPlayer.volume);
+			dispatchVolumeChange(radioPlayer.volume);
 		}
 	}
 }
@@ -185,6 +206,18 @@ export const radioStop = () => {
 		$('#player-switch').attr('class', 'player-switch-stalled');
 		setVal('player_on', "0");
 	}
+};
+
+export const radioStopPlayback = () => {
+	nowPlaying = false;
+	radioStop();
+};
+
+export const radioIsPlaying = () => nowPlaying;
+
+export const radioGetVolume = () => {
+	if (radioPlayer) return radioPlayer.volume;
+	return state.volumeValue;
 };
 
 export const radioToggle = (channel?: string) => {

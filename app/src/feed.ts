@@ -1,11 +1,14 @@
 import { loadPublicFeedIndex } from './feedData'
 import type { PublicFeedLink, PublicFeedPost, PublicFeedTrack } from './feedTypes'
+import { feedPlayerGetState, type FeedPlayerState } from './feedPlayer'
 import type { AppRoute } from './router'
 
 const MAX_PAGE_SIZE = 12
 const MAX_VISIBLE_TAGS = 3
 const SITE_TITLE = 'Советская Волна #sovietwave'
 const ICON_LINK_TYPES = new Set(['soundcloud', 'telegram', 'vk', 'youtube'])
+const activeListTrackClass = 'feed-post-track-active'
+const activeDetailTrackClass = 'feed-detail-track-active'
 
 let renderToken = 0
 
@@ -109,6 +112,33 @@ const getTrackTitle = (post: PublicFeedPost, track: PublicFeedTrack): string =>
 const getTrackArtist = (post: PublicFeedPost, track: PublicFeedTrack): string =>
      normalizeText(track.artist) || getDisplayArtist(post)
 
+const getTrackKey = (post: PublicFeedPost, track: PublicFeedTrack): string =>
+     `${post.slug}:${track.id}`
+
+const getActiveTrackKey = (state: FeedPlayerState): string | null =>
+     state.post && state.track ? getTrackKey(state.post, state.track) : null
+
+const updateActiveTrackElements = (state: FeedPlayerState) => {
+     const activeTrackKey = getActiveTrackKey(state)
+
+     document
+          .querySelectorAll<HTMLButtonElement>('[data-feed-track-key]')
+          .forEach((button) => {
+               const isActive = button.dataset.feedTrackKey === activeTrackKey
+               const isDetailTrack = button.classList.contains('feed-detail-track')
+
+               button.classList.toggle(
+                    isDetailTrack ? activeDetailTrackClass : activeListTrackClass,
+                    isActive
+               )
+               button.setAttribute('aria-pressed', isActive ? 'true' : 'false')
+          })
+}
+
+window.addEventListener('feed-player:state-change', (event) => {
+     updateActiveTrackElements((event as CustomEvent<FeedPlayerState>).detail)
+})
+
 const createCoverPlaceholder = (): HTMLElement =>
      createElement('div', 'feed-cover-placeholder')
 
@@ -140,18 +170,35 @@ const createCover = (post: PublicFeedPost): HTMLElement => {
 
 const createTrackList = (post: PublicFeedPost): HTMLElement => {
      const list = createElement('ul', 'feed-post-tracks')
-     const tracks = post.tracks.length
-          ? post.tracks.map((track) => normalizeText(track.title) || getDisplayTitle(post))
-          : [getDisplayTitle(post)]
 
-     tracks.forEach((trackTitle, index) => {
+     if (post.tracks.length === 0) {
           const item = createElement('li', 'feed-post-track')
-          item.textContent = trackTitle
+          item.textContent = getDisplayTitle(post)
+          list.append(item)
 
-          if (index === 0 && post.tracks.length > 0) {
-               item.classList.add('feed-post-track-primary')
-          }
+          return list
+     }
 
+     post.tracks.forEach((track, index) => {
+          const item = createElement('li', 'feed-post-track')
+          const button = createElement(
+               'button',
+               'feed-post-track-button',
+               getTrackTitle(post, track)
+          )
+
+          button.type = 'button'
+          button.dataset.feedTrackKey = getTrackKey(post, track)
+          button.setAttribute('aria-pressed', 'false')
+          button.addEventListener('click', (event) => {
+               event.preventDefault()
+               event.stopPropagation()
+               handleFeedCardPlay(post, track)
+          })
+
+          if (index === 0) item.classList.add('feed-post-track-primary')
+
+          item.append(button)
           list.append(item)
      })
 
@@ -268,21 +315,6 @@ const createDetailFooter = (post: PublicFeedPost): HTMLElement | null => {
      return footer.childNodes.length > 0 ? footer : null
 }
 
-const setActiveTrackButton = (
-     list: HTMLElement,
-     button: HTMLButtonElement
-) => {
-     list.querySelectorAll<HTMLButtonElement>('.feed-detail-track-active').forEach(
-          (trackButton) => {
-               trackButton.classList.remove('feed-detail-track-active')
-               trackButton.setAttribute('aria-pressed', 'false')
-          }
-     )
-
-     button.classList.add('feed-detail-track-active')
-     button.setAttribute('aria-pressed', 'true')
-}
-
 const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
      const section = createElement('section', 'feed-detail-tracks-section')
 
@@ -302,6 +334,7 @@ const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
           const artist = getTrackArtist(post, track)
 
           button.type = 'button'
+          button.dataset.feedTrackKey = getTrackKey(post, track)
           button.setAttribute('aria-pressed', 'false')
           button.append(title)
 
@@ -313,7 +346,6 @@ const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
           }
 
           button.addEventListener('click', () => {
-               setActiveTrackButton(list, button)
                handleFeedCardPlay(post, track)
           })
 
@@ -351,8 +383,9 @@ const createPostDetail = (post: PublicFeedPost): HTMLElement => {
      return layout
 }
 
-const createPostCard = (post: PublicFeedPost): HTMLAnchorElement => {
-     const link = createElement('a', 'feed-post')
+const createPostCard = (post: PublicFeedPost): HTMLElement => {
+     const article = createElement('article', 'feed-post')
+     const link = createElement('a', 'feed-post-open')
      const content = createElement('div', 'feed-post-content')
      const main = createElement('div', 'feed-post-main')
      const artist = createElement('h2', 'feed-post-artist', getDisplayArtist(post))
@@ -366,9 +399,9 @@ const createPostCard = (post: PublicFeedPost): HTMLAnchorElement => {
      createTags(post).forEach((tag) => meta.append(tag))
      if (meta.childNodes.length > 0) content.append(meta)
 
-     link.append(createCover(post), content)
+     article.append(createCover(post), content, link)
 
-     return link
+     return article
 }
 
 const getPageHref = (page: number): string =>
@@ -437,6 +470,7 @@ const renderFeedList = (page: number, posts: PublicFeedPost[], pageSize: number)
 
      layout.append(list, createPagination(page, totalPages))
      renderView([layout])
+     updateActiveTrackElements(feedPlayerGetState())
 }
 
 const renderFeedListRoute = async (route: { page: number }) => {
@@ -478,6 +512,7 @@ const renderFeedPostRoute = async (route: { slug: string }) => {
 
           document.title = `${getPostDocumentTitle(post)} | ${SITE_TITLE}`
           renderView([createPostDetail(post)])
+          updateActiveTrackElements(feedPlayerGetState())
      } catch {
           if (token !== renderToken) return
           renderShell('Не удалось загрузить пост', 'Попробуйте обновить страницу', [

@@ -292,6 +292,29 @@
                 </a>
             </div>
 
+            <div id="feed-player-bar">
+                <div id="feed-player-info">
+                    <div id="feed-player-artist"></div>
+                    <div id="feed-player-title"></div>
+                    <div id="feed-player-error" hidden></div>
+                </div>
+
+                <div id="feed-player-controls">
+                    <button id="feed-player-prev" class="feed-player-button" type="button" aria-label="Предыдущий трек">
+                        <span aria-hidden="true">◀</span>
+                    </button>
+                    <button id="feed-player-toggle" class="feed-player-button feed-player-toggle" type="button" aria-label="Воспроизвести">
+                        <span class="feed-player-toggle-play" aria-hidden="true">▶</span>
+                        <span class="feed-player-toggle-pause" aria-hidden="true">Ⅱ</span>
+                    </button>
+                    <button id="feed-player-next" class="feed-player-button" type="button" aria-label="Следующий трек">
+                        <span aria-hidden="true">▶</span>
+                    </button>
+                    <input id="feed-player-progress" type="range" min="0" max="0" step="0.1" value="0" aria-label="Позиция трека" />
+                    <div id="feed-player-time">0:00 / 0:00</div>
+                </div>
+            </div>
+
         </div>
 
         <div id="navi-logo"><img src="/assets/sprites/logo.svg" onclick="toggleNavi()" /></div>

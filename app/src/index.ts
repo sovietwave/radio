@@ -8,9 +8,10 @@ import {
      initPWA,
      installPWA,
 } from './core'
-import { radioInit, radioToggle, radioStop } from './radio'
+import { radioInit, radioToggle, radioStopPlayback } from './radio'
 import { renderFeedRoute } from './feed'
 import { initRouter, type AppRoute } from './router'
+import { feedPlayerInit, feedPlayerStop } from './feedPlayer'
 
 const siteTitle = 'Советская Волна #sovietwave'
 
@@ -37,6 +38,7 @@ const getRouteTitle = (route: AppRoute): string => {
 const renderRoute = (route: AppRoute) => {
      const isRadio = route.kind === 'radio'
 
+     if (isRadio) feedPlayerStop()
      document.body.dataset.view = isRadio ? 'radio' : 'feed'
      setHidden('radio-view', !isRadio)
      setHidden('feed-view', isRadio)
@@ -44,9 +46,14 @@ const renderRoute = (route: AppRoute) => {
      renderFeedRoute(route)
 }
 
+const radioToggleFromUi = (channel?: string) => {
+     feedPlayerStop()
+     return radioToggle(channel)
+}
+
 // register external control functions for HTML
-globalThis.radioToggle = radioToggle
-globalThis.radioStop = radioStop
+globalThis.radioToggle = radioToggleFromUi
+globalThis.radioStop = radioStopPlayback
 globalThis.switchCurrentBackground = switchCurrentBackground
 globalThis.toggleLinks = toggleLinks
 globalThis.toggleAirPanel = toggleAirPanel
@@ -58,6 +65,7 @@ globalThis.installPWA = installPWA
 $(() => {
      init()
      radioInit()
+     feedPlayerInit()
      initPWA()
      initRouter(renderRoute)
 })

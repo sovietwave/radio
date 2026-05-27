@@ -62,6 +62,132 @@ body[data-view='feed'] #cover-image {
      opacity: 0.1;
 }
 
+#feed-player-bar {
+     display: none;
+}
+
+body[data-view='feed'] #left,
+body[data-view='feed'] #navi-logo,
+body[data-view='feed'] #listeners-container,
+body[data-view='feed'] #switch-back {
+     display: none !important;
+}
+
+body[data-view='feed'] #right {
+     position: relative;
+     z-index: 35;
+     width: 300px;
+     margin-left: auto;
+     justify-content: flex-end;
+}
+
+body[data-view='feed'] #feed-player-bar {
+     position: absolute;
+     top: 0;
+     right: 300px;
+     bottom: 0;
+     left: 0;
+     z-index: 30;
+     display: grid;
+     grid-template-columns: minmax(190px, 1fr) minmax(360px, 760px);
+     gap: 28px;
+     box-sizing: border-box;
+     padding: 0 28px;
+     align-items: center;
+     background: #000000;
+     color: rgba(255, 255, 255, 0.82);
+}
+
+#feed-player-info {
+     min-width: 0;
+     padding-left: env(safe-area-inset-left);
+     text-transform: uppercase;
+}
+
+#feed-player-artist {
+     overflow: hidden;
+     font-size: 11pt;
+     line-height: 1.05;
+     opacity: 0.78;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+}
+
+#feed-player-title {
+     overflow: hidden;
+     margin-top: 4px;
+     font-size: 18pt;
+     line-height: 1.05;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+}
+
+#feed-player-error {
+     overflow: hidden;
+     margin-top: 4px;
+     color: rgba(255, 255, 255, 0.48);
+     font-size: 10pt;
+     line-height: 1.1;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+}
+
+#feed-player-controls {
+     display: grid;
+     grid-template-columns: 36px 48px 36px minmax(120px, 1fr) 92px;
+     gap: 16px;
+     align-items: center;
+}
+
+.feed-player-button {
+     display: inline-flex;
+     width: 100%;
+     height: 48px;
+     align-items: center;
+     justify-content: center;
+     padding: 0;
+     border: 0;
+     background: transparent;
+     color: rgba(255, 255, 255, 0.72);
+     cursor: pointer;
+     font-family: inherit;
+     font-size: 25pt;
+     line-height: 1;
+     transition:
+          opacity 0.2s ease,
+          color 0.2s ease;
+}
+
+.feed-player-button:hover {
+     color: rgba(255, 255, 255, 1);
+}
+
+.feed-player-button:disabled {
+     cursor: default;
+     opacity: 0.22;
+}
+
+.feed-player-toggle-pause,
+.feed-player-toggle[data-status='playing'] .feed-player-toggle-play {
+     display: none;
+}
+
+.feed-player-toggle[data-status='playing'] .feed-player-toggle-pause {
+     display: inline;
+}
+
+#feed-player-progress {
+     width: 100%;
+}
+
+#feed-player-time {
+     color: rgba(255, 255, 255, 0.48);
+     font-size: 12pt;
+     line-height: 1;
+     text-align: left;
+     white-space: nowrap;
+}
+
 .feed-chrome {
      position: sticky;
      top: 0;
@@ -187,6 +313,7 @@ body[data-view='feed'] #cover-image {
 }
 
 .feed-post {
+     position: relative;
      display: grid;
      grid-template-columns: minmax(260px, 360px) minmax(320px, 1fr);
      gap: clamp(48px, 6vw, 86px);
@@ -196,6 +323,14 @@ body[data-view='feed'] #cover-image {
      color: #ffffff;
      text-decoration: none;
      opacity: 1;
+}
+
+.feed-post-open {
+     position: absolute;
+     inset: 0;
+     z-index: 1;
+     color: inherit;
+     text-decoration: none;
 }
 
 .feed-post:hover {
@@ -213,6 +348,7 @@ body[data-view='feed'] #cover-image {
 
 .feed-cover {
      position: relative;
+     z-index: 0;
      overflow: hidden;
      width: 100%;
      min-width: 0;
@@ -225,6 +361,7 @@ body[data-view='feed'] #cover-image {
      transition:
           box-shadow 0.2s ease,
           transform 0.2s ease;
+     pointer-events: none;
 }
 
 .feed-cover-image {
@@ -261,6 +398,7 @@ body[data-view='feed'] #cover-image {
 
 .feed-post-content {
      position: relative;
+     z-index: 2;
      display: flex;
      flex-direction: column;
      align-self: stretch;
@@ -268,6 +406,7 @@ body[data-view='feed'] #cover-image {
      max-width: 100%;
      min-height: 260px;
      color: rgba(255, 255, 255, 0.84);
+     pointer-events: none;
 }
 
 .feed-post-main {
@@ -297,6 +436,32 @@ body[data-view='feed'] #cover-image {
      line-height: 1.18;
      overflow-wrap: anywhere;
      text-transform: uppercase;
+}
+
+.feed-post-track-button {
+     position: relative;
+     z-index: 2;
+     display: inline;
+     max-width: 100%;
+     padding: 0;
+     border: 0;
+     background: transparent;
+     color: inherit;
+     cursor: pointer;
+     font-family: inherit;
+     font-size: inherit;
+     line-height: inherit;
+     overflow-wrap: anywhere;
+     text-align: left;
+     text-transform: inherit;
+     pointer-events: auto;
+}
+
+.feed-post-track-button:hover,
+.feed-post-track-active {
+     color: rgba(255, 255, 255, 1);
+     text-shadow: 0 0 4px
+          rgba(var(--accentR), var(--accentG), var(--accentB), 0.45);
 }
 
 .feed-post-track-primary::before {
@@ -618,6 +783,52 @@ body[data-view='feed'] #cover-image {
           padding: 0 24px 104px;
           padding-right: calc(24px + env(safe-area-inset-right));
           padding-left: calc(24px + env(safe-area-inset-left));
+     }
+
+     body[data-view='feed'] #right {
+          display: none;
+     }
+
+     body[data-view='feed'] #feed-player-bar {
+          right: 0;
+          grid-template-columns: 1fr;
+          grid-template-rows: 24px 34px;
+          gap: 2px;
+          padding: 5px 16px;
+          padding-right: calc(16px + env(safe-area-inset-right));
+          padding-left: calc(16px + env(safe-area-inset-left));
+     }
+
+     #feed-player-info {
+          padding-left: 0;
+     }
+
+     #feed-player-artist {
+          display: none;
+     }
+
+     #feed-player-title {
+          margin-top: 0;
+          font-size: 12pt;
+     }
+
+     #feed-player-error {
+          margin-top: 0;
+          font-size: 10pt;
+     }
+
+     #feed-player-controls {
+          grid-template-columns: 30px 38px 30px minmax(70px, 1fr) 72px;
+          gap: 8px;
+     }
+
+     .feed-player-button {
+          height: 34px;
+          font-size: 20pt;
+     }
+
+     #feed-player-time {
+          font-size: 10pt;
      }
 
      .feed-chrome {
