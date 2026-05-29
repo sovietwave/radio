@@ -19,13 +19,23 @@ const activeListTrackClass = 'feed-post-track-active'
 const activeDetailTrackClass = 'feed-detail-track-active'
 const playingListTrackClass = 'feed-post-track-playing'
 const playingDetailTrackClass = 'feed-detail-track-playing'
+const coverLightboxPadding = 24
+const coverLightboxTransitionMs = 360
 
 let renderToken = 0
 let previousRouteKind: AppRoute['kind'] | null = null
+let activeCoverLightboxClose: (() => void) | null = null
 
 interface TopChromeOptions {
      showBackButton?: boolean
      useHistoryBack?: boolean
+}
+
+interface CoverLightboxRect {
+     left: number
+     top: number
+     width: number
+     height: number
 }
 
 const createElement = <K extends keyof HTMLElementTagNameMap>(
@@ -180,6 +190,124 @@ window.addEventListener('feed-player:state-change', (event) => {
 
 const createCoverPlaceholder = (): HTMLElement =>
      createElement('div', 'feed-cover-placeholder')
+
+const toCoverLightboxRect = (rect: DOMRect): CoverLightboxRect => ({
+     left: rect.left,
+     top: rect.top,
+     width: rect.width,
+     height: rect.height,
+})
+
+const getCoverLightboxTargetRect = (
+     image: HTMLImageElement,
+     fallbackRect: CoverLightboxRect
+): CoverLightboxRect => {
+     const naturalWidth =
+          image.naturalWidth > 0 ? image.naturalWidth : fallbackRect.width
+     const naturalHeight =
+          image.naturalHeight > 0 ? image.naturalHeight : fallbackRect.height
+     const maxWidth = Math.max(1, window.innerWidth - coverLightboxPadding * 2)
+     const maxHeight = Math.max(1, window.innerHeight - coverLightboxPadding * 2)
+     const scale = Math.min(1, maxWidth / naturalWidth, maxHeight / naturalHeight)
+     const width = naturalWidth * scale
+     const height = naturalHeight * scale
+
+     return {
+          left: (window.innerWidth - width) / 2,
+          top: (window.innerHeight - height) / 2,
+          width,
+          height,
+     }
+}
+
+const setCoverLightboxImageRect = (
+     image: HTMLImageElement,
+     rect: CoverLightboxRect
+) => {
+     image.style.left = `${rect.left}px`
+     image.style.top = `${rect.top}px`
+     image.style.width = `${rect.width}px`
+     image.style.height = `${rect.height}px`
+}
+
+const openCoverLightbox = (cover: HTMLElement) => {
+     const sourceImage = cover.querySelector<HTMLImageElement>('.feed-cover-image')
+     if (!sourceImage || !sourceImage.src) return
+
+     if (activeCoverLightboxClose) activeCoverLightboxClose()
+
+     const startRect = toCoverLightboxRect(cover.getBoundingClientRect())
+     const targetRect = getCoverLightboxTargetRect(sourceImage, startRect)
+     const overlay = createElement('div', 'feed-cover-lightbox')
+     const backdrop = createElement('div', 'feed-cover-lightbox-backdrop')
+     const lightboxImage = sourceImage.cloneNode(false) as HTMLImageElement
+     let isClosing = false
+     let closeTimer = 0
+     let shouldBlurCover = false
+
+     lightboxImage.className = 'feed-cover-lightbox-image'
+     lightboxImage.removeAttribute('loading')
+     setCoverLightboxImageRect(lightboxImage, startRect)
+
+     const cleanup = () => {
+          window.clearTimeout(closeTimer)
+          window.removeEventListener('keydown', handleKeyDown)
+          overlay.remove()
+          cover.classList.remove('feed-detail-cover-lightbox-source')
+          cover.setAttribute('aria-expanded', 'false')
+          if (shouldBlurCover) cover.blur()
+          if (activeCoverLightboxClose === close) activeCoverLightboxClose = null
+     }
+
+     const close = (blurCover = false) => {
+          if (isClosing) return
+          isClosing = true
+          shouldBlurCover = blurCover
+          if (blurCover) cover.blur()
+
+          const returnRect = toCoverLightboxRect(cover.getBoundingClientRect())
+
+          overlay.classList.remove('feed-cover-lightbox-open')
+          setCoverLightboxImageRect(lightboxImage, returnRect)
+          closeTimer = window.setTimeout(cleanup, coverLightboxTransitionMs)
+     }
+
+     function handleKeyDown(event: KeyboardEvent) {
+          if (event.key === 'Escape') close(true)
+     }
+
+     overlay.addEventListener('click', () => close())
+     window.addEventListener('keydown', handleKeyDown)
+
+     overlay.append(backdrop, lightboxImage)
+     document.body.append(overlay)
+     cover.classList.add('feed-detail-cover-lightbox-source')
+     cover.setAttribute('aria-expanded', 'true')
+     activeCoverLightboxClose = close
+
+     window.requestAnimationFrame(() => {
+          overlay.classList.add('feed-cover-lightbox-open')
+          setCoverLightboxImageRect(lightboxImage, targetRect)
+     })
+}
+
+const bindDetailCoverLightbox = (cover: HTMLElement) => {
+     if (!cover.querySelector('.feed-cover-image')) return
+
+     cover.setAttribute('role', 'button')
+     cover.setAttribute('tabindex', '0')
+     cover.setAttribute('aria-label', 'Открыть обложку')
+     cover.setAttribute('aria-expanded', 'false')
+     cover.addEventListener('click', () => {
+          openCoverLightbox(cover)
+     })
+     cover.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return
+
+          event.preventDefault()
+          openCoverLightbox(cover)
+     })
+}
 
 const applyCoverImageRatio = (
      cover: HTMLElement,
@@ -511,6 +639,7 @@ const createPostDetail = (post: PublicFeedPost): HTMLElement => {
      const footer = createDetailFooter(post)
 
      cover.classList.add('feed-detail-cover')
+     bindDetailCoverLightbox(cover)
 
      main.append(artist, createDetailTrackList(post))
      content.append(main)

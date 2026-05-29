@@ -539,6 +539,58 @@ body[data-view='feed'] #feed-player-bar {
      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.58);
 }
 
+.feed-detail-cover.feed-cover.feed-cover-loaded {
+     cursor: zoom-in;
+     pointer-events: auto;
+}
+
+.feed-detail-cover.feed-cover.feed-cover-loaded:focus-visible {
+     outline: 2px solid rgba(255, 255, 255, 0.72);
+     outline-offset: 8px;
+}
+
+.feed-detail-cover-lightbox-source {
+     opacity: 0;
+}
+
+.feed-cover-lightbox {
+     position: fixed;
+     inset: 0;
+     z-index: 2000;
+     overflow: hidden;
+     cursor: zoom-out;
+}
+
+.feed-cover-lightbox-backdrop {
+     position: absolute;
+     inset: 0;
+     background: rgba(0, 0, 0, 0.88);
+     opacity: 0;
+     transition: opacity 0.36s ease;
+}
+
+.feed-cover-lightbox-open .feed-cover-lightbox-backdrop {
+     opacity: 1;
+}
+
+.feed-cover-lightbox-image {
+     position: fixed;
+     z-index: 1;
+     display: block;
+     max-width: none;
+     max-height: none;
+     object-fit: contain;
+     opacity: 1;
+     pointer-events: auto;
+     transition:
+          left 0.36s ease,
+          top 0.36s ease,
+          width 0.36s ease,
+          height 0.36s ease,
+          transform 0.36s ease;
+     will-change: left, top, width, height, transform;
+}
+
 .feed-detail-content {
      display: flex;
      align-self: stretch;
