@@ -2,7 +2,9 @@ import { loadPublicFeedIndex } from './feedData'
 import type { PublicFeedLink, PublicFeedPost, PublicFeedTrack } from './feedTypes'
 import {
      feedPlayerGetState,
+     feedPlayerPlayTrack,
      feedPlayerToggle,
+     type FeedPlayerAdjacentTrackDirection,
      type FeedPlayerState,
 } from './feedPlayer'
 import { getFeedDetailPalette, type FeedDetailPalette } from './feedPalette'
@@ -28,6 +30,7 @@ const coverLightboxPadding = 24
 const coverLightboxTransitionMs = 360
 const feedPostElementIdPrefix = 'feed-post-'
 const openPostRequestEventName = 'feed-player:open-post-request'
+const adjacentTrackRequestEventName = 'feed-player:adjacent-track-request'
 const feedDetailPaletteClass = 'feed-view-detail-palette'
 const feedDetailPaletteProperties = [
      '--feed-detail-bg-top-left',
@@ -44,6 +47,7 @@ let renderToken = 0
 let previousRouteKind: AppRoute['kind'] | null = null
 let currentFeedRoute: AppRoute = { kind: 'radio' }
 let activeCoverLightboxClose: (() => void) | null = null
+let pendingFeedListScroll: { slug: string; behavior: ScrollBehavior } | null = null
 
 interface TopChromeOptions {
      showBackButton?: boolean
@@ -106,8 +110,22 @@ const createLink = (href: string, textContent: string): HTMLAnchorElement => {
 }
 
 const handleTopChromeBackClick = (useHistoryBack: boolean) => {
+     const currentPostSlug =
+          currentFeedRoute.kind === 'feedPost' ? currentFeedRoute.slug : null
+
      if (useHistoryBack && window.history.length > 1) {
+          if (currentPostSlug) {
+               pendingFeedListScroll = {
+                    slug: currentPostSlug,
+                    behavior: 'auto',
+               }
+          }
           window.history.back()
+          return
+     }
+
+     if (currentPostSlug) {
+          void navigateToFeedListPost(currentPostSlug, 'auto')
           return
      }
 
@@ -218,6 +236,18 @@ const getPageHref = (page: number): string =>
 
 const getPostElementId = (slug: string): string => `${feedPostElementIdPrefix}${slug}`
 
+const getFeedPostPage = (
+     posts: PublicFeedPost[],
+     slug: string,
+     pageSize: number
+): number | null => {
+     const postIndex = posts.findIndex((post) => post.slug === slug)
+
+     if (postIndex < 0) return null
+
+     return Math.floor(postIndex / getNormalizedPageSize(pageSize)) + 1
+}
+
 const getFeedPostSlugFromHash = (): string | null => {
      const hash = window.location.hash.slice(1)
      if (!hash.startsWith(feedPostElementIdPrefix)) return null
@@ -225,12 +255,16 @@ const getFeedPostSlugFromHash = (): string | null => {
      return hash.slice(feedPostElementIdPrefix.length)
 }
 
-const scrollFeedPostIntoView = (slug: string): boolean => {
+const scrollFeedPostIntoView = (
+     slug: string,
+     behavior: ScrollBehavior = 'auto'
+): boolean => {
      const element = document.getElementById(getPostElementId(slug))
      if (!element) return false
 
      const scroll = () => {
           element.scrollIntoView({
+               behavior,
                block: 'center',
                inline: 'nearest',
           })
@@ -242,11 +276,66 @@ const scrollFeedPostIntoView = (slug: string): boolean => {
      return true
 }
 
-const scrollHashFeedPostIntoView = () => {
-     const slug = getFeedPostSlugFromHash()
+const navigateToFeedListPost = async (
+     slug: string,
+     behavior: ScrollBehavior = 'auto'
+) => {
+     try {
+          const index = await loadPublicFeedIndex()
+          const page = getFeedPostPage(index.posts, slug, index.pageSize)
+
+          if (page === null) {
+               navigateTo('/feed')
+               return
+          }
+
+          pendingFeedListScroll = { slug, behavior }
+          navigateTo(`${getPageHref(page)}#${getPostElementId(slug)}`)
+     } catch {
+          navigateTo('/feed')
+     }
+}
+
+const openFeedPostInCurrentContext = async (
+     slug: string,
+     feedListScrollBehavior: ScrollBehavior = 'auto'
+) => {
+     if (currentFeedRoute.kind === 'feedPost') {
+          if (currentFeedRoute.slug !== slug) navigateTo(`/feed/${slug}`)
+          return
+     }
+
+     if (currentFeedRoute.kind === 'feedList') {
+          await navigateToFeedListPost(slug, feedListScrollBehavior)
+          return
+     }
+
+     navigateTo(`/feed/${slug}`)
+}
+
+const scrollFeedListTargetIntoView = (
+     page: number,
+     posts: PublicFeedPost[],
+     pageSize: number
+) => {
+     const pendingScroll = pendingFeedListScroll
+     const slug = pendingScroll?.slug ?? getFeedPostSlugFromHash()
      if (!slug) return
 
-     scrollFeedPostIntoView(slug)
+     if (pendingScroll) {
+          const targetPage = getFeedPostPage(posts, slug, pageSize)
+
+          if (targetPage !== null && targetPage !== page) {
+               navigateTo(`${getPageHref(targetPage)}#${getPostElementId(slug)}`, {
+                    replace: true,
+               })
+               return
+          }
+     }
+
+     if (scrollFeedPostIntoView(slug, pendingScroll?.behavior ?? 'auto')) {
+          if (pendingFeedListScroll?.slug === slug) pendingFeedListScroll = null
+     }
 }
 
 const updateActiveTrackElements = (state: FeedPlayerState) => {
@@ -276,33 +365,7 @@ window.addEventListener('feed-player:state-change', (event) => {
 })
 
 const openFeedPlayerPost = async (slug: string) => {
-     if (currentFeedRoute.kind === 'feedPost') {
-          if (currentFeedRoute.slug !== slug) navigateTo(`/feed/${slug}`)
-          return
-     }
-
-     if (currentFeedRoute.kind !== 'feedList') {
-          navigateTo(`/feed/${slug}`)
-          return
-     }
-
-     try {
-          const index = await loadPublicFeedIndex()
-          const postIndex = index.posts.findIndex((post) => post.slug === slug)
-
-          if (postIndex < 0) {
-               navigateTo(`/feed/${slug}`)
-               return
-          }
-
-          const pageSize = getNormalizedPageSize(index.pageSize)
-          const page = Math.floor(postIndex / pageSize) + 1
-          const hash = getPostElementId(slug)
-
-          navigateTo(`${getPageHref(page)}#${hash}`)
-     } catch {
-          navigateTo(`/feed/${slug}`)
-     }
+     await openFeedPostInCurrentContext(slug)
 }
 
 window.addEventListener(openPostRequestEventName, (event) => {
@@ -311,6 +374,59 @@ window.addEventListener(openPostRequestEventName, (event) => {
      )
 
      if (slug) void openFeedPlayerPost(slug)
+})
+
+const isAdjacentTrackDirection = (
+     value: unknown
+): value is FeedPlayerAdjacentTrackDirection =>
+     value === 'previous' || value === 'next'
+
+const findAdjacentPlayablePost = (
+     posts: PublicFeedPost[],
+     slug: string,
+     direction: FeedPlayerAdjacentTrackDirection
+): PublicFeedPost | null => {
+     const currentIndex = posts.findIndex((post) => post.slug === slug)
+     if (currentIndex < 0 || posts.length === 0) return null
+
+     const step = direction === 'next' ? 1 : -1
+
+     for (let offset = 1; offset <= posts.length; offset++) {
+          const index = (currentIndex + step * offset + posts.length) % posts.length
+          const post = posts[index]
+
+          if (post.tracks.length > 0) return post
+     }
+
+     return null
+}
+
+const handleAdjacentTrackRequest = async (event: Event) => {
+     const detail = (event as CustomEvent<{
+          slug?: string
+          direction?: unknown
+     }>).detail
+     const slug = normalizeText(detail?.slug ?? '')
+     const direction = detail?.direction
+
+     if (!slug || !isAdjacentTrackDirection(direction)) return
+
+     try {
+          const index = await loadPublicFeedIndex()
+          const post = findAdjacentPlayablePost(index.posts, slug, direction)
+          const track = post?.tracks[0]
+
+          if (!post || !track) return
+
+          feedPlayerPlayTrack(post, track.id)
+          await openFeedPostInCurrentContext(post.slug, 'smooth')
+     } catch {
+          return
+     }
+}
+
+window.addEventListener(adjacentTrackRequestEventName, (event) => {
+     void handleAdjacentTrackRequest(event)
 })
 
 const createCoverPlaceholder = (): HTMLElement =>
@@ -800,7 +916,65 @@ const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
      return section
 }
 
-const createPostDetail = (post: PublicFeedPost): HTMLElement => {
+const createPostNavigationLink = (
+     post: PublicFeedPost | null,
+     className: string,
+     textContent: string,
+     ariaLabel: string
+): HTMLElement => {
+     const linkClassName = `feed-detail-navigation-link feed-text-note ${className}`
+
+     if (!post) {
+          const item = createElement(
+               'span',
+               `${linkClassName} feed-detail-navigation-link-disabled`,
+               textContent
+          )
+
+          item.setAttribute('aria-disabled', 'true')
+          item.setAttribute('aria-label', ariaLabel)
+
+          return item
+     }
+
+     const item = createElement('a', linkClassName, textContent)
+
+     item.href = `/feed/${post.slug}`
+     item.setAttribute('aria-label', ariaLabel)
+
+     return item
+}
+
+const createPostNavigation = (
+     previousPost: PublicFeedPost | null,
+     nextPost: PublicFeedPost | null
+): HTMLElement => {
+     const navigation = createElement('nav', 'feed-detail-navigation')
+
+     navigation.setAttribute('aria-label', 'Навигация между постами')
+     navigation.append(
+          createPostNavigationLink(
+               previousPost,
+               'feed-detail-navigation-previous',
+               '← Предыдущий',
+               'Предыдущий пост'
+          ),
+          createPostNavigationLink(
+               nextPost,
+               'feed-detail-navigation-next',
+               'Следующий →',
+               'Следующий пост'
+          )
+     )
+
+     return navigation
+}
+
+const createPostDetail = (
+     post: PublicFeedPost,
+     previousPost: PublicFeedPost | null,
+     nextPost: PublicFeedPost | null
+): HTMLElement => {
      const layout = createElement('section', 'feed-detail-view')
      const article = createElement('article', 'feed-detail')
      const cover = createCover(post)
@@ -821,7 +995,7 @@ const createPostDetail = (post: PublicFeedPost): HTMLElement => {
      if (footer) content.append(footer)
 
      article.append(cover, content)
-     layout.append(article)
+     layout.append(article, createPostNavigation(previousPost, nextPost))
 
      return layout
 }
@@ -923,7 +1097,7 @@ const renderFeedList = (page: number, posts: PublicFeedPost[], pageSize: number)
      layout.append(list, createPagination(page, totalPages))
      renderView([layout])
      updateActiveTrackElements(feedPlayerGetState())
-     scrollHashFeedPostIntoView()
+     scrollFeedListTargetIntoView(page, posts, pageSize)
 }
 
 const renderFeedListRoute = async (route: { page: number }) => {
@@ -958,7 +1132,8 @@ const renderFeedPostRoute = async (
 
           if (token !== renderToken) return
 
-          const post = index.posts.find((item) => item.slug === route.slug)
+          const postIndex = index.posts.findIndex((item) => item.slug === route.slug)
+          const post = postIndex >= 0 ? index.posts[postIndex] : null
 
           if (!post) {
                document.title = `Пост не найден | ${SITE_TITLE}`
@@ -966,7 +1141,9 @@ const renderFeedPostRoute = async (
                return
           }
 
-          const detailView = createPostDetail(post)
+          const previousPost = index.posts[postIndex - 1] ?? null
+          const nextPost = index.posts[postIndex + 1] ?? null
+          const detailView = createPostDetail(post, previousPost, nextPost)
 
           document.title = `${getPostDocumentTitle(post)} | ${SITE_TITLE}`
           renderView([detailView], {

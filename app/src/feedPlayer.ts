@@ -2,6 +2,7 @@ import type { PublicFeedPost, PublicFeedTrack } from './feedTypes'
 import { radioGetVolume, radioStopPlayback } from './radio'
 
 export type FeedPlayerStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'error'
+export type FeedPlayerAdjacentTrackDirection = 'previous' | 'next'
 
 export interface FeedPlayerState {
      status: FeedPlayerStatus
@@ -15,6 +16,7 @@ export interface FeedPlayerState {
 
 const stateChangeEventName = 'feed-player:state-change'
 const openPostRequestEventName = 'feed-player:open-post-request'
+const adjacentTrackRequestEventName = 'feed-player:adjacent-track-request'
 const volumeChangeEventName = 'swr:volume-change'
 const missingMediaError =
      'Mp3 не найден: проверьте PUBLIC_FEED_MEDIA_ROOT или серверный /feed/media'
@@ -128,14 +130,8 @@ const renderPlayerBar = () => {
           )
      }
 
-     setButtonState('feed-player-prev', !hasTrack || state.trackIndex <= 0)
-     setButtonState(
-          'feed-player-next',
-          !hasTrack ||
-               !state.post ||
-               state.trackIndex < 0 ||
-               state.trackIndex >= state.post.tracks.length - 1
-     )
+     setButtonState('feed-player-prev', !hasTrack)
+     setButtonState('feed-player-next', !hasTrack)
 
      if (progress) {
           progress.disabled = !hasTrack || duration <= 0
@@ -289,12 +285,24 @@ export const feedPlayerToggle = () => {
      })
 }
 
+const requestAdjacentTrack = (direction: FeedPlayerAdjacentTrackDirection) => {
+     if (!state.post) return
+
+     window.dispatchEvent(
+          new CustomEvent(adjacentTrackRequestEventName, {
+               detail: {
+                    slug: state.post.slug,
+                    direction,
+               },
+          })
+     )
+}
+
 export const feedPlayerPrev = () => {
      if (!state.post || state.trackIndex < 0) return
 
      if (state.trackIndex === 0) {
-          if (feedAudio) feedAudio.currentTime = 0
-          setState({ currentTime: 0 })
+          requestAdjacentTrack('previous')
           return
      }
 
@@ -306,7 +314,12 @@ export const feedPlayerNext = () => {
      if (!state.post || state.trackIndex < 0) return
 
      const nextTrack = state.post.tracks[state.trackIndex + 1]
-     if (nextTrack) feedPlayerPlayTrack(state.post, nextTrack.id)
+     if (nextTrack) {
+          feedPlayerPlayTrack(state.post, nextTrack.id)
+          return
+     }
+
+     requestAdjacentTrack('next')
 }
 
 export const feedPlayerStop = () => {
@@ -408,7 +421,7 @@ const bindAudioEvents = () => {
      })
      feedAudio.addEventListener('ended', () => {
           if (!isActiveAudioElementSource()) return
-          if (state.post && state.trackIndex < state.post.tracks.length - 1) {
+          if (state.post && state.trackIndex >= 0) {
                feedPlayerNext()
                return
           }
