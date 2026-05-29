@@ -14,6 +14,7 @@ export interface FeedPlayerState {
 }
 
 const stateChangeEventName = 'feed-player:state-change'
+const openPostRequestEventName = 'feed-player:open-post-request'
 const volumeChangeEventName = 'swr:volume-change'
 const missingMediaError =
      'Mp3 не найден: проверьте PUBLIC_FEED_MEDIA_ROOT или серверный /feed/media'
@@ -82,7 +83,7 @@ const setButtonState = (
 
 const renderPlayerBar = () => {
      const artistElement = getElement('feed-player-artist')
-     const titleElement = getElement('feed-player-title')
+     const titleElement = getElement<HTMLButtonElement>('feed-player-title')
      const errorElement = getElement('feed-player-error')
      const toggleButton = getElement<HTMLButtonElement>('feed-player-toggle')
      const progress = getElement<HTMLInputElement>('feed-player-progress')
@@ -101,9 +102,15 @@ const renderPlayerBar = () => {
 
      if (titleElement) {
           if (state.post && state.track) {
-               titleElement.textContent = getTrackTitle(state.post, state.track)
+               const title = getTrackTitle(state.post, state.track)
+
+               titleElement.textContent = title
+               titleElement.disabled = false
+               titleElement.setAttribute('aria-label', `Открыть пост: ${title}`)
           } else {
                titleElement.textContent = ''
+               titleElement.disabled = true
+               titleElement.removeAttribute('aria-label')
           }
      }
 
@@ -333,6 +340,18 @@ const onFeedPlayTrackRequest = (event: Event) => {
      feedPlayerPlayTrack(post, track.id)
 }
 
+const requestActivePostOpen = () => {
+     if (!state.post || !state.track) return
+
+     window.dispatchEvent(
+          new CustomEvent(openPostRequestEventName, {
+               detail: {
+                    slug: state.post.slug,
+               },
+          })
+     )
+}
+
 const bindDomControls = () => {
      getElement<HTMLButtonElement>('feed-player-prev')?.addEventListener(
           'click',
@@ -345,6 +364,10 @@ const bindDomControls = () => {
      getElement<HTMLButtonElement>('feed-player-next')?.addEventListener(
           'click',
           feedPlayerNext
+     )
+     getElement<HTMLButtonElement>('feed-player-title')?.addEventListener(
+          'click',
+          requestActivePostOpen
      )
 
      getElement<HTMLInputElement>('feed-player-progress')?.addEventListener(

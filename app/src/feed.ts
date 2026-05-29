@@ -25,9 +25,12 @@ const playingListTrackClass = 'feed-post-track-playing'
 const playingDetailTrackClass = 'feed-detail-track-playing'
 const coverLightboxPadding = 24
 const coverLightboxTransitionMs = 360
+const feedPostElementIdPrefix = 'feed-post-'
+const openPostRequestEventName = 'feed-player:open-post-request'
 
 let renderToken = 0
 let previousRouteKind: AppRoute['kind'] | null = null
+let currentFeedRoute: AppRoute = { kind: 'radio' }
 let activeCoverLightboxClose: (() => void) | null = null
 
 interface TopChromeOptions {
@@ -166,6 +169,45 @@ const getTrackKey = (post: PublicFeedPost, track: PublicFeedTrack): string =>
 const getActiveTrackKey = (state: FeedPlayerState): string | null =>
      state.post && state.track ? getTrackKey(state.post, state.track) : null
 
+const getNormalizedPageSize = (pageSize: number): number =>
+     Math.min(Math.max(pageSize, 1), MAX_PAGE_SIZE)
+
+const getPageHref = (page: number): string =>
+     page <= 1 ? '/feed' : `/feed/page/${page}`
+
+const getPostElementId = (slug: string): string => `${feedPostElementIdPrefix}${slug}`
+
+const getFeedPostSlugFromHash = (): string | null => {
+     const hash = window.location.hash.slice(1)
+     if (!hash.startsWith(feedPostElementIdPrefix)) return null
+
+     return hash.slice(feedPostElementIdPrefix.length)
+}
+
+const scrollFeedPostIntoView = (slug: string): boolean => {
+     const element = document.getElementById(getPostElementId(slug))
+     if (!element) return false
+
+     const scroll = () => {
+          element.scrollIntoView({
+               block: 'center',
+               inline: 'nearest',
+          })
+     }
+
+     window.requestAnimationFrame(scroll)
+     window.setTimeout(scroll, 250)
+
+     return true
+}
+
+const scrollHashFeedPostIntoView = () => {
+     const slug = getFeedPostSlugFromHash()
+     if (!slug) return
+
+     scrollFeedPostIntoView(slug)
+}
+
 const updateActiveTrackElements = (state: FeedPlayerState) => {
      const activeTrackKey = getActiveTrackKey(state)
 
@@ -190,6 +232,44 @@ const updateActiveTrackElements = (state: FeedPlayerState) => {
 
 window.addEventListener('feed-player:state-change', (event) => {
      updateActiveTrackElements((event as CustomEvent<FeedPlayerState>).detail)
+})
+
+const openFeedPlayerPost = async (slug: string) => {
+     if (currentFeedRoute.kind === 'feedPost') {
+          if (currentFeedRoute.slug !== slug) navigateTo(`/feed/${slug}`)
+          return
+     }
+
+     if (currentFeedRoute.kind !== 'feedList') {
+          navigateTo(`/feed/${slug}`)
+          return
+     }
+
+     try {
+          const index = await loadPublicFeedIndex()
+          const postIndex = index.posts.findIndex((post) => post.slug === slug)
+
+          if (postIndex < 0) {
+               navigateTo(`/feed/${slug}`)
+               return
+          }
+
+          const pageSize = getNormalizedPageSize(index.pageSize)
+          const page = Math.floor(postIndex / pageSize) + 1
+          const hash = getPostElementId(slug)
+
+          navigateTo(`${getPageHref(page)}#${hash}`)
+     } catch {
+          navigateTo(`/feed/${slug}`)
+     }
+}
+
+window.addEventListener(openPostRequestEventName, (event) => {
+     const slug = normalizeText(
+          (event as CustomEvent<{ slug?: string }>).detail?.slug ?? ''
+     )
+
+     if (slug) void openFeedPlayerPost(slug)
 })
 
 const createCoverPlaceholder = (): HTMLElement =>
@@ -672,6 +752,8 @@ const createPostCard = (post: PublicFeedPost): HTMLElement => {
      )
      const meta = createMeta(post)
 
+     article.id = getPostElementId(post.slug)
+     article.dataset.feedPostSlug = post.slug
      link.href = `/feed/${post.slug}`
      link.setAttribute('aria-label', `${getDisplayArtist(post)} - ${getDisplayTitle(post)}`)
 
@@ -690,9 +772,6 @@ const createPostCard = (post: PublicFeedPost): HTMLElement => {
 
      return article
 }
-
-const getPageHref = (page: number): string =>
-     page <= 1 ? '/feed' : `/feed/page/${page}`
 
 const createPagination = (page: number, totalPages: number): HTMLElement => {
      const pagination = createElement('nav', 'feed-pagination')
@@ -735,7 +814,7 @@ const renderFeedList = (page: number, posts: PublicFeedPost[], pageSize: number)
           return
      }
 
-     const normalizedPageSize = Math.min(Math.max(pageSize, 1), MAX_PAGE_SIZE)
+     const normalizedPageSize = getNormalizedPageSize(pageSize)
      const totalPages = Math.max(1, Math.ceil(posts.length / normalizedPageSize))
 
      if (page > totalPages) {
@@ -758,6 +837,7 @@ const renderFeedList = (page: number, posts: PublicFeedPost[], pageSize: number)
      layout.append(list, createPagination(page, totalPages))
      renderView([layout])
      updateActiveTrackElements(feedPlayerGetState())
+     scrollHashFeedPostIntoView()
 }
 
 const renderFeedListRoute = async (route: { page: number }) => {
@@ -817,6 +897,7 @@ const renderFeedPostRoute = async (
 
 export const renderFeedRoute = (route: AppRoute) => {
      const useHistoryBack = previousRouteKind === 'feedList'
+     currentFeedRoute = route
      previousRouteKind = route.kind
 
      switch (route.kind) {
