@@ -21,18 +21,51 @@
      padding: 0 48px 120px;
      padding-right: calc(48px + env(safe-area-inset-right));
      padding-left: calc(48px + env(safe-area-inset-left));
-     background:
+     --feed-view-default-background:
           radial-gradient(
                circle at 50% 16%,
                rgba(255, 255, 255, 0.08),
                rgba(255, 255, 255, 0) 34%
           ),
           linear-gradient(180deg, rgba(58, 58, 58, 0.9), #181818 42%, #111111);
+     background: var(--feed-view-default-background);
      scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
 }
 
 #feed-view.feed-view-detail {
      padding-bottom: 0;
+}
+
+#feed-view.feed-view-detail.feed-view-detail-palette {
+     background:
+          linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.54)),
+          radial-gradient(
+               circle at 0% 0%,
+               rgba(var(--feed-detail-bg-top-left-rgb), 0.92),
+               rgba(var(--feed-detail-bg-top-left-rgb), 0) 58%
+          ),
+          radial-gradient(
+               circle at 100% 0%,
+               rgba(var(--feed-detail-bg-top-right-rgb), 0.84),
+               rgba(var(--feed-detail-bg-top-right-rgb), 0) 58%
+          ),
+          radial-gradient(
+               circle at 0% 100%,
+               rgba(var(--feed-detail-bg-bottom-left-rgb), 0.7),
+               rgba(var(--feed-detail-bg-bottom-left-rgb), 0) 60%
+          ),
+          radial-gradient(
+               circle at 100% 100%,
+               rgba(var(--feed-detail-bg-bottom-right-rgb), 0.96),
+               rgba(var(--feed-detail-bg-bottom-right-rgb), 0) 62%
+          ),
+          linear-gradient(
+               135deg,
+               var(--feed-detail-bg-top-left) 0%,
+               var(--feed-detail-bg-top-right) 28%,
+               var(--feed-detail-bg-bottom-left) 62%,
+               var(--feed-detail-bg-bottom-right) 100%
+          );
 }
 
 #feed-view::-webkit-scrollbar {

@@ -8,6 +8,7 @@
         "preview": "vite build && vite preview"
     },
     "dependencies": {
+        "colorthief": "^3.3.1",
         "jquery": "^3.7.1"
     },
     "devDependencies": {

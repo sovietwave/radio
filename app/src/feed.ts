@@ -5,6 +5,7 @@ import {
      feedPlayerToggle,
      type FeedPlayerState,
 } from './feedPlayer'
+import { getFeedDetailPalette, type FeedDetailPalette } from './feedPalette'
 import { navigateTo, type AppRoute } from './router'
 
 const MAX_PAGE_SIZE = 12
@@ -27,6 +28,17 @@ const coverLightboxPadding = 24
 const coverLightboxTransitionMs = 360
 const feedPostElementIdPrefix = 'feed-post-'
 const openPostRequestEventName = 'feed-player:open-post-request'
+const feedDetailPaletteClass = 'feed-view-detail-palette'
+const feedDetailPaletteProperties = [
+     '--feed-detail-bg-top-left',
+     '--feed-detail-bg-top-right',
+     '--feed-detail-bg-bottom-left',
+     '--feed-detail-bg-bottom-right',
+     '--feed-detail-bg-top-left-rgb',
+     '--feed-detail-bg-top-right-rgb',
+     '--feed-detail-bg-bottom-left-rgb',
+     '--feed-detail-bg-bottom-right-rgb',
+] as const
 
 let renderToken = 0
 let previousRouteKind: AppRoute['kind'] | null = null
@@ -43,6 +55,34 @@ interface CoverLightboxRect {
      top: number
      width: number
      height: number
+}
+
+const clearFeedDetailPalette = (root: HTMLElement) => {
+     root.classList.remove(feedDetailPaletteClass)
+     feedDetailPaletteProperties.forEach((property) => {
+          root.style.removeProperty(property)
+     })
+}
+
+const applyFeedDetailPalette = (
+     root: HTMLElement,
+     palette: FeedDetailPalette
+) => {
+     root.style.setProperty('--feed-detail-bg-top-left', palette.topLeft)
+     root.style.setProperty('--feed-detail-bg-top-right', palette.topRight)
+     root.style.setProperty('--feed-detail-bg-bottom-left', palette.bottomLeft)
+     root.style.setProperty('--feed-detail-bg-bottom-right', palette.bottomRight)
+     root.style.setProperty('--feed-detail-bg-top-left-rgb', palette.topLeftRgb)
+     root.style.setProperty('--feed-detail-bg-top-right-rgb', palette.topRightRgb)
+     root.style.setProperty(
+          '--feed-detail-bg-bottom-left-rgb',
+          palette.bottomLeftRgb
+     )
+     root.style.setProperty(
+          '--feed-detail-bg-bottom-right-rgb',
+          palette.bottomRightRgb
+     )
+     root.classList.add(feedDetailPaletteClass)
 }
 
 const createElement = <K extends keyof HTMLElementTagNameMap>(
@@ -111,6 +151,7 @@ const renderView = (children: Node[], options: TopChromeOptions = {}) => {
      if (!root) return
 
      root.classList.toggle('feed-view-detail', Boolean(options.showBackButton))
+     clearFeedDetailPalette(root)
      root.replaceChildren(createTopChrome(options), ...children)
 }
 
@@ -433,6 +474,51 @@ const applyCoverAssetRatio = (
 
      cover.style.setProperty('--feed-cover-ratio', `${width} / ${height}`)
      cover.style.setProperty('--feed-cover-ratio-value', `${width / height}`)
+}
+
+const isCurrentFeedPostRender = (post: PublicFeedPost, token: number): boolean =>
+     token === renderToken &&
+     currentFeedRoute.kind === 'feedPost' &&
+     currentFeedRoute.slug === post.slug
+
+const applyPostDetailPalette = (
+     post: PublicFeedPost,
+     image: HTMLImageElement,
+     token: number
+) => {
+     if (!post.image || !isCurrentFeedPostRender(post, token)) return
+
+     const root = document.getElementById('feed-view')
+     if (!root || !root.classList.contains('feed-view-detail')) return
+
+     const palette = getFeedDetailPalette(post.image.url, image)
+     if (!palette || !isCurrentFeedPostRender(post, token)) return
+
+     applyFeedDetailPalette(root, palette)
+}
+
+const bindPostDetailPalette = (
+     post: PublicFeedPost,
+     detailView: HTMLElement,
+     token: number
+) => {
+     if (!post.image) return
+
+     const image = detailView.querySelector<HTMLImageElement>(
+          '.feed-detail-cover .feed-cover-image'
+     )
+     if (!image) return
+
+     const applyPalette = () => {
+          applyPostDetailPalette(post, image, token)
+     }
+
+     if (image.complete) {
+          applyPalette()
+          return
+     }
+
+     image.addEventListener('load', applyPalette, { once: true })
 }
 
 const createCover = (post: PublicFeedPost): HTMLElement => {
@@ -880,11 +966,14 @@ const renderFeedPostRoute = async (
                return
           }
 
+          const detailView = createPostDetail(post)
+
           document.title = `${getPostDocumentTitle(post)} | ${SITE_TITLE}`
-          renderView([createPostDetail(post)], {
+          renderView([detailView], {
                showBackButton: true,
                useHistoryBack,
           })
+          bindPostDetailPalette(post, detailView, token)
           updateActiveTrackElements(feedPlayerGetState())
      } catch {
           if (token !== renderToken) return
@@ -919,7 +1008,15 @@ export const renderFeedRoute = (route: AppRoute) => {
 
           case 'radio':
                ++renderToken
-               document.getElementById('feed-view')?.replaceChildren()
+               {
+                    const root = document.getElementById('feed-view')
+
+                    if (root) {
+                         root.classList.remove('feed-view-detail')
+                         clearFeedDetailPalette(root)
+                         root.replaceChildren()
+                    }
+               }
                return
      }
 }
