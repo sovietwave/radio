@@ -937,7 +937,7 @@ body[data-view='feed'] #feed-player-bar {
 
 .feed-text-heading {
      color: #ffffff;
-     font-size: 36pt;
+     font-size: 28pt;
      font-weight: normal;
      line-height: 1.05;
      overflow-wrap: anywhere;
@@ -948,7 +948,7 @@ body[data-view='feed'] #feed-player-bar {
 
 .feed-text-subheading {
      color: #ffffff;
-     font-size: 22pt;
+     font-size: 17pt;
      line-height: 1.18;
      opacity: 0.8;
      overflow-wrap: anywhere;
@@ -957,8 +957,8 @@ body[data-view='feed'] #feed-player-bar {
 
 .feed-text-note {
      color: #ffffff;
-     font-size: 16pt;
-     line-height: 40px;
+     font-size: 12pt;
+     line-height: 30px;
      opacity: 0.5;
      overflow-wrap: anywhere;
      text-transform: uppercase;
@@ -1197,16 +1197,16 @@ body[data-view='feed'] #feed-player-bar {
      }
 
      .feed-text-heading {
-          font-size: 22pt;
+          font-size: 18pt;
      }
 
      .feed-text-subheading {
-          font-size: 22pt;
+          font-size: 17pt;
      }
 
      .feed-text-note {
-          font-size: 16pt;
-          line-height: 40px;
+          font-size: 12pt;
+          line-height: 30px;
      }
 }
 
