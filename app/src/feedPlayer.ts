@@ -96,14 +96,14 @@ const renderPlayerBar = () => {
           artistElement.textContent =
                state.post && state.track
                     ? getTrackArtist(state.post, state.track)
-                    : 'Лента'
+                    : ''
      }
 
      if (titleElement) {
           if (state.post && state.track) {
                titleElement.textContent = getTrackTitle(state.post, state.track)
           } else {
-               titleElement.textContent = 'Выберите трек'
+               titleElement.textContent = ''
           }
      }
 

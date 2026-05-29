@@ -1,18 +1,32 @@
 import { loadPublicFeedIndex } from './feedData'
 import type { PublicFeedLink, PublicFeedPost, PublicFeedTrack } from './feedTypes'
 import { feedPlayerGetState, type FeedPlayerState } from './feedPlayer'
-import type { AppRoute } from './router'
+import { navigateTo, type AppRoute } from './router'
 
 const MAX_PAGE_SIZE = 12
 const MAX_VISIBLE_TAGS = 3
 const SITE_TITLE = 'Советская Волна #sovietwave'
-const ICON_LINK_TYPES = new Set(['soundcloud', 'telegram', 'vk', 'youtube'])
+const ICON_LINK_FILE_BY_TYPE: Partial<Record<PublicFeedLink['type'], string>> = {
+     bandcamp: 'bandcamp',
+     soundcloud: 'soundcloud',
+     spotify: 'spotify',
+     telegram: 'telegram',
+     vk: 'vk',
+     youtube: 'youtube',
+     'yandex-music': 'yandex',
+}
 const activeListTrackClass = 'feed-post-track-active'
 const activeDetailTrackClass = 'feed-detail-track-active'
 const playingListTrackClass = 'feed-post-track-playing'
 const playingDetailTrackClass = 'feed-detail-track-playing'
 
 let renderToken = 0
+let previousRouteKind: AppRoute['kind'] | null = null
+
+interface TopChromeOptions {
+     showBackButton?: boolean
+     useHistoryBack?: boolean
+}
 
 const createElement = <K extends keyof HTMLElementTagNameMap>(
      tagName: K,
@@ -34,21 +48,34 @@ const createLink = (href: string, textContent: string): HTMLAnchorElement => {
      return link
 }
 
-const createTopChrome = () => {
+const handleTopChromeBackClick = (useHistoryBack: boolean) => {
+     if (useHistoryBack && window.history.length > 1) {
+          window.history.back()
+          return
+     }
+
+     navigateTo('/feed')
+}
+
+const createTopChrome = (options: TopChromeOptions = {}) => {
      const chrome = createElement('header', 'feed-chrome')
      const nav = createElement('nav', 'feed-chrome-nav')
-     const radioLink = createElement('a', 'feed-radio-link')
      const logoLink = createElement('a', 'feed-logo-link')
      const logo = createElement('img', 'feed-logo')
 
      nav.setAttribute('aria-label', 'Навигация ленты')
-     radioLink.href = '/radio'
-     radioLink.setAttribute('aria-label', 'Вернуться к радио')
-     radioLink.title = 'Радио'
-     radioLink.append(
-          createElement('span', 'feed-radio-icon', ''),
-          createElement('span', 'feed-radio-text', 'Радио')
-     )
+
+     if (options.showBackButton) {
+          const backButton = createElement('button', 'feed-back-button', '<')
+
+          backButton.type = 'button'
+          backButton.title = 'Назад'
+          backButton.setAttribute('aria-label', 'Вернуться назад')
+          backButton.addEventListener('click', () => {
+               handleTopChromeBackClick(Boolean(options.useHistoryBack))
+          })
+          nav.append(backButton)
+     }
 
      logo.src = '/assets/sprites/logo.svg'
      logo.alt = 'Советская Волна'
@@ -56,17 +83,18 @@ const createTopChrome = () => {
      logoLink.className = 'feed-logo-link'
      logoLink.append(logo)
 
-     nav.append(radioLink)
-     chrome.append(nav, logoLink)
+     if (nav.childNodes.length > 0) chrome.append(nav)
+     chrome.append(logoLink)
 
      return chrome
 }
 
-const renderView = (children: Node[]) => {
+const renderView = (children: Node[], options: TopChromeOptions = {}) => {
      const root = document.getElementById('feed-view')
      if (!root) return
 
-     root.replaceChildren(createTopChrome(), ...children)
+     root.classList.toggle('feed-view-detail', Boolean(options.showBackButton))
+     root.replaceChildren(createTopChrome(options), ...children)
 }
 
 const renderShell = (
@@ -75,8 +103,12 @@ const renderShell = (
      actions: HTMLAnchorElement[]
 ) => {
      const routeView = createElement('article', 'feed-route feed-state')
-     const heading = createElement('h1', 'feed-title', title)
-     const summaryElement = createElement('p', 'feed-summary', summary)
+     const heading = createElement('h1', 'feed-title feed-text-heading', title)
+     const summaryElement = createElement(
+          'p',
+          'feed-summary feed-text-subheading',
+          summary
+     )
      const actionsElement = createElement('nav', 'feed-actions')
 
      actionsElement.setAttribute('aria-label', 'Навигация раздела')
@@ -225,7 +257,7 @@ const createTrackList = (post: PublicFeedPost): HTMLElement => {
      const list = createElement('ul', 'feed-post-tracks')
 
      if (post.tracks.length === 0) {
-          const item = createElement('li', 'feed-post-track')
+          const item = createElement('li', 'feed-post-track feed-text-subheading')
           item.textContent = getDisplayTitle(post)
           list.append(item)
 
@@ -233,7 +265,7 @@ const createTrackList = (post: PublicFeedPost): HTMLElement => {
      }
 
      post.tracks.forEach((track) => {
-          const item = createElement('li', 'feed-post-track')
+          const item = createElement('li', 'feed-post-track feed-text-subheading')
           const button = createElement(
                'button',
                'feed-post-track-button',
@@ -260,7 +292,9 @@ const createMeta = (post: PublicFeedPost): HTMLElement => {
      const meta = createElement('div', 'feed-post-footer')
      const city = normalizeText(post.city)
 
-     if (city) meta.append(createElement('span', 'feed-post-location', city))
+     if (city) {
+          meta.append(createElement('div', 'feed-post-location feed-text-note', city))
+     }
 
      return meta
 }
@@ -301,12 +335,58 @@ const createDetailMetaItem = (className: string, text: string): HTMLElement | nu
 const getExternalLinkLabel = (link: PublicFeedLink): string =>
      normalizeText(link.label) || link.type
 
+const parseExternalUrl = (rawUrl: string): URL | null => {
+     try {
+          return new URL(rawUrl)
+     } catch {
+          return null
+     }
+}
+
+const getNormalizedHostName = (url: URL): string =>
+     url.hostname.toLowerCase().replace(/^www\./, '')
+
+const isSovietwaveVkPostUrl = (rawUrl: string): boolean => {
+     const url = parseExternalUrl(rawUrl)
+     if (!url) return false
+
+     const host = getNormalizedHostName(url)
+
+     return (
+          (host === 'vk.com' || host === 'vk.ru') &&
+          /^\/wall-71116189_\d+\/?$/i.test(url.pathname)
+     )
+}
+
+const isSovietwaveTelegramPostUrl = (rawUrl: string): boolean => {
+     const url = parseExternalUrl(rawUrl)
+     if (!url) return false
+
+     const host = getNormalizedHostName(url)
+
+     return (
+          (host === 't.me' || host === 'telegram.me') &&
+          /^\/sovietwave\/\d+\/?$/i.test(url.pathname)
+     )
+}
+
+const isArtistExternalLink = (link: PublicFeedLink): boolean => {
+     const url = normalizeText(link.url)
+
+     return (
+          link.type !== 'source' &&
+          !isSovietwaveVkPostUrl(url) &&
+          !isSovietwaveTelegramPostUrl(url)
+     )
+}
+
 const createExternalLink = (link: PublicFeedLink): HTMLAnchorElement | null => {
      const url = normalizeText(link.url)
      if (!url) return null
 
      const anchor = createElement('a', 'feed-detail-link')
      const label = getExternalLinkLabel(link)
+     const iconName = ICON_LINK_FILE_BY_TYPE[link.type]
 
      anchor.href = url
      anchor.target = '_blank'
@@ -314,10 +394,10 @@ const createExternalLink = (link: PublicFeedLink): HTMLAnchorElement | null => {
      anchor.title = label
      anchor.setAttribute('aria-label', label)
 
-     if (ICON_LINK_TYPES.has(link.type)) {
+     if (iconName) {
           const icon = createElement('img', 'feed-detail-link-icon')
 
-          icon.src = `/assets/sprites/icons/${link.type}.svg`
+          icon.src = `/assets/sprites/icons/${iconName}.svg`
           icon.alt = ''
           icon.loading = 'lazy'
           anchor.append(icon)
@@ -332,6 +412,7 @@ const createExternalLink = (link: PublicFeedLink): HTMLAnchorElement | null => {
 const createExternalLinks = (post: PublicFeedPost): HTMLElement | null => {
      const links = createElement('nav', 'feed-detail-links')
      const anchors = post.links
+          .filter(isArtistExternalLink)
           .map(createExternalLink)
           .filter((link): link is HTMLAnchorElement => link !== null)
 
@@ -345,14 +426,12 @@ const createExternalLinks = (post: PublicFeedPost): HTMLElement | null => {
 
 const createDetailFooter = (post: PublicFeedPost): HTMLElement | null => {
      const footer = createElement('footer', 'feed-detail-footer')
-     const meta = createElement('div', 'feed-detail-meta')
+     const meta = createElement('div', 'feed-detail-meta feed-text-note')
      const city = createDetailMetaItem('feed-detail-meta-item', post.city)
-     const date = createDetailMetaItem('feed-detail-meta-item', post.date)
-     const tags = createElement('div', 'feed-detail-tags')
+     const tags = createElement('div', 'feed-detail-tags feed-text-note')
      const links = createExternalLinks(post)
 
      if (city) meta.append(city)
-     if (date) meta.append(date)
 
      createTags(post, null).forEach((tag) => {
           tag.classList.add('feed-detail-tag')
@@ -372,7 +451,13 @@ const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
      section.setAttribute('aria-label', 'Треки поста')
 
      if (post.tracks.length === 0) {
-          section.append(createElement('p', 'feed-detail-empty-tracks', 'Треков нет'))
+          section.append(
+               createElement(
+                    'p',
+                    'feed-detail-empty-tracks feed-text-subheading',
+                    'Треков нет'
+               )
+          )
           return section
      }
 
@@ -380,7 +465,10 @@ const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
 
      post.tracks.forEach((track) => {
           const item = createElement('li', 'feed-detail-track-item')
-          const button = createElement('button', 'feed-detail-track')
+          const button = createElement(
+               'button',
+               'feed-detail-track feed-text-subheading'
+          )
           const title = createElement('span', 'feed-detail-track-title', getTrackTitle(post, track))
           const artist = getTrackArtist(post, track)
 
@@ -411,15 +499,17 @@ const createDetailTrackList = (post: PublicFeedPost): HTMLElement => {
 
 const createPostDetail = (post: PublicFeedPost): HTMLElement => {
      const layout = createElement('section', 'feed-detail-view')
-     const backLink = createElement('a', 'feed-detail-back', '← Лента')
      const article = createElement('article', 'feed-detail')
      const cover = createCover(post)
      const content = createElement('div', 'feed-detail-content')
      const main = createElement('div', 'feed-detail-main')
-     const artist = createElement('h1', 'feed-detail-artist', getDisplayArtist(post))
+     const artist = createElement(
+          'h1',
+          'feed-detail-artist feed-text-heading',
+          getDisplayArtist(post)
+     )
      const footer = createDetailFooter(post)
 
-     backLink.href = '/feed'
      cover.classList.add('feed-detail-cover')
 
      main.append(artist, createDetailTrackList(post))
@@ -427,7 +517,7 @@ const createPostDetail = (post: PublicFeedPost): HTMLElement => {
      if (footer) content.append(footer)
 
      article.append(cover, content)
-     layout.append(backLink, article)
+     layout.append(article)
 
      return layout
 }
@@ -437,7 +527,11 @@ const createPostCard = (post: PublicFeedPost): HTMLElement => {
      const link = createElement('a', 'feed-post-open')
      const content = createElement('div', 'feed-post-content')
      const main = createElement('div', 'feed-post-main')
-     const artist = createElement('h2', 'feed-post-artist', getDisplayArtist(post))
+     const artist = createElement(
+          'h2',
+          'feed-post-artist feed-text-heading',
+          getDisplayArtist(post)
+     )
      const meta = createMeta(post)
 
      link.href = `/feed/${post.slug}`
@@ -445,7 +539,13 @@ const createPostCard = (post: PublicFeedPost): HTMLElement => {
 
      main.append(artist, createTrackList(post))
      content.append(main)
-     createTags(post).forEach((tag) => meta.append(tag))
+     const tags = createTags(post)
+     if (tags.length > 0) {
+          const tagsLine = createElement('div', 'feed-post-tags feed-text-note')
+
+          tagsLine.replaceChildren(...tags)
+          meta.append(tagsLine)
+     }
      if (meta.childNodes.length > 0) content.append(meta)
 
      article.append(createCover(post), content, link)
@@ -541,7 +641,10 @@ const renderFeedListRoute = async (route: { page: number }) => {
      }
 }
 
-const renderFeedPostRoute = async (route: { slug: string }) => {
+const renderFeedPostRoute = async (
+     route: { slug: string },
+     useHistoryBack: boolean
+) => {
      const token = ++renderToken
 
      renderShell('Загрузка поста...', 'Получаем публикацию', [])
@@ -560,7 +663,10 @@ const renderFeedPostRoute = async (route: { slug: string }) => {
           }
 
           document.title = `${getPostDocumentTitle(post)} | ${SITE_TITLE}`
-          renderView([createPostDetail(post)])
+          renderView([createPostDetail(post)], {
+               showBackButton: true,
+               useHistoryBack,
+          })
           updateActiveTrackElements(feedPlayerGetState())
      } catch {
           if (token !== renderToken) return
@@ -572,13 +678,16 @@ const renderFeedPostRoute = async (route: { slug: string }) => {
 }
 
 export const renderFeedRoute = (route: AppRoute) => {
+     const useHistoryBack = previousRouteKind === 'feedList'
+     previousRouteKind = route.kind
+
      switch (route.kind) {
           case 'feedList':
                void renderFeedListRoute(route)
                return
 
           case 'feedPost':
-               void renderFeedPostRoute(route)
+               void renderFeedPostRoute(route, useHistoryBack)
                return
 
           case 'notFound':
