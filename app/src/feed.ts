@@ -8,6 +8,7 @@ import {
      type FeedPlayerState,
 } from './feedPlayer'
 import { getFeedDetailPalette, type FeedDetailPalette } from './feedPalette'
+import { radioIsPlaying } from './radio'
 import { navigateTo, type AppRoute } from './router'
 
 const MAX_PAGE_SIZE = 12
@@ -227,6 +228,16 @@ const getTrackKey = (post: PublicFeedPost, track: PublicFeedTrack): string =>
 
 const getActiveTrackKey = (state: FeedPlayerState): string | null =>
      state.post && state.track ? getTrackKey(state.post, state.track) : null
+
+const shouldAutoPlayOpenedFeedPost = (
+     post: PublicFeedPost,
+     openedFromFeedList: boolean,
+     feedPlayerState: FeedPlayerState
+): boolean =>
+     openedFromFeedList &&
+     post.tracks.length > 0 &&
+     !radioIsPlaying() &&
+     feedPlayerState.status !== 'playing'
 
 const getNormalizedPageSize = (pageSize: number): number =>
      Math.min(Math.max(pageSize, 1), MAX_PAGE_SIZE)
@@ -1151,7 +1162,15 @@ const renderFeedPostRoute = async (
                useHistoryBack,
           })
           bindPostDetailPalette(post, detailView, token)
-          updateActiveTrackElements(feedPlayerGetState())
+          const feedPlayerState = feedPlayerGetState()
+
+          updateActiveTrackElements(feedPlayerState)
+
+          if (shouldAutoPlayOpenedFeedPost(post, useHistoryBack, feedPlayerState)) {
+               const firstTrack = post.tracks[0]
+
+               feedPlayerPlayTrack(post, firstTrack.id)
+          }
      } catch {
           if (token !== renderToken) return
           renderShell('Не удалось загрузить пост', 'Попробуйте обновить страницу', [

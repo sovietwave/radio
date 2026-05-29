@@ -59,6 +59,10 @@ Check:
 - A click on a track row in `/feed` starts that mp3 and keeps the current feed
   URL.
 - A click outside track rows opens `/feed/:slug`.
+- When no radio or feed mp3 is playing, a click outside track rows starts the
+  first mp3 from the opened post.
+- When radio or a feed mp3 is playing, opening a post from `/feed` does not
+  replace the current player.
 - A click on a track row in `/feed/:slug` starts that exact track.
 - The dot marker is visible only on the currently playing track.
 - Paused, errored or selected-but-not-playing tracks do not show the dot marker.
