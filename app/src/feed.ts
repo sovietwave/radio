@@ -1,6 +1,10 @@
 import { loadPublicFeedIndex } from './feedData'
 import type { PublicFeedLink, PublicFeedPost, PublicFeedTrack } from './feedTypes'
-import { feedPlayerGetState, type FeedPlayerState } from './feedPlayer'
+import {
+     feedPlayerGetState,
+     feedPlayerToggle,
+     type FeedPlayerState,
+} from './feedPlayer'
 import { navigateTo, type AppRoute } from './router'
 
 const MAX_PAGE_SIZE = 12
@@ -448,6 +452,11 @@ export const handleFeedCardPlay = (
      post: PublicFeedPost,
      track: PublicFeedTrack
 ) => {
+     if (getActiveTrackKey(feedPlayerGetState()) === getTrackKey(post, track)) {
+          feedPlayerToggle()
+          return
+     }
+
      const detail = { post, track }
 
      window.dispatchEvent(new CustomEvent('feed:play-track-request', { detail }))

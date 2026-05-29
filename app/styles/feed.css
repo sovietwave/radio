@@ -464,7 +464,7 @@ body[data-view='feed'] #feed-player-bar {
           rgba(var(--accentR), var(--accentG), var(--accentB), 0.45);
 }
 
-.feed-post-track-playing::before {
+.feed-post-track-active::before {
      content: '•';
      margin-right: 12px;
 }
@@ -524,12 +524,12 @@ body[data-view='feed'] #feed-player-bar {
      min-height: 0;
      grid-template-columns: minmax(320px, 560px) minmax(320px, 1fr);
      gap: clamp(32px, 5vw, 72px);
-     align-items: center;
+     align-items: start;
 }
 
 .feed-detail-cover.feed-cover {
      justify-self: center;
-     align-self: center;
+     align-self: start;
      width: min(
           100%,
           calc(min(54dvh, 560px) * var(--feed-cover-ratio-value, 1))
@@ -600,12 +600,11 @@ body[data-view='feed'] #feed-player-bar {
 }
 
 .feed-detail-main {
-     margin-top: auto;
-     margin-bottom: auto;
+     margin: 0;
 }
 
 .feed-detail-artist {
-     margin: 0 0 28px;
+     margin: 0 0 14px;
      color: rgba(255, 255, 255, 0.42);
      font-size: clamp(42pt, 5.2vw, 72pt);
      font-weight: normal;
@@ -652,7 +651,7 @@ body[data-view='feed'] #feed-player-bar {
           rgba(var(--accentR), var(--accentG), var(--accentB), 0.45);
 }
 
-.feed-detail-track-playing::before {
+.feed-detail-track-active::before {
      content: '•';
      flex: 0 0 auto;
 }
@@ -697,7 +696,7 @@ body[data-view='feed'] #feed-player-bar {
 
 .feed-detail-tags,
 .feed-detail-links {
-     margin-top: 16px;
+     margin-top: 8px;
 }
 
 .feed-detail-meta-item,
@@ -1016,7 +1015,7 @@ body[data-view='feed'] #feed-player-bar {
      }
 
      .feed-detail-artist {
-          margin-bottom: 28px;
+          margin-bottom: 14px;
           color: rgba(255, 255, 255, 0.62);
           font-size: 34pt;
      }
