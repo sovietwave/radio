@@ -1,5 +1,118 @@
 /* NAVI */
 
+:root {
+	--top-navi-height: 56px;
+}
+
+#top-navi {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 40;
+	display: flex;
+	height: var(--top-navi-height);
+	box-sizing: border-box;
+	align-items: center;
+	padding: 0 calc(22px + env(safe-area-inset-right)) 0 calc(24px + env(safe-area-inset-left));
+	background-color: rgba(0, 0, 0, 1);
+	box-shadow: 0 0 5px 10px rgba(0, 0, 0, 1);
+	color: #ffffff;
+	font-size: 22pt;
+	text-transform: uppercase;
+	user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+}
+
+#top-navi-logo {
+	display: flex;
+	flex: 0 0 132px;
+	height: 100%;
+	align-items: center;
+	justify-content: flex-start;
+	box-sizing: border-box;
+	padding-right: 18px;
+	opacity: 0.82;
+	text-decoration: none;
+}
+
+#top-navi-logo img {
+	display: block;
+	width: 96px;
+	max-height: 42px;
+	object-fit: contain;
+}
+
+#top-navi-logo:hover,
+.top-navi-section-link:hover {
+	opacity: 1;
+	filter: drop-shadow(0px 0px 3px rgba(var(--accentR), var(--accentG), var(--accentB), 0.7));
+	-webkit-filter: drop-shadow(0px 0px 3px rgba(var(--accentR), var(--accentG), var(--accentB), 0.7));
+}
+
+#top-navi-sections {
+	display: flex;
+	height: 100%;
+	align-items: stretch;
+}
+
+.top-navi-section-link {
+	position: relative;
+	z-index: 0;
+	display: flex;
+	min-width: 128px;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	padding: 0 22px;
+	color: #ffffff;
+	line-height: 1;
+	opacity: 0.58;
+	text-align: center;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.top-navi-section-link[aria-current='page'] {
+	opacity: 1;
+}
+
+.top-navi-section-link[aria-current='page']::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background-color: rgba(var(--accentR), var(--accentG), var(--accentB), 0.2);
+	box-shadow: 0 0 7px 2px inset rgba(0, 0, 0, 1);
+}
+
+#top-feed-search {
+	display: flex;
+	min-width: 0;
+	height: 100%;
+	align-items: center;
+	justify-content: flex-end;
+	margin-left: auto;
+	padding-left: 24px;
+}
+
+#top-feed-search[hidden],
+body:not([data-section='feed']) #top-feed-search {
+	display: none;
+}
+
+#top-feed-search .feed-search-field {
+	width: min(20vw, 230px);
+	grid-template-columns: minmax(0, 1fr) auto 34px;
+}
+
+#top-feed-search .feed-search-active .feed-search-field {
+	width: min(30vw, 400px);
+}
+
 #navi-back
 {
 	width: 100%;
@@ -273,10 +386,72 @@
 	#navi-logo{
 		display: none;
 	}
+
+	#top-navi {
+		font-size: 19pt;
+	}
+
+	#top-navi-logo {
+		flex-basis: 112px;
+	}
+
+	#top-navi-logo img {
+		width: 82px;
+		max-height: 36px;
+	}
+
+	.top-navi-section-link {
+		min-width: 106px;
+		padding: 0 16px;
+	}
+
+	#top-feed-search .feed-search-field {
+		width: min(24vw, 220px);
+	}
+
+	#top-feed-search .feed-search-active .feed-search-field {
+		width: min(32vw, 320px);
+	}
 }
 
 /* S ВЁРСТКА - Прортретная для телефонов */
 @media (max-width: 800px), (max-height: 500px){
+	:root {
+		--top-navi-height: 50px;
+	}
+
+	#top-navi {
+		padding-right: calc(12px + env(safe-area-inset-right));
+		padding-left: calc(12px + env(safe-area-inset-left));
+		font-size: 16pt;
+	}
+
+	#top-navi-logo {
+		flex-basis: 78px;
+		padding-right: 10px;
+	}
+
+	#top-navi-logo img {
+		width: 62px;
+		max-height: 30px;
+	}
+
+	.top-navi-section-link {
+		min-width: 66px;
+		padding: 0 9px;
+	}
+
+	#top-feed-search {
+		padding-left: 10px;
+	}
+
+	#top-feed-search .feed-search-field {
+		width: min(22vw, 160px);
+	}
+
+	#top-feed-search .feed-search-active .feed-search-field {
+		width: min(28vw, 220px);
+	}
 	
 	#volume-container, #volume-speaker, #standalone-only
 	{
@@ -336,8 +511,61 @@
 	}
 }
 
+@media (max-width: 520px) {
+	#top-navi-logo {
+		display: none;
+	}
+
+	#top-navi {
+		font-size: 14pt;
+	}
+
+	.top-navi-section-link {
+		min-width: 58px;
+		padding: 0 6px;
+	}
+
+	#top-feed-search .feed-search-field {
+		width: min(24vw, 126px);
+	}
+
+	#top-feed-search .feed-search-active .feed-search-field {
+		width: min(32vw, 164px);
+	}
+
+	#top-feed-search .feed-search-active .feed-search-scope {
+		display: none;
+	}
+}
+
 /* XS ВЁРСТКА - Совсем маленбкая вёрстка жесть */
 @media (max-width: 300px), (max-height: 400px){
+	:root {
+		--top-navi-height: 46px;
+	}
+
+	#top-navi {
+		padding-right: 8px;
+		padding-left: 8px;
+		font-size: 13pt;
+	}
+
+	#top-navi-logo,
+	#top-feed-search {
+		display: none;
+	}
+
+	#top-navi-sections {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.top-navi-section-link {
+		min-width: 0;
+		flex: 1 1 0;
+		padding: 0 4px;
+	}
+
 	#navi{
 		display: none;
 	}

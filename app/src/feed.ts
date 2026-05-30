@@ -63,16 +63,10 @@ const feedDetailPaletteProperties = [
 ] as const
 
 let renderToken = 0
-let previousRouteKind: AppRoute['kind'] | null = null
 let currentFeedRoute: AppRoute = { kind: 'radio' }
 let lastFeedSearchState: FeedSearchState = { ...emptyFeedSearchState }
 let activeCoverLightboxClose: (() => void) | null = null
 let pendingFeedListScroll: { slug: string; behavior: ScrollBehavior } | null = null
-
-interface TopChromeOptions {
-     showBackButton?: boolean
-     useHistoryBack?: boolean
-}
 
 interface FeedSearchState {
      scope: FeedSearchScope
@@ -85,6 +79,10 @@ interface FeedListRenderOptions {
      pageNotFoundSummary?: (totalPages: number) => string
      pageNotFoundActionHref?: string
      pageNotFoundActionText?: string
+}
+
+interface RenderViewOptions {
+     isDetail?: boolean
 }
 
 interface CoverLightboxRect {
@@ -140,29 +138,6 @@ const createLink = (href: string, textContent: string): HTMLAnchorElement => {
      link.href = href
 
      return link
-}
-
-const handleTopChromeBackClick = (useHistoryBack: boolean) => {
-     const currentPostSlug =
-          currentFeedRoute.kind === 'feedPost' ? currentFeedRoute.slug : null
-
-     if (useHistoryBack && window.history.length > 1) {
-          if (currentPostSlug) {
-               pendingFeedListScroll = {
-                    slug: currentPostSlug,
-                    behavior: 'auto',
-               }
-          }
-          window.history.back()
-          return
-     }
-
-     if (currentPostSlug) {
-          void navigateToFeedListPost(currentPostSlug, 'auto')
-          return
-     }
-
-     navigateTo('/feed')
 }
 
 const getFeedSearchOption = (scope: FeedSearchScope) =>
@@ -386,47 +361,33 @@ const createFeedSearchForm = (): HTMLFormElement => {
      return form
 }
 
-const createTopChrome = (options: TopChromeOptions = {}) => {
-     const chrome = createElement('header', 'feed-chrome')
-     const nav = createElement('nav', 'feed-chrome-nav')
-     const logoLink = createElement('a', 'feed-logo-link')
-     const logo = createElement('img', 'feed-logo')
+const shouldShowTopFeedSearch = (route: AppRoute): boolean =>
+     route.kind === 'feedList' ||
+     route.kind === 'feedSearch' ||
+     route.kind === 'feedPost'
 
-     nav.setAttribute('aria-label', 'Навигация ленты')
+const renderTopFeedSearch = (route: AppRoute) => {
+     const root = document.getElementById('top-feed-search')
+     if (!root) return
 
-     if (options.showBackButton) {
-          const backButton = createElement('button', 'feed-back-button', '<')
+     root.replaceChildren()
 
-          backButton.type = 'button'
-          backButton.title = 'Назад'
-          backButton.setAttribute('aria-label', 'Вернуться назад')
-          backButton.addEventListener('click', () => {
-               handleTopChromeBackClick(Boolean(options.useHistoryBack))
-          })
-          nav.append(backButton)
+     if (!shouldShowTopFeedSearch(route)) {
+          root.hidden = true
+          return
      }
 
-     nav.append(createFeedSearchForm())
-
-     logo.src = '/assets/sprites/logo.svg'
-     logo.alt = 'Советская Волна'
-     logoLink.href = '/feed'
-     logoLink.className = 'feed-logo-link'
-     logoLink.append(logo)
-
-     chrome.append(nav)
-     chrome.append(logoLink)
-
-     return chrome
+     root.hidden = false
+     root.append(createFeedSearchForm())
 }
 
-const renderView = (children: Node[], options: TopChromeOptions = {}) => {
+const renderView = (children: Node[], options: RenderViewOptions = {}) => {
      const root = document.getElementById('feed-view')
      if (!root) return
 
-     root.classList.toggle('feed-view-detail', Boolean(options.showBackButton))
+     root.classList.toggle('feed-view-detail', Boolean(options.isDetail))
      clearFeedDetailPalette(root)
-     root.replaceChildren(createTopChrome(options), ...children)
+     root.replaceChildren(...children)
 }
 
 const renderShell = (
@@ -1540,10 +1501,7 @@ const renderFeedSearchRoute = async (
      }
 }
 
-const renderFeedPostRoute = async (
-     route: { slug: string },
-     useHistoryBack: boolean
-) => {
+const renderFeedPostRoute = async (route: { slug: string }) => {
      const token = ++renderToken
 
      renderShell('Загрузка поста...', 'Получаем публикацию', [])
@@ -1567,10 +1525,7 @@ const renderFeedPostRoute = async (
           const detailView = createPostDetail(post, previousPost, nextPost)
 
           document.title = `${getPostDocumentTitle(post)} | ${SITE_TITLE}`
-          renderView([detailView], {
-               showBackButton: true,
-               useHistoryBack,
-          })
+          renderView([detailView], { isDetail: true })
           bindPostDetailPalette(post, detailView, token)
           selectInitialFeedPlayerTrack([post])
           updateActiveTrackElements(feedPlayerGetState())
@@ -1583,20 +1538,37 @@ const renderFeedPostRoute = async (
      }
 }
 
+const clearFeedView = () => {
+     const root = document.getElementById('feed-view')
+
+     if (!root) return
+
+     root.classList.remove('feed-view-detail')
+     clearFeedDetailPalette(root)
+     root.replaceChildren()
+}
+
+const renderAboutRoute = () => {
+     ++renderToken
+     renderShell('О нас', 'Раздел будет добавлен позже', [
+          createLink('/feed', 'Лента'),
+          createLink('/radio', 'Радио'),
+     ])
+}
+
 export const renderFeedRoute = (route: AppRoute) => {
-     const useHistoryBack =
-          previousRouteKind === 'feedList' || previousRouteKind === 'feedSearch'
      currentFeedRoute = route
-     previousRouteKind = route.kind
 
      if (route.kind === 'feedSearch') {
           lastFeedSearchState = {
                scope: route.scope,
                query: route.query,
           }
-     } else if (route.kind === 'feedList' || route.kind === 'radio') {
+     } else if (route.kind !== 'feedPost') {
           lastFeedSearchState = { ...emptyFeedSearchState }
      }
+
+     renderTopFeedSearch(route)
 
      switch (route.kind) {
           case 'feedList':
@@ -1608,7 +1580,11 @@ export const renderFeedRoute = (route: AppRoute) => {
                return
 
           case 'feedPost':
-               void renderFeedPostRoute(route, useHistoryBack)
+               void renderFeedPostRoute(route)
+               return
+
+          case 'about':
+               renderAboutRoute()
                return
 
           case 'notFound':
@@ -1621,15 +1597,7 @@ export const renderFeedRoute = (route: AppRoute) => {
 
           case 'radio':
                ++renderToken
-               {
-                    const root = document.getElementById('feed-view')
-
-                    if (root) {
-                         root.classList.remove('feed-view-detail')
-                         clearFeedDetailPalette(root)
-                         root.replaceChildren()
-                    }
-               }
+               clearFeedView()
                return
      }
 }

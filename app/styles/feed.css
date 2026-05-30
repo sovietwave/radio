@@ -10,7 +10,7 @@
 
 #feed-view {
      position: fixed;
-     top: 0;
+     top: var(--top-navi-height, 56px);
      right: 0;
      bottom: 70px;
      left: 0;
@@ -506,7 +506,7 @@ body[data-view='feed'] #feed-player-bar {
      box-sizing: border-box;
      width: min(100%, 1060px);
      margin: 0 auto;
-     padding: 112px 0 40px;
+     padding: 96px 0 40px;
 }
 
 .feed-list-heading {
@@ -768,7 +768,7 @@ body[data-view='feed'] #feed-player-bar {
      display: flex;
      flex-direction: column;
      width: min(100%, 1280px);
-     min-height: calc(100dvh - 105px);
+     min-height: calc(100dvh - var(--top-navi-height, 56px) - 70px);
      margin: 0 auto;
      padding: 24px 0 28px;
      align-items: center;
@@ -1089,7 +1089,7 @@ body[data-view='feed'] #feed-player-bar {
 
 .feed-route {
      box-sizing: border-box;
-     min-height: calc(100% - 35px);
+     min-height: calc(100dvh - var(--top-navi-height, 56px) - 70px);
      max-width: 1120px;
      margin: 0 auto;
      padding: 96px 0;
@@ -1100,7 +1100,7 @@ body[data-view='feed'] #feed-player-bar {
 }
 
 .feed-state {
-     min-height: calc(100dvh - 105px);
+     min-height: calc(100dvh - var(--top-navi-height, 56px) - 70px);
 }
 
 .feed-title {
@@ -1402,7 +1402,7 @@ body[data-view='feed'] #feed-player-bar {
 
      .feed-route {
           justify-content: flex-start;
-          min-height: calc(100dvh - 105px);
+          min-height: calc(100dvh - var(--top-navi-height, 50px) - 70px);
           padding-top: 48px;
      }
 
@@ -1447,6 +1447,12 @@ body[data-view='feed'] #feed-player-bar {
      #feed-view {
           bottom: 0;
           padding-bottom: 40px;
+     }
+
+     .feed-route,
+     .feed-state,
+     .feed-detail-view {
+          min-height: calc(100dvh - var(--top-navi-height, 46px));
      }
 
      .feed-chrome {

@@ -20,10 +20,47 @@ const setHidden = (elementId: string, hidden: boolean) => {
      if (element) element.hidden = hidden
 }
 
+const getRouteSection = (route: AppRoute): string | null => {
+     switch (route.kind) {
+          case 'radio':
+               return 'radio'
+          case 'about':
+               return 'about'
+          case 'feedList':
+          case 'feedSearch':
+          case 'feedPost':
+               return 'feed'
+          case 'notFound':
+               return null
+     }
+}
+
+const updateTopNavigation = (route: AppRoute) => {
+     const section = getRouteSection(route)
+
+     if (section) {
+          document.body.dataset.section = section
+     } else {
+          delete document.body.dataset.section
+     }
+
+     document
+          .querySelectorAll<HTMLAnchorElement>('[data-top-section]')
+          .forEach((link) => {
+               if (link.dataset.topSection === section) {
+                    link.setAttribute('aria-current', 'page')
+               } else {
+                    link.removeAttribute('aria-current')
+               }
+          })
+}
+
 const getRouteTitle = (route: AppRoute): string => {
      switch (route.kind) {
           case 'radio':
                return siteTitle
+          case 'about':
+               return `О нас | ${siteTitle}`
           case 'feedList':
                return route.page === 1
                     ? `Лента | ${siteTitle}`
@@ -48,6 +85,7 @@ const renderRoute = (route: AppRoute) => {
 
      if (isRadio) feedPlayerStop()
      document.body.dataset.view = isRadio ? 'radio' : 'feed'
+     updateTopNavigation(route)
      setHidden('radio-view', !isRadio)
      setHidden('feed-view', isRadio)
      document.title = getRouteTitle(route)

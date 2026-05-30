@@ -2,6 +2,7 @@ export type FeedSearchScope = 'q' | 'artist' | 'music' | 'tag' | 'city'
 
 export type AppRoute =
      | { kind: 'radio' }
+     | { kind: 'about' }
      | { kind: 'feedList'; page: number }
      | {
             kind: 'feedSearch'
@@ -83,6 +84,10 @@ export const parseRoute = (pathname: string, search = ''): AppRoute => {
 
      if (path === '/' || path === '/radio') {
           return { kind: 'radio' }
+     }
+
+     if (path === '/about') {
+          return { kind: 'about' }
      }
 
      const segments = path.slice(1).split('/')

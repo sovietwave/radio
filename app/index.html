@@ -33,8 +33,22 @@
     <title>Советская Волна #sovietwave</title>
 </head>
 
-<body data-view="radio">
+<body data-view="radio" data-section="radio">
     <div id="cover-image"></div>
+
+    <header id="top-navi" aria-label="Навигация сайта">
+        <a href="/radio" id="top-navi-logo" aria-label="Советская Волна">
+            <img src="/assets/sprites/logo.svg" alt="Советская Волна" />
+        </a>
+
+        <nav id="top-navi-sections" aria-label="Разделы">
+            <a href="/feed" class="top-navi-section-link" data-top-section="feed">Лента</a>
+            <a href="/radio" class="top-navi-section-link" data-top-section="radio">Радио</a>
+            <a href="/about" class="top-navi-section-link" data-top-section="about">О нас</a>
+        </nav>
+
+        <div id="top-feed-search"></div>
+    </header>
 
     <div id="hide-on-micro">
         <div id="bright-overlay" onclick="hideLeftPanels()"></div>
