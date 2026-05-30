@@ -206,6 +206,7 @@ body[data-view='feed'] #feed-player-bar {
      display: grid;
      grid-template-columns: 36px 48px 36px minmax(120px, 1fr) 92px;
      gap: 16px;
+     height: 100%;
      align-items: center;
 }
 
@@ -260,8 +261,27 @@ body[data-view='feed'] #feed-player-bar {
      display: block;
 }
 
+#feed-player-progress-container {
+     width: 100%;
+     min-width: 0;
+     height: 100%;
+     box-sizing: border-box;
+     padding-right: 10px;
+     padding-left: 10px;
+}
+
 #feed-player-progress {
      width: 100%;
+     height: 100%;
+     cursor: pointer;
+}
+
+#feed-player-progress:active {
+     cursor: grabbing;
+}
+
+#feed-player-progress:disabled {
+     cursor: not-allowed;
 }
 
 #feed-player-time {
