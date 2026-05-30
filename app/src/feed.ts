@@ -81,6 +81,7 @@ interface FeedSearchState {
 
 interface FeedListRenderOptions {
      getPageHref?: (page: number) => string
+     hideSinglePagePagination?: boolean
      pageNotFoundSummary?: (totalPages: number) => string
      pageNotFoundActionHref?: string
      pageNotFoundActionText?: string
@@ -450,7 +451,6 @@ const getPostArtistSearchValues = (post: PublicFeedPost): string[] => [
 ]
 
 const getPostMusicSearchValues = (post: PublicFeedPost): string[] => [
-     post.title,
      getDisplayTitle(post),
      ...post.tracks.map((track) => track.title),
 ]
@@ -1399,7 +1399,10 @@ const renderFeedList = (
           list.append(createPostCard(post))
      })
 
-     layout.append(list, createPagination(page, totalPages, createPageHref))
+     layout.append(list)
+     if (!options.hideSinglePagePagination || totalPages > 1) {
+          layout.append(createPagination(page, totalPages, createPageHref))
+     }
      renderView([layout])
      updateActiveTrackElements(feedPlayerGetState())
      scrollFeedListTargetIntoView(page, posts, pageSize)
@@ -1458,6 +1461,7 @@ const renderFeedSearchRoute = async (
 
           renderFeedList(route.page, posts, index.pageSize, {
                getPageHref: (page) => createFeedSearchHref(search, page),
+               hideSinglePagePagination: true,
                pageNotFoundSummary: (totalPages) =>
                     `В результатах всего ${totalPages}`,
                pageNotFoundActionHref: createFeedSearchHref(search, 1),
