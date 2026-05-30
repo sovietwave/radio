@@ -205,18 +205,67 @@ const isActiveAudioElementSource = () => {
      return feedAudio.currentSrc === activeAudioUrl || feedAudio.src === activeAudioUrl
 }
 
+const getTrackSelection = (
+     post: PublicFeedPost,
+     trackId: string
+): { track: PublicFeedTrack; trackIndex: number } | null => {
+     const trackIndex = post.tracks.findIndex((track) => track.id === trackId)
+     const track = post.tracks[trackIndex]
+
+     return trackIndex >= 0 && track ? { track, trackIndex } : null
+}
+
+const isSelectedTrackLoaded = () => {
+     if (!feedAudio || !state.track || !activeAudioUrl) return false
+
+     const audioUrl = getAbsoluteAudioUrl(state.track.audioUrl)
+
+     return (
+          activeAudioUrl === audioUrl &&
+          (feedAudio.currentSrc === audioUrl || feedAudio.src === audioUrl)
+     )
+}
+
 export const feedPlayerGetState = (): FeedPlayerState => cloneState()
+
+export const feedPlayerSelectTrack = (
+     post: PublicFeedPost,
+     trackId: string
+): boolean => {
+     if (!feedAudio) return false
+
+     const selection = getTrackSelection(post, trackId)
+     if (!selection) return false
+
+     activeRequestId += 1
+     activeAudioUrl = ''
+     feedAudio.pause()
+     feedAudio.removeAttribute('src')
+     feedAudio.load()
+
+     setState({
+          status: 'paused',
+          post,
+          track: selection.track,
+          trackIndex: selection.trackIndex,
+          currentTime: 0,
+          duration: selection.track.duration,
+          error: null,
+     })
+
+     return true
+}
 
 export const feedPlayerPlayTrack = (
      post: PublicFeedPost,
      trackId: string
 ) => {
-     const trackIndex = post.tracks.findIndex((track) => track.id === trackId)
-     const track = post.tracks[trackIndex]
+     const selection = getTrackSelection(post, trackId)
 
-     if (!feedAudio || trackIndex < 0 || !track) return
+     if (!feedAudio || !selection) return
 
      const requestId = activeRequestId + 1
+     const { track, trackIndex } = selection
      const audioUrl = getAbsoluteAudioUrl(track.audioUrl)
 
      activeRequestId = requestId
@@ -276,6 +325,14 @@ export const feedPlayerToggle = () => {
           feedPlayerPlayTrack(state.post, state.track.id)
           return
      }
+
+     if (!isSelectedTrackLoaded()) {
+          feedPlayerPlayTrack(state.post, state.track.id)
+          return
+     }
+
+     radioStopPlayback()
+     setAudioVolume(radioGetVolume())
 
      void feedAudio.play().catch(() => {
           setState({

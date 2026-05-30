@@ -740,6 +740,28 @@ body[data-view='feed'] #feed-player-bar {
      margin-left: 0;
 }
 
+.feed-metadata-link {
+     position: relative;
+     z-index: 3;
+     color: inherit;
+     cursor: pointer;
+     font: inherit;
+     opacity: inherit;
+     overflow-wrap: inherit;
+     pointer-events: auto;
+     text-decoration: none;
+     text-transform: inherit;
+}
+
+.feed-metadata-link:hover,
+.feed-metadata-link:focus-visible {
+     color: rgba(255, 255, 255, 1);
+     opacity: 1;
+     outline: 0;
+     text-shadow: 0 0 4px
+          rgba(var(--accentR), var(--accentG), var(--accentB), 0.45);
+}
+
 .feed-detail-view {
      position: relative;
      box-sizing: border-box;

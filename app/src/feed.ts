@@ -3,12 +3,12 @@ import type { PublicFeedLink, PublicFeedPost, PublicFeedTrack } from './feedType
 import {
      feedPlayerGetState,
      feedPlayerPlayTrack,
+     feedPlayerSelectTrack,
      feedPlayerToggle,
      type FeedPlayerAdjacentTrackDirection,
      type FeedPlayerState,
 } from './feedPlayer'
 import { getFeedDetailPalette, type FeedDetailPalette } from './feedPalette'
-import { radioIsPlaying } from './radio'
 import { navigateTo, type AppRoute, type FeedSearchScope } from './router'
 
 const MAX_PAGE_SIZE = 12
@@ -201,6 +201,42 @@ const createFeedSearchHref = (
      if (page > 1) params.set('page', `${page}`)
 
      return `/feed/search?${params.toString()}`
+}
+
+const shouldHandleSearchLinkClick = (event: MouseEvent): boolean =>
+     !event.defaultPrevented &&
+     event.button === 0 &&
+     !event.metaKey &&
+     !event.ctrlKey &&
+     !event.shiftKey &&
+     !event.altKey
+
+const createFeedSearchLink = (
+     scope: FeedSearchScope,
+     query: string,
+     className: string,
+     textContent?: string
+): HTMLAnchorElement | null => {
+     const value = normalizeText(query)
+     if (!value) return null
+
+     const link = createElement(
+          'a',
+          `${className} feed-metadata-link`,
+          textContent ?? value
+     )
+     const href = createFeedSearchHref({ scope, query: value })
+
+     link.href = href
+     link.addEventListener('click', (event) => {
+          if (!shouldHandleSearchLinkClick(event)) return
+
+          event.preventDefault()
+          event.stopPropagation()
+          navigateTo(href)
+     })
+
+     return link
 }
 
 const createSearchScopeControl = (
@@ -505,15 +541,19 @@ const getTrackKey = (post: PublicFeedPost, track: PublicFeedTrack): string =>
 const getActiveTrackKey = (state: FeedPlayerState): string | null =>
      state.post && state.track ? getTrackKey(state.post, state.track) : null
 
-const shouldAutoPlayOpenedFeedPost = (
-     post: PublicFeedPost,
-     openedFromFeedList: boolean,
-     feedPlayerState: FeedPlayerState
-): boolean =>
-     openedFromFeedList &&
-     post.tracks.length > 0 &&
-     !radioIsPlaying() &&
-     feedPlayerState.status !== 'playing'
+const hasSelectedFeedTrack = (state: FeedPlayerState): boolean =>
+     Boolean(state.post && state.track)
+
+const selectInitialFeedPlayerTrack = (posts: PublicFeedPost[]): boolean => {
+     if (hasSelectedFeedTrack(feedPlayerGetState())) return false
+
+     const post = posts.find((item) => item.tracks.length > 0)
+     const track = post?.tracks[0]
+
+     if (!post || !track) return false
+
+     return feedPlayerSelectTrack(post, track.id)
+}
 
 const getNormalizedPageSize = (pageSize: number): number =>
      Math.min(Math.max(pageSize, 1), MAX_PAGE_SIZE)
@@ -994,7 +1034,14 @@ const createMeta = (post: PublicFeedPost): HTMLElement => {
      const city = normalizeText(post.city)
 
      if (city) {
-          meta.append(createElement('div', 'feed-post-location feed-text-note', city))
+          const cityLink = createFeedSearchLink(
+               'city',
+               city,
+               'feed-post-location feed-text-note',
+               city
+          )
+
+          if (cityLink) meta.append(cityLink)
      }
 
      return meta
@@ -1011,7 +1058,9 @@ const createTags = (
           const value = normalizeText(tag)
           if (!value) return
 
-          tags.push(createElement('span', 'feed-post-tag', `#${value}`))
+          const tagLink = createFeedSearchLink('tag', value, 'feed-post-tag', `#${value}`)
+
+          if (tagLink) tags.push(tagLink)
      })
 
      return tags
@@ -1035,7 +1084,7 @@ const createDetailMetaItem = (className: string, text: string): HTMLElement | nu
      const value = normalizeText(text)
      if (!value) return null
 
-     return createElement('span', className, value)
+     return createFeedSearchLink('city', value, className, value)
 }
 
 const getExternalLinkLabel = (link: PublicFeedLink): string =>
@@ -1267,16 +1316,23 @@ const createPostDetail = (
      const cover = createCover(post)
      const content = createElement('div', 'feed-detail-content')
      const main = createElement('div', 'feed-detail-main')
+     const artistName = getDisplayArtist(post)
      const artist = createElement(
           'h1',
-          'feed-detail-artist feed-text-heading',
-          getDisplayArtist(post)
+          'feed-detail-artist feed-text-heading'
+     )
+     const artistLink = createFeedSearchLink(
+          'artist',
+          artistName,
+          'feed-artist-link',
+          artistName
      )
      const footer = createDetailFooter(post)
 
      cover.classList.add('feed-detail-cover')
      bindDetailCoverLightbox(cover)
 
+     artist.append(artistLink ?? artistName)
      main.append(artist, createDetailTrackList(post))
      content.append(main)
      if (footer) content.append(footer)
@@ -1292,10 +1348,16 @@ const createPostCard = (post: PublicFeedPost): HTMLElement => {
      const link = createElement('a', 'feed-post-open')
      const content = createElement('div', 'feed-post-content')
      const main = createElement('div', 'feed-post-main')
+     const artistName = getDisplayArtist(post)
      const artist = createElement(
           'h2',
-          'feed-post-artist feed-text-heading',
-          getDisplayArtist(post)
+          'feed-post-artist feed-text-heading'
+     )
+     const artistLink = createFeedSearchLink(
+          'artist',
+          artistName,
+          'feed-artist-link',
+          artistName
      )
      const meta = createMeta(post)
 
@@ -1304,6 +1366,7 @@ const createPostCard = (post: PublicFeedPost): HTMLElement => {
      link.href = `/feed/${post.slug}`
      link.setAttribute('aria-label', `${getDisplayArtist(post)} - ${getDisplayTitle(post)}`)
 
+     artist.append(artistLink ?? artistName)
      main.append(artist, createTrackList(post))
      content.append(main)
      const tags = createTags(post)
@@ -1404,6 +1467,7 @@ const renderFeedList = (
           layout.append(createPagination(page, totalPages, createPageHref))
      }
      renderView([layout])
+     selectInitialFeedPlayerTrack(pagePosts)
      updateActiveTrackElements(feedPlayerGetState())
      scrollFeedListTargetIntoView(page, posts, pageSize)
 }
@@ -1508,15 +1572,8 @@ const renderFeedPostRoute = async (
                useHistoryBack,
           })
           bindPostDetailPalette(post, detailView, token)
-          const feedPlayerState = feedPlayerGetState()
-
-          updateActiveTrackElements(feedPlayerState)
-
-          if (shouldAutoPlayOpenedFeedPost(post, useHistoryBack, feedPlayerState)) {
-               const firstTrack = post.tracks[0]
-
-               feedPlayerPlayTrack(post, firstTrack.id)
-          }
+          selectInitialFeedPlayerTrack([post])
+          updateActiveTrackElements(feedPlayerGetState())
      } catch {
           if (token !== renderToken) return
           renderShell('Не удалось загрузить пост', 'Попробуйте обновить страницу', [
