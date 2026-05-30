@@ -3,24 +3,27 @@
         {
             "path": "/assets/sprites/bg/v1/day0.jpg",
             "tags": [
-                "full",
-                "v1"
+                "day",
+                "v1",
+                "full"
             ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/v1/day1.jpg",
             "tags": [
-                "full",
-                "v1"
+                "day",
+                "v1",
+                "full"
             ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/v1/day2.jpg",
             "tags": [
-                "full",
-                "v1"
+                "day",
+                "v1",
+                "full"
             ],
             "mobilePath": null
         },
@@ -35,6 +38,7 @@
         {
             "path": "/assets/sprites/bg/day1.jpg",
             "tags": [
+                "day",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/day1.jpg"
@@ -42,6 +46,7 @@
         {
             "path": "/assets/sprites/bg/day2.jpg",
             "tags": [
+                "day",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/day2.jpg"
@@ -98,7 +103,6 @@
         {
             "path": "/assets/sprites/bg/day10.jpg",
             "tags": [
-                "day",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/day10.jpg"
@@ -106,7 +110,6 @@
         {
             "path": "/assets/sprites/bg/evening1.jpg",
             "tags": [
-                "evening",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/evening1.jpg"
@@ -114,6 +117,7 @@
         {
             "path": "/assets/sprites/bg/evening2.jpg",
             "tags": [
+                "evening",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/evening2.jpg"
@@ -121,7 +125,6 @@
         {
             "path": "/assets/sprites/bg/evening3.jpg",
             "tags": [
-                "evening",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/evening3.jpg"
@@ -136,7 +139,6 @@
         {
             "path": "/assets/sprites/bg/evening5.jpg",
             "tags": [
-                "evening",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/evening5.jpg"
@@ -179,16 +181,18 @@
         {
             "path": "/assets/sprites/bg/v1/evening0.jpg",
             "tags": [
-                "full",
-                "v1"
+                "evening",
+                "v1",
+                "full"
             ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/v1/evening1.jpg",
             "tags": [
-                "full",
-                "v1"
+                "evening",
+                "v1",
+                "full"
             ],
             "mobilePath": null
         },
@@ -218,6 +222,7 @@
         {
             "path": "/assets/sprites/bg/midnight2.jpg",
             "tags": [
+                "midnight",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/midnight2.jpg"
@@ -239,7 +244,6 @@
         {
             "path": "/assets/sprites/bg/midnight5.jpg",
             "tags": [
-                "midnight",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/midnight5.jpg"
@@ -247,7 +251,6 @@
         {
             "path": "/assets/sprites/bg/midnight6.jpg",
             "tags": [
-                "midnight",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/midnight6.jpg"
@@ -255,39 +258,39 @@
         {
             "path": "/assets/sprites/bg/v1/night0.jpg",
             "tags": [
-                "full",
-                "v1"
+                "v1",
+                "full"
             ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/v1/night1.jpg",
             "tags": [
-                "full",
-                "v1"
+                "v1",
+                "full"
             ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/v1/night2.jpg",
             "tags": [
-                "full",
-                "v1"
+                "v1",
+                "full"
             ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/v1/night3.jpg",
             "tags": [
-                "full",
-                "v1"
+                "midnight",
+                "v1",
+                "full"
             ],
             "mobilePath": null
         },
         {
             "path": "/assets/sprites/bg/night1.jpg",
             "tags": [
-                "night",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/night1.jpg"
@@ -330,7 +333,7 @@
         {
             "path": "/assets/sprites/bg/night7.jpg",
             "tags": [
-                "night",
+                "midnight",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/night7.jpg"
@@ -362,6 +365,7 @@
         {
             "path": "/assets/sprites/bg/night10.jpg",
             "tags": [
+                "midnight",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/night10.jpg"
@@ -373,14 +377,13 @@
         },
         {
             "path": "/assets/sprites/bg/night12.jpg",
-            "tags": [
-                "night"
-            ],
+            "tags": [],
             "mobilePath": "/assets/sprites/bg/mobile/night12.jpg"
         },
         {
             "path": "/assets/sprites/bg/event_120425/1.jpg",
             "tags": [
+                "night",
                 "event"
             ],
             "mobilePath": "/assets/sprites/bg/event_120425/mobile/1.jpg"
@@ -402,6 +405,7 @@
         {
             "path": "/assets/sprites/bg/event_120425/4.jpg",
             "tags": [
+                "night",
                 "event"
             ],
             "mobilePath": "/assets/sprites/bg/event_120425/mobile/4.jpg"
@@ -437,6 +441,7 @@
         {
             "path": "/assets/sprites/bg/event_120425/9.jpg",
             "tags": [
+                "night",
                 "event"
             ],
             "mobilePath": "/assets/sprites/bg/event_120425/mobile/9.jpg"
@@ -444,6 +449,7 @@
         {
             "path": "/assets/sprites/bg/event_120425/10.jpg",
             "tags": [
+                "night",
                 "event"
             ],
             "mobilePath": "/assets/sprites/bg/event_120425/mobile/10.jpg"
@@ -493,6 +499,7 @@
         {
             "path": "/assets/sprites/bg/evening11.jpg",
             "tags": [
+                "evening",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/evening11.jpg"
@@ -685,7 +692,6 @@
         {
             "path": "/assets/sprites/bg/day20.jpg",
             "tags": [
-                "day",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/day20.jpg"
@@ -693,7 +699,6 @@
         {
             "path": "/assets/sprites/bg/day19.jpg",
             "tags": [
-                "day",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/day19.jpg"
