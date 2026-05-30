@@ -9,11 +9,29 @@ import {
 } from './feedPlayer'
 import { getFeedDetailPalette, type FeedDetailPalette } from './feedPalette'
 import { radioIsPlaying } from './radio'
-import { navigateTo, type AppRoute } from './router'
+import { navigateTo, type AppRoute, type FeedSearchScope } from './router'
 
 const MAX_PAGE_SIZE = 12
 const MAX_VISIBLE_TAGS = 3
 const SITE_TITLE = 'Советская Волна #sovietwave'
+const defaultFeedSearchScope: FeedSearchScope = 'q'
+const emptyFeedSearchState: FeedSearchState = {
+     scope: defaultFeedSearchScope,
+     query: '',
+}
+const feedSearchOptions: { scope: FeedSearchScope; label: string }[] = [
+     { scope: 'q', label: 'Везде' },
+     { scope: 'artist', label: 'Артисты' },
+     { scope: 'music', label: 'Песни' },
+     { scope: 'tag', label: 'Стили' },
+     { scope: 'city', label: 'Города' },
+]
+const feedSearchMatchScopes: Exclude<FeedSearchScope, 'q'>[] = [
+     'artist',
+     'music',
+     'tag',
+     'city',
+]
 const ICON_LINK_FILE_BY_TYPE: Partial<Record<PublicFeedLink['type'], string>> = {
      bandcamp: 'bandcamp',
      soundcloud: 'soundcloud',
@@ -47,12 +65,25 @@ const feedDetailPaletteProperties = [
 let renderToken = 0
 let previousRouteKind: AppRoute['kind'] | null = null
 let currentFeedRoute: AppRoute = { kind: 'radio' }
+let lastFeedSearchState: FeedSearchState = { ...emptyFeedSearchState }
 let activeCoverLightboxClose: (() => void) | null = null
 let pendingFeedListScroll: { slug: string; behavior: ScrollBehavior } | null = null
 
 interface TopChromeOptions {
      showBackButton?: boolean
      useHistoryBack?: boolean
+}
+
+interface FeedSearchState {
+     scope: FeedSearchScope
+     query: string
+}
+
+interface FeedListRenderOptions {
+     getPageHref?: (page: number) => string
+     pageNotFoundSummary?: (totalPages: number) => string
+     pageNotFoundActionHref?: string
+     pageNotFoundActionText?: string
 }
 
 interface CoverLightboxRect {
@@ -133,6 +164,191 @@ const handleTopChromeBackClick = (useHistoryBack: boolean) => {
      navigateTo('/feed')
 }
 
+const getFeedSearchOption = (scope: FeedSearchScope) =>
+     feedSearchOptions.find((option) => option.scope === scope) ??
+     { scope: defaultFeedSearchScope, label: 'Везде' }
+
+const stripWrappingSearchQuotes = (value: string): string => {
+     const trimmed = value.trim()
+     const first = trimmed[0]
+     const last = trimmed[trimmed.length - 1]
+
+     if (
+          trimmed.length >= 2 &&
+          ((first === '"' && last === '"') || (first === "'" && last === "'"))
+     ) {
+          return trimmed.slice(1, -1).trim()
+     }
+
+     return trimmed
+}
+
+const getCleanSearchQuery = (value: string): string =>
+     stripWrappingSearchQuotes(value)
+
+const createFeedSearchHref = (
+     search: FeedSearchState,
+     page = 1
+): string => {
+     const query = getCleanSearchQuery(search.query)
+
+     if (!query) return '/feed'
+
+     const params = new URLSearchParams()
+
+     params.set(search.scope, query)
+     if (page > 1) params.set('page', `${page}`)
+
+     return `/feed/search?${params.toString()}`
+}
+
+const createSearchScopeControl = (
+     initialScope: FeedSearchScope,
+     onScopeChange: (scope: FeedSearchScope) => void
+) => {
+     const control = createElement('div', 'feed-search-scope')
+     const button = createElement('button', 'feed-search-scope-button')
+     const menu = createElement('div', 'feed-search-scope-menu')
+     let selectedScope = initialScope
+
+     const setSelectedScope = (scope: FeedSearchScope) => {
+          const shouldNotify = selectedScope !== scope
+
+          selectedScope = scope
+          button.textContent = getFeedSearchOption(scope).label
+          setOpen(false)
+          renderMenu()
+          if (shouldNotify) onScopeChange(scope)
+     }
+
+     const renderMenu = () => {
+          const items = feedSearchOptions
+               .filter((option) => option.scope !== selectedScope)
+               .map((option) => {
+                    const item = createElement(
+                         'button',
+                         'feed-search-scope-option',
+                         option.label
+                    )
+
+                    item.type = 'button'
+                    item.setAttribute('role', 'option')
+                    item.addEventListener('pointerdown', (event) => {
+                         event.preventDefault()
+                         setSelectedScope(option.scope)
+                    })
+                    item.addEventListener('click', (event) => {
+                         event.preventDefault()
+                         setSelectedScope(option.scope)
+                    })
+
+                    return item
+               })
+
+          menu.replaceChildren(...items)
+     }
+
+     const setOpen = (isOpen: boolean) => {
+          control.classList.toggle('feed-search-scope-open', isOpen)
+          button.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+     }
+
+     button.type = 'button'
+     button.textContent = getFeedSearchOption(selectedScope).label
+     button.setAttribute('aria-haspopup', 'listbox')
+     button.setAttribute('aria-expanded', 'false')
+     button.setAttribute('aria-label', 'Область поиска')
+     button.addEventListener('click', () => {
+          setOpen(!control.classList.contains('feed-search-scope-open'))
+     })
+
+     menu.setAttribute('role', 'listbox')
+     renderMenu()
+     control.append(button, menu)
+
+     return {
+          element: control,
+          getScope: () => selectedScope,
+          close: () => setOpen(false),
+     }
+}
+
+const createFeedSearchForm = (): HTMLFormElement => {
+     const form = createElement('form', 'feed-search') as HTMLFormElement
+     const field = createElement('div', 'feed-search-field')
+     const input = createElement('input', 'feed-search-input') as HTMLInputElement
+     const submitButton = createElement('button', 'feed-search-submit')
+     const submitIcon = createElement('img', 'feed-search-submit-icon')
+
+     input.type = 'text'
+     input.autocomplete = 'off'
+     input.spellcheck = false
+     input.placeholder = 'Найти'
+     input.value = lastFeedSearchState.query
+     input.setAttribute('aria-label', 'Поиск по ленте')
+
+     const scopeControl = createSearchScopeControl(
+          lastFeedSearchState.scope,
+          (scope) => {
+               const query = getCleanSearchQuery(input.value)
+
+               if (!query) return
+
+               navigateTo(createFeedSearchHref({ scope, query }))
+          }
+     )
+
+     submitButton.type = 'submit'
+     submitButton.title = 'Найти'
+     submitButton.setAttribute('aria-label', 'Найти')
+     submitIcon.src = '/assets/sprites/icons/search.svg'
+     submitIcon.alt = ''
+     submitIcon.setAttribute('aria-hidden', 'true')
+     submitButton.append(submitIcon)
+
+     const updateActiveState = () => {
+          const hasFocus = form.contains(document.activeElement)
+          const hasQuery = input.value.trim().length > 0
+
+          form.classList.toggle('feed-search-active', hasFocus || hasQuery)
+          input.placeholder = hasFocus || hasQuery ? '' : 'Найти'
+     }
+
+     form.addEventListener('submit', (event) => {
+          event.preventDefault()
+
+          const query = getCleanSearchQuery(input.value)
+
+          if (!query) {
+               navigateTo('/feed')
+               return
+          }
+
+          navigateTo(
+               createFeedSearchHref({
+                    scope: scopeControl.getScope(),
+                    query,
+               })
+          )
+     })
+     form.addEventListener('focusin', updateActiveState)
+     form.addEventListener('focusout', () => {
+          window.setTimeout(() => {
+               if (!form.contains(document.activeElement)) {
+                    scopeControl.close()
+               }
+               updateActiveState()
+          }, 0)
+     })
+     input.addEventListener('input', updateActiveState)
+
+     field.append(input, scopeControl.element, submitButton)
+     form.append(field)
+     updateActiveState()
+
+     return form
+}
+
 const createTopChrome = (options: TopChromeOptions = {}) => {
      const chrome = createElement('header', 'feed-chrome')
      const nav = createElement('nav', 'feed-chrome-nav')
@@ -153,13 +369,15 @@ const createTopChrome = (options: TopChromeOptions = {}) => {
           nav.append(backButton)
      }
 
+     nav.append(createFeedSearchForm())
+
      logo.src = '/assets/sprites/logo.svg'
      logo.alt = 'Советская Волна'
      logoLink.href = '/feed'
      logoLink.className = 'feed-logo-link'
      logoLink.append(logo)
 
-     if (nav.childNodes.length > 0) chrome.append(nav)
+     chrome.append(nav)
      chrome.append(logoLink)
 
      return chrome
@@ -222,6 +440,64 @@ const getTrackTitle = (post: PublicFeedPost, track: PublicFeedTrack): string =>
 
 const getTrackArtist = (post: PublicFeedPost, track: PublicFeedTrack): string =>
      normalizeText(track.artist) || getDisplayArtist(post)
+
+const normalizeSearchText = (value: string): string =>
+     normalizeText(value).toLowerCase().replace(/ё/g, 'е')
+
+const getPostArtistSearchValues = (post: PublicFeedPost): string[] => [
+     post.artist,
+     ...post.tracks.map((track) => track.artist),
+]
+
+const getPostMusicSearchValues = (post: PublicFeedPost): string[] => [
+     post.title,
+     getDisplayTitle(post),
+     ...post.tracks.map((track) => track.title),
+]
+
+const getPostTagSearchValues = (post: PublicFeedPost): string[] =>
+     post.tags.flatMap((tag) => [tag, `#${tag}`])
+
+const getPostSearchValues = (
+     post: PublicFeedPost,
+     scope: Exclude<FeedSearchScope, 'q'>
+): string[] => {
+     switch (scope) {
+          case 'artist':
+               return getPostArtistSearchValues(post)
+          case 'music':
+               return getPostMusicSearchValues(post)
+          case 'tag':
+               return getPostTagSearchValues(post)
+          case 'city':
+               return [post.city]
+     }
+}
+
+const postMatchesSearchScope = (
+     post: PublicFeedPost,
+     scope: Exclude<FeedSearchScope, 'q'>,
+     normalizedQuery: string
+): boolean =>
+     getPostSearchValues(post, scope).some((value) =>
+          normalizeSearchText(value).includes(normalizedQuery)
+     )
+
+const postMatchesSearch = (
+     post: PublicFeedPost,
+     search: FeedSearchState
+): boolean => {
+     const normalizedQuery = normalizeSearchText(search.query)
+
+     if (!normalizedQuery) return true
+
+     const scopes =
+          search.scope === 'q' ? feedSearchMatchScopes : [search.scope]
+
+     return scopes.some((scope) =>
+          postMatchesSearchScope(post, scope, normalizedQuery)
+     )
+}
 
 const getTrackKey = (post: PublicFeedPost, track: PublicFeedTrack): string =>
      `${post.slug}:${track.id}`
@@ -1044,20 +1320,24 @@ const createPostCard = (post: PublicFeedPost): HTMLElement => {
      return article
 }
 
-const createPagination = (page: number, totalPages: number): HTMLElement => {
+const createPagination = (
+     page: number,
+     totalPages: number,
+     createPageHref: (page: number) => string = getPageHref
+): HTMLElement => {
      const pagination = createElement('nav', 'feed-pagination')
      pagination.setAttribute('aria-label', 'Страницы ленты')
 
      const previous =
           page > 1
-               ? createLink(getPageHref(page - 1), '←')
+               ? createLink(createPageHref(page - 1), '←')
                : createElement('span', 'feed-action feed-action-disabled', '←')
      previous.setAttribute('aria-label', 'Предыдущая страница')
 
      const pageList = createElement('div', 'feed-page-list')
      const next =
           page < totalPages
-               ? createLink(getPageHref(page + 1), '→')
+               ? createLink(createPageHref(page + 1), '→')
                : createElement('span', 'feed-action feed-action-disabled', '→')
      next.setAttribute('aria-label', 'Следующая страница')
 
@@ -1065,7 +1345,7 @@ const createPagination = (page: number, totalPages: number): HTMLElement => {
           const item =
                index === page
                     ? createElement('span', 'feed-page-link feed-page-link-current', `${index}`)
-                    : createLink(getPageHref(index), `${index}`)
+                    : createLink(createPageHref(index), `${index}`)
 
           if (index === page) item.setAttribute('aria-current', 'page')
           item.classList.add('feed-page-link')
@@ -1077,7 +1357,12 @@ const createPagination = (page: number, totalPages: number): HTMLElement => {
      return pagination
 }
 
-const renderFeedList = (page: number, posts: PublicFeedPost[], pageSize: number) => {
+const renderFeedList = (
+     page: number,
+     posts: PublicFeedPost[],
+     pageSize: number,
+     options: FeedListRenderOptions = {}
+) => {
      if (posts.length === 0) {
           renderShell('Пока нет опубликованных постов', 'Лента пуста', [
                createLink('/radio', 'Радио'),
@@ -1090,12 +1375,21 @@ const renderFeedList = (page: number, posts: PublicFeedPost[], pageSize: number)
 
      if (page > totalPages) {
           document.title = `Страница не найдена | ${SITE_TITLE}`
-          renderShell('Страница не найдена', `В ленте всего ${totalPages}`, [
-               createLink('/feed', 'К ленте'),
-          ])
+          renderShell(
+               'Страница не найдена',
+               options.pageNotFoundSummary?.(totalPages) ??
+                    `В ленте всего ${totalPages}`,
+               [
+                    createLink(
+                         options.pageNotFoundActionHref ?? '/feed',
+                         options.pageNotFoundActionText ?? 'К ленте'
+                    ),
+               ]
+          )
           return
      }
 
+     const createPageHref = options.getPageHref ?? getPageHref
      const start = (page - 1) * normalizedPageSize
      const pagePosts = posts.slice(start, start + normalizedPageSize)
      const layout = createElement('section', 'feed-list-view')
@@ -1105,7 +1399,7 @@ const renderFeedList = (page: number, posts: PublicFeedPost[], pageSize: number)
           list.append(createPostCard(post))
      })
 
-     layout.append(list, createPagination(page, totalPages))
+     layout.append(list, createPagination(page, totalPages, createPageHref))
      renderView([layout])
      updateActiveTrackElements(feedPlayerGetState())
      scrollFeedListTargetIntoView(page, posts, pageSize)
@@ -1125,6 +1419,54 @@ const renderFeedListRoute = async (route: { page: number }) => {
           if (token !== renderToken) return
           renderShell('Не удалось загрузить ленту', 'Попробуйте обновить страницу', [
                createLink('/feed', 'Повторить'),
+               createLink('/radio', 'Радио'),
+          ])
+     }
+}
+
+const renderFeedSearchRoute = async (
+     route: { page: number; scope: FeedSearchScope; query: string }
+) => {
+     const search: FeedSearchState = {
+          scope: route.scope,
+          query: route.query,
+     }
+     const token = ++renderToken
+
+     if (!getCleanSearchQuery(search.query)) {
+          navigateTo('/feed', { replace: true })
+          return
+     }
+
+     renderShell('Загрузка поиска...', 'Ищем публикации', [])
+
+     try {
+          const index = await loadPublicFeedIndex()
+
+          if (token !== renderToken) return
+
+          const posts = index.posts.filter((post) =>
+               postMatchesSearch(post, search)
+          )
+
+          if (posts.length === 0) {
+               renderShell('Ничего не найдено', search.query, [
+                    createLink('/feed', 'К ленте'),
+               ])
+               return
+          }
+
+          renderFeedList(route.page, posts, index.pageSize, {
+               getPageHref: (page) => createFeedSearchHref(search, page),
+               pageNotFoundSummary: (totalPages) =>
+                    `В результатах всего ${totalPages}`,
+               pageNotFoundActionHref: createFeedSearchHref(search, 1),
+               pageNotFoundActionText: 'К результатам',
+          })
+     } catch {
+          if (token !== renderToken) return
+          renderShell('Не удалось выполнить поиск', 'Попробуйте обновить страницу', [
+               createLink('/feed', 'Лента'),
                createLink('/radio', 'Радио'),
           ])
      }
@@ -1181,13 +1523,27 @@ const renderFeedPostRoute = async (
 }
 
 export const renderFeedRoute = (route: AppRoute) => {
-     const useHistoryBack = previousRouteKind === 'feedList'
+     const useHistoryBack =
+          previousRouteKind === 'feedList' || previousRouteKind === 'feedSearch'
      currentFeedRoute = route
      previousRouteKind = route.kind
+
+     if (route.kind === 'feedSearch') {
+          lastFeedSearchState = {
+               scope: route.scope,
+               query: route.query,
+          }
+     } else if (route.kind === 'feedList' || route.kind === 'radio') {
+          lastFeedSearchState = { ...emptyFeedSearchState }
+     }
 
      switch (route.kind) {
           case 'feedList':
                void renderFeedListRoute(route)
+               return
+
+          case 'feedSearch':
+               void renderFeedSearchRoute(route)
                return
 
           case 'feedPost':

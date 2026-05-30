@@ -28,6 +28,14 @@ const getRouteTitle = (route: AppRoute): string => {
                return route.page === 1
                     ? `Лента | ${siteTitle}`
                     : `Лента, страница ${route.page} | ${siteTitle}`
+          case 'feedSearch':
+               {
+                    const title = route.query ? `Поиск: ${route.query}` : 'Поиск'
+
+                    return route.page === 1
+                         ? `${title} | ${siteTitle}`
+                         : `${title}, страница ${route.page} | ${siteTitle}`
+               }
           case 'feedPost':
                return `Пост ${route.slug} | ${siteTitle}`
           case 'notFound':
