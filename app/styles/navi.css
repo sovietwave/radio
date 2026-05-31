@@ -19,7 +19,6 @@
 	box-shadow: 0 0 5px 10px rgba(0, 0, 0, 1);
 	color: #ffffff;
 	font-size: 22pt;
-	text-transform: uppercase;
 	user-select: none;
 	-moz-user-select: none;
 	-khtml-user-select: none;
@@ -73,6 +72,7 @@
 	opacity: 0.58;
 	text-align: center;
 	text-decoration: none;
+	text-transform: uppercase;
 	white-space: nowrap;
 }
 
@@ -192,6 +192,7 @@ body:not([data-section='feed']) #top-feed-search {
 	height: 100%;
 
 	text-align: center;
+	text-transform: uppercase;
 	cursor: pointer;
 
 	opacity: 0.7;	
@@ -216,6 +217,7 @@ body:not([data-section='feed']) #top-feed-search {
 	height: 100%;
 
 	text-align: center;
+	text-transform: uppercase;
 	cursor: pointer;
 
 	opacity: 0.7;

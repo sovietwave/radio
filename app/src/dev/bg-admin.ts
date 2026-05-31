@@ -187,7 +187,6 @@ style.textContent = `
 
      .status-label,
      .folder {
-          text-transform: uppercase;
           letter-spacing: 0.08em;
      }
 

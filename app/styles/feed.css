@@ -151,7 +151,6 @@ body[data-view='feed'] #feed-player-bar {
 #feed-player-info {
      min-width: 0;
      padding-left: env(safe-area-inset-left);
-     text-transform: uppercase;
 }
 
 #feed-player-artist {
@@ -179,7 +178,6 @@ body[data-view='feed'] #feed-player-bar {
      line-height: 1.05;
      text-align: left;
      text-overflow: ellipsis;
-     text-transform: inherit;
      white-space: nowrap;
 }
 
@@ -364,7 +362,6 @@ body[data-view='feed'] #feed-player-bar {
      font-family: inherit;
      font-size: 18pt;
      line-height: 34px;
-     text-transform: uppercase;
 }
 
 .feed-search-input::placeholder {
@@ -398,7 +395,6 @@ body[data-view='feed'] #feed-player-bar {
      font-size: 17pt;
      line-height: 30px;
      text-overflow: ellipsis;
-     text-transform: uppercase;
      white-space: nowrap;
 }
 
@@ -450,7 +446,6 @@ body[data-view='feed'] #feed-player-bar {
      font-size: 16pt;
      line-height: 34px;
      text-align: left;
-     text-transform: uppercase;
      white-space: nowrap;
 }
 
@@ -543,7 +538,6 @@ body[data-view='feed'] #feed-player-bar {
      font-size: 24pt;
      font-weight: normal;
      line-height: 1;
-     text-transform: uppercase;
 }
 
 .feed-list-summary {
@@ -551,7 +545,6 @@ body[data-view='feed'] #feed-player-bar {
      font-size: 14pt;
      line-height: 1.2;
      opacity: 0.58;
-     text-transform: uppercase;
 }
 
 .feed-list {
@@ -674,7 +667,6 @@ body[data-view='feed'] #feed-player-bar {
      font-weight: normal;
      line-height: 1.05;
      overflow-wrap: anywhere;
-     text-transform: uppercase;
 }
 
 .feed-post-tracks {
@@ -688,7 +680,6 @@ body[data-view='feed'] #feed-player-bar {
      font-size: clamp(16pt, 1.8vw, 22pt);
      line-height: 1.18;
      overflow-wrap: anywhere;
-     text-transform: uppercase;
 }
 
 .feed-post-track-button {
@@ -706,7 +697,6 @@ body[data-view='feed'] #feed-player-bar {
      line-height: inherit;
      overflow-wrap: anywhere;
      text-align: left;
-     text-transform: inherit;
      pointer-events: auto;
 }
 
@@ -734,7 +724,6 @@ body[data-view='feed'] #feed-player-bar {
      font-size: clamp(14pt, 1.5vw, 18pt);
      line-height: 1.2;
      text-align: right;
-     text-transform: uppercase;
 }
 
 .feed-post-location,
@@ -770,7 +759,6 @@ body[data-view='feed'] #feed-player-bar {
      overflow-wrap: inherit;
      pointer-events: auto;
      text-decoration: none;
-     text-transform: inherit;
 }
 
 .feed-metadata-link:hover,
@@ -887,7 +875,6 @@ body[data-view='feed'] #feed-player-bar {
      font-weight: normal;
      line-height: 1.02;
      overflow-wrap: anywhere;
-     text-transform: uppercase;
 }
 
 .feed-detail-tracks-section {
@@ -918,7 +905,6 @@ body[data-view='feed'] #feed-player-bar {
      font-size: clamp(18pt, 1.8vw, 24pt);
      line-height: 1.18;
      text-align: left;
-     text-transform: uppercase;
 }
 
 .feed-detail-track:hover,
@@ -949,7 +935,6 @@ body[data-view='feed'] #feed-player-bar {
      color: rgba(255, 255, 255, 0.48);
      font-size: clamp(18pt, 1.8vw, 24pt);
      line-height: 1.2;
-     text-transform: uppercase;
 }
 
 .feed-detail-footer {
@@ -959,7 +944,6 @@ body[data-view='feed'] #feed-player-bar {
      font-size: clamp(14pt, 1.4vw, 18pt);
      line-height: 1.2;
      text-align: right;
-     text-transform: uppercase;
 }
 
 .feed-detail-meta,
@@ -1080,7 +1064,6 @@ body[data-view='feed'] #feed-player-bar {
      align-items: center;
      color: #ffffff;
      text-decoration: none;
-     text-transform: uppercase;
 }
 
 .feed-action {
@@ -1148,7 +1131,6 @@ body[data-view='feed'] #feed-player-bar {
      line-height: 1.05;
      overflow-wrap: anywhere;
      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.75);
-     text-transform: uppercase;
      -webkit-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.75);
 }
 
@@ -1158,7 +1140,6 @@ body[data-view='feed'] #feed-player-bar {
      line-height: 1.18;
      opacity: 0.8;
      overflow-wrap: anywhere;
-     text-transform: uppercase;
 }
 
 .feed-text-note {
@@ -1167,7 +1148,6 @@ body[data-view='feed'] #feed-player-bar {
      line-height: 30px;
      opacity: 0.5;
      overflow-wrap: anywhere;
-     text-transform: uppercase;
 }
 
 @media (max-width: 1100px) {

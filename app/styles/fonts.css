@@ -7,6 +7,14 @@
   font-style: normal;
 }*/
 
+/* Fonts: Evolventa */
+@font-face {
+  font-family: 'Evolventa';
+  src: url('/assets/fonts/Evolventa-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* Fonts: Stereonic-M */
 @font-face {
   font-family: 'Stereonic-M';
