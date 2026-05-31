@@ -524,6 +524,17 @@ const getPageHref = (page: number): string =>
 
 const getPostElementId = (slug: string): string => `${feedPostElementIdPrefix}${slug}`
 
+const getFeedListPostHref = (slug: string, page: number): string =>
+     `${getPageHref(page)}#${getPostElementId(slug)}`
+
+const setFeedRootLinkHref = (href = '/feed') => {
+     document
+          .querySelectorAll<HTMLAnchorElement>('[data-feed-root-link]')
+          .forEach((link) => {
+               link.setAttribute('href', href)
+          })
+}
+
 const getFeedPostPage = (
      posts: PublicFeedPost[],
      slug: string,
@@ -578,7 +589,7 @@ const navigateToFeedListPost = async (
           }
 
           pendingFeedListScroll = { slug, behavior }
-          navigateTo(`${getPageHref(page)}#${getPostElementId(slug)}`)
+          navigateTo(getFeedListPostHref(slug, page))
      } catch {
           navigateTo('/feed')
      }
@@ -614,7 +625,7 @@ const scrollFeedListTargetIntoView = (
           const targetPage = getFeedPostPage(posts, slug, pageSize)
 
           if (targetPage !== null && targetPage !== page) {
-               navigateTo(`${getPageHref(targetPage)}#${getPostElementId(slug)}`, {
+               navigateTo(getFeedListPostHref(slug, targetPage), {
                     replace: true,
                })
                return
@@ -1504,6 +1515,7 @@ const renderFeedSearchRoute = async (
 const renderFeedPostRoute = async (route: { slug: string }) => {
      const token = ++renderToken
 
+     setFeedRootLinkHref()
      renderShell('Загрузка поста...', 'Получаем публикацию', [])
 
      try {
@@ -1520,10 +1532,16 @@ const renderFeedPostRoute = async (route: { slug: string }) => {
                return
           }
 
+          const postFeedPage = getFeedPostPage(
+               index.posts,
+               post.slug,
+               index.pageSize
+          )
           const previousPost = index.posts[postIndex - 1] ?? null
           const nextPost = index.posts[postIndex + 1] ?? null
           const detailView = createPostDetail(post, previousPost, nextPost)
 
+          setFeedRootLinkHref(getFeedListPostHref(post.slug, postFeedPage ?? 1))
           document.title = `${getPostDocumentTitle(post)} | ${SITE_TITLE}`
           renderView([detailView], { isDetail: true })
           bindPostDetailPalette(post, detailView, token)
@@ -1558,6 +1576,10 @@ const renderAboutRoute = () => {
 
 export const renderFeedRoute = (route: AppRoute) => {
      currentFeedRoute = route
+
+     if (route.kind !== 'feedPost') {
+          setFeedRootLinkHref()
+     }
 
      if (route.kind === 'feedSearch') {
           lastFeedSearchState = {
