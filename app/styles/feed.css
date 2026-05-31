@@ -597,6 +597,7 @@ body[data-view='feed'] #feed-player-bar {
      min-width: 0;
      max-width: 100%;
      aspect-ratio: var(--feed-cover-ratio, 1 / 1);
+     border-radius: 4px;
      background:
           linear-gradient(135deg, rgba(var(--accentR), var(--accentG), var(--accentB), 0.16), transparent),
           #171717;
@@ -628,19 +629,7 @@ body[data-view='feed'] #feed-player-bar {
 .feed-cover-placeholder {
      position: absolute;
      inset: 0;
-     background:
-          radial-gradient(
-               circle at 50% 42%,
-               rgba(255, 255, 255, 0.08),
-               rgba(255, 255, 255, 0) 42%
-          ),
-          repeating-linear-gradient(
-               90deg,
-               rgba(255, 255, 255, 0.04) 0,
-               rgba(255, 255, 255, 0.04) 1px,
-               transparent 1px,
-               transparent 10px
-          );
+     background: #0D0D0D;
 }
 
 .feed-post-content {
