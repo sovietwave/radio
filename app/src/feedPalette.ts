@@ -100,6 +100,35 @@ const rgbToHsl = ({ r, g, b }: RgbColor): HslColor => {
      }
 }
 
+const hueToRgb = (p: number, q: number, t: number): number => {
+     let hue = t
+
+     if (hue < 0) hue += 1
+     if (hue > 1) hue -= 1
+     if (hue < 1 / 6) return p + (q - p) * 6 * hue
+     if (hue < 1 / 2) return q
+     if (hue < 2 / 3) return p + (q - p) * (2 / 3 - hue) * 6
+
+     return p
+}
+
+const hslToRgb = ({ h, s, l }: HslColor): RgbColor => {
+     if (s === 0) {
+          const value = Math.round(l * 255)
+
+          return { r: value, g: value, b: value }
+     }
+
+     const q = l < 0.5 ? l * (1 + s) : l + s - l * s
+     const p = 2 * l - q
+
+     return {
+          r: Math.round(hueToRgb(p, q, h + 1 / 3) * 255),
+          g: Math.round(hueToRgb(p, q, h) * 255),
+          b: Math.round(hueToRgb(p, q, h - 1 / 3) * 255),
+     }
+}
+
 const srgbToLinear = (value: number): number => {
      const channel = value / 255
 
@@ -196,8 +225,21 @@ const toPaletteCandidate = (
      weight,
 })
 
+const boostBackgroundColor = (rgb: RgbColor): RgbColor => {
+     const hsl = rgbToHsl(rgb)
+     if (hsl.s < 0.04) return rgb
+
+     const saturationBoost = 1.22 + getCloseness(hsl.l, 0.52, 0.42) * 0.14
+
+     return hslToRgb({
+          ...hsl,
+          s: clamp(hsl.s * saturationBoost, 0, 0.92),
+     })
+}
+
 const toPaletteColor = (rgb: RgbColor): PaletteColor => {
-     const rgbValue = `${rgb.r}, ${rgb.g}, ${rgb.b}`
+     const boostedRgb = boostBackgroundColor(rgb)
+     const rgbValue = `${boostedRgb.r}, ${boostedRgb.g}, ${boostedRgb.b}`
 
      return {
           css: `rgb(${rgbValue})`,
@@ -556,6 +598,41 @@ const selectDistinctCandidate = (
      return bestCandidate
 }
 
+const getCornerNeighborDistanceScore = (
+     topLeft: PaletteCandidate,
+     topRight: PaletteCandidate,
+     bottomLeft: PaletteCandidate,
+     bottomRight: PaletteCandidate
+): number =>
+     getOklchDistance(topLeft, topRight) * 0.68 +
+     getOklchDistance(topRight, bottomRight) * 0.61 +
+     getOklchDistance(bottomRight, bottomLeft) * 0.6 +
+     getOklchDistance(bottomLeft, topLeft) * 0.67
+
+const smoothPaletteCornerOrder = (
+     selected: PaletteCandidate[]
+): PaletteCandidate[] => {
+     if (selected.length < 4) return selected
+
+     const [primary, secondary, support, accent] = selected
+     const defaultScore = getCornerNeighborDistanceScore(
+          primary,
+          secondary,
+          support,
+          accent
+     )
+     const swappedScore = getCornerNeighborDistanceScore(
+          primary,
+          support,
+          secondary,
+          accent
+     )
+
+     return swappedScore < defaultScore
+          ? [primary, support, secondary, accent]
+          : selected
+}
+
 const getFeedDetailPaletteColors = (image: HTMLImageElement): RgbColor[] => {
      const candidates = getFeedDetailCandidates(image)
      const selected: PaletteCandidate[] = []
@@ -577,7 +654,7 @@ const getFeedDetailPaletteColors = (image: HTMLImageElement): RgbColor[] => {
           selected.push(candidate)
      }
 
-     return selected
+     return smoothPaletteCornerOrder(selected)
 }
 
 export const getFeedDetailPalette = (

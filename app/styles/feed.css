@@ -37,48 +37,37 @@
 }
 
 #feed-view.feed-view-detail.feed-view-detail-palette {
-     --feed-detail-bg-top-right-stop: 28%;
-     --feed-detail-bg-bottom-left-stop: 62%;
-     --feed-detail-bg-corner-fade: 58%;
-     --feed-detail-bg-top-left-fade: var(--feed-detail-bg-corner-fade);
-     --feed-detail-bg-top-right-fade: var(--feed-detail-bg-corner-fade);
-     --feed-detail-bg-bottom-left-fade: 60%;
-     --feed-detail-bg-bottom-right-fade: 62%;
+     --feed-detail-bg-top-left-fade: 78%;
+     --feed-detail-bg-top-right-fade: 84%;
+     --feed-detail-bg-bottom-left-fade: 84%;
+     --feed-detail-bg-bottom-right-fade: 82%;
      background:
           linear-gradient(180deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.68)),
           radial-gradient(
-               circle at 0% 0%,
-               rgba(var(--feed-detail-bg-top-left-rgb), 0.92),
+               ellipse 96% 88% at 0% 0%,
+               rgba(var(--feed-detail-bg-top-left-rgb), 0.86),
                rgba(var(--feed-detail-bg-top-left-rgb), 0)
                     var(--feed-detail-bg-top-left-fade)
           ),
           radial-gradient(
-               circle at 100% 0%,
-               rgba(var(--feed-detail-bg-top-right-rgb), 0.84),
+               ellipse 92% 86% at 100% 0%,
+               rgba(var(--feed-detail-bg-top-right-rgb), 0.64),
                rgba(var(--feed-detail-bg-top-right-rgb), 0)
                     var(--feed-detail-bg-top-right-fade)
           ),
           radial-gradient(
-               circle at 0% 100%,
-               rgba(var(--feed-detail-bg-bottom-left-rgb), 0.7),
+               ellipse 94% 88% at 0% 100%,
+               rgba(var(--feed-detail-bg-bottom-left-rgb), 0.62),
                rgba(var(--feed-detail-bg-bottom-left-rgb), 0)
                     var(--feed-detail-bg-bottom-left-fade)
           ),
           radial-gradient(
-               circle at 100% 100%,
-               rgba(var(--feed-detail-bg-bottom-right-rgb), 0.96),
+               ellipse 96% 90% at 100% 100%,
+               rgba(var(--feed-detail-bg-bottom-right-rgb), 0.74),
                rgba(var(--feed-detail-bg-bottom-right-rgb), 0)
                     var(--feed-detail-bg-bottom-right-fade)
           ),
-          linear-gradient(
-               135deg,
-               var(--feed-detail-bg-top-left) 0%,
-               var(--feed-detail-bg-top-right)
-                    var(--feed-detail-bg-top-right-stop),
-               var(--feed-detail-bg-bottom-left)
-                    var(--feed-detail-bg-bottom-left-stop),
-               var(--feed-detail-bg-bottom-right) 100%
-          );
+          #151515;
 }
 
 #feed-view::-webkit-scrollbar {
