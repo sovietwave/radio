@@ -21,7 +21,6 @@
         {
             "path": "/assets/sprites/bg/v1/day2.jpg",
             "tags": [
-                "day",
                 "v1",
                 "full"
             ],
@@ -190,7 +189,6 @@
         {
             "path": "/assets/sprites/bg/v1/evening1.jpg",
             "tags": [
-                "evening",
                 "v1",
                 "full"
             ],
@@ -365,7 +363,6 @@
         {
             "path": "/assets/sprites/bg/night10.jpg",
             "tags": [
-                "midnight",
                 "full"
             ],
             "mobilePath": "/assets/sprites/bg/mobile/night10.jpg"
