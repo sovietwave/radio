@@ -37,11 +37,17 @@
 }
 
 #feed-view.feed-view-detail.feed-view-detail-palette {
+     --feed-detail-bg-paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cfilter id='paper-grain' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.45' numOctaves='2' seed='17' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.34'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='96' height='96' filter='url(%23paper-grain)'/%3E%3C/svg%3E");
+     --feed-detail-bg-paper-fibers-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cfilter id='paper-fibers-x' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.075 0.82' numOctaves='4' seed='29' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.22'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23paper-fibers-x)'/%3E%3C/svg%3E");
+     --feed-detail-bg-paper-fibers-y: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340' viewBox='0 0 340 340'%3E%3Cfilter id='paper-fibers-y' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62 0.06' numOctaves='3' seed='43' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.14'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='340' height='340' filter='url(%23paper-fibers-y)'/%3E%3C/svg%3E");
      --feed-detail-bg-top-left-fade: 78%;
      --feed-detail-bg-top-right-fade: 84%;
      --feed-detail-bg-bottom-left-fade: 84%;
      --feed-detail-bg-bottom-right-fade: 82%;
      background:
+          var(--feed-detail-bg-paper-grain),
+          var(--feed-detail-bg-paper-fibers-x),
+          var(--feed-detail-bg-paper-fibers-y),
           linear-gradient(180deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.68)),
           radial-gradient(
                ellipse 96% 88% at 0% 0%,
@@ -68,6 +74,8 @@
                     var(--feed-detail-bg-bottom-right-fade)
           ),
           #151515;
+     background-blend-mode: overlay, soft-light, soft-light, normal, normal, normal, normal, normal;
+     background-size: 96px 96px, 260px 260px, 340px 340px, auto, auto, auto, auto, auto;
 }
 
 #feed-view::-webkit-scrollbar {
