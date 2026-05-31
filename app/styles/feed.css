@@ -666,6 +666,7 @@ body[data-view='feed'] #feed-player-bar {
 
 .feed-post-track {
      margin: 0 0 12px;
+     font-family: 'Evolventa', 'Stereonic-M', Arial, Verdana, Tahoma, sans-serif;
      font-size: clamp(16pt, 1.8vw, 22pt);
      line-height: 1.18;
      overflow-wrap: anywhere;
@@ -719,6 +720,7 @@ body[data-view='feed'] #feed-player-bar {
 .feed-post-tags {
      display: block;
      color: inherit;
+     font-family: 'Evolventa', 'Stereonic-M', Arial, Verdana, Tahoma, sans-serif;
      font-size: inherit;
      line-height: inherit;
      margin: 0;
@@ -728,6 +730,7 @@ body[data-view='feed'] #feed-player-bar {
 .feed-post-tag {
      display: inline;
      color: inherit;
+     font-family: 'Evolventa', 'Stereonic-M', Arial, Verdana, Tahoma, sans-serif;
      font-size: inherit;
      line-height: inherit;
      margin-left: 16px;
@@ -748,6 +751,11 @@ body[data-view='feed'] #feed-player-bar {
      overflow-wrap: inherit;
      pointer-events: auto;
      text-decoration: none;
+}
+
+.feed-post-location.feed-metadata-link,
+.feed-post-tag.feed-metadata-link {
+     font-family: 'Evolventa', 'Stereonic-M', Arial, Verdana, Tahoma, sans-serif;
 }
 
 .feed-metadata-link:hover,
@@ -909,6 +917,7 @@ body[data-view='feed'] #feed-player-bar {
 }
 
 .feed-detail-track-title {
+     font-family: 'Evolventa', 'Stereonic-M', Arial, Verdana, Tahoma, sans-serif;
      min-width: 0;
      overflow-wrap: anywhere;
 }
@@ -953,6 +962,7 @@ body[data-view='feed'] #feed-player-bar {
 .feed-detail-tag.feed-post-tag {
      margin-left: 0;
      color: inherit;
+     font-family: 'Evolventa', 'Stereonic-M', Arial, Verdana, Tahoma, sans-serif;
      font-size: inherit;
      line-height: inherit;
      overflow-wrap: anywhere;
