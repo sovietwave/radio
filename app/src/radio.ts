@@ -23,7 +23,7 @@ let stalledRestartTimer: ReturnType<typeof setTimeout> | null = null;
 let retryAttempt = 0;
 let tempShowing = false;
 const volumeChangeEventName = 'swr:volume-change';
-const degradedNoiseDelay = 200;
+const degradedNoiseDelay = 1000;
 const stalledRestartDelay = 8000;
 const retryDelays = [1000, 2000, 5000, 10000, 20000, 30000];
 
@@ -119,7 +119,7 @@ class Volume {
 const signalStatusTitle: Partial<Record<RadioSignalState, string>> = {
 	connecting: 'Поиск частоты...',
 	degraded: 'Слабый сигнал...',
-	retrying: 'Сигнал потерян — ищем снова...',
+	retrying: 'Сигнал потерян...',
 };
 
 const setSignalState = (nextState: RadioSignalState) => {

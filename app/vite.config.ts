@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { backgroundAdminPlugin } from './backgroundAdminPlugin'
 
 const FEED_MEDIA_PREFIX = '/feed/media/'
-const DEFAULT_FEED_MEDIA_ROOT = 'D:\\YandexDisk\\obsidian\\Sovietwave\\База\\Посты'
+const DEFAULT_FEED_MEDIA_ROOT = 'D:\\Sovietwave\\shared\\vault\\База\\Посты'
 
 const getExistingFeedMediaRoot = () => {
      const candidates = [
