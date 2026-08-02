@@ -1264,13 +1264,13 @@ const createPostNavigation = (
           createPostNavigationLink(
                previousPost,
                'feed-detail-navigation-previous',
-               '← Предыдущий',
+               '←',
                'Предыдущий пост'
           ),
           createPostNavigationLink(
                nextPost,
                'feed-detail-navigation-next',
-               'Следующий →',
+               '→',
                'Следующий пост'
           )
      )
