@@ -247,7 +247,7 @@ export default ({ command }) =>
                     workbox: {
                          clientsClaim: true,
                          skipWaiting: true,
-                         globPatterns: ['**/*.{js,css,html,ico,png,svg,wav}'],
+                         globPatterns: ['**/*.{js,css,html,ico,png,svg,wav,mp3}'],
                          globIgnores: ['feed/media/**/*'],
                     },
                     manifest: {

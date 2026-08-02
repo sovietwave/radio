@@ -8,10 +8,16 @@ import {
      initPWA,
      installPWA,
 } from './core'
-import { radioInit, radioToggle, radioStopPlayback } from './radio'
+import {
+     radioInit,
+     radioIsPlaying,
+     radioToggle,
+     radioStopPlayback,
+} from './radio'
 import { renderFeedRoute } from './feed'
 import { initRouter, type AppRoute } from './router'
 import { feedPlayerInit, feedPlayerStop } from './feedPlayer'
+import { playUiSound } from './uiSounds'
 
 const siteTitle = 'Советская Волна #sovietwave'
 
@@ -93,7 +99,9 @@ const renderRoute = (route: AppRoute) => {
 }
 
 const radioToggleFromUi = (channel?: string) => {
+     const sound = radioIsPlaying() ? 'pause' : 'play'
      feedPlayerStop()
+     playUiSound(sound)
      return radioToggle(channel)
 }
 

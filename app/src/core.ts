@@ -1,6 +1,7 @@
 import { rnd } from './common'
 import { backgroundAssetsByMode as backs } from './backgrounds'
 import { radioStop } from './radio'
+import { initUiSounds, playUiSound } from './uiSounds'
 
 let currentIndex: number = 0
 let frameIndex: number = 0
@@ -86,13 +87,6 @@ let logo
 let activeLinks
 let activeAir
 let frameOverlay
-let sfxSlide
-let sfxSlide2
-let sfxClick
-let sfxClick2
-let sfxCamera
-let sfxCamera2
-let sfxCounter
 let coverImage
 let frameMobileMode = false
 let player
@@ -185,14 +179,7 @@ export const init = () => {
      coverImage = $('#cover-image')
      player = $('#player-wrapper')
 
-     sfxSlide = new Audio('/assets/sfx/slide.mp3')
-     sfxClick = new Audio('/assets/sfx/click.mp3')
-     sfxCamera = new Audio('/assets/sfx/camera.mp3')
-
-     sfxSlide2 = new Audio('/assets/sfx/slide.mp3')
-     sfxClick2 = new Audio('/assets/sfx/click.mp3')
-     sfxCamera2 = new Audio('/assets/sfx/camera.mp3')
-     sfxCounter = 0
+     initUiSounds(state.volumeValue)
 
      frameIndex = rnd(framesCount) + 1
 
@@ -333,7 +320,7 @@ const switchFrame = () => {
 }
 
 export const switchCurrentBackground = () => {
-     sfxPlayCamera()
+     playUiSound('camera')
      switchBackground(SITE_BG_MODE || SITE_MODE)
 
      if (portraitOrientation) hideLeftPanels()
@@ -363,10 +350,10 @@ const toggleFrame = () => {
 export const toggleLinks = () => {
      if (linksIsEnabled) {
           disableLinks()
-          sfxPlaySlide()
+          playUiSound('slide')
      } else {
           enableLinks()
-          sfxPlayClick()
+          playUiSound('click')
      }
 
      closePopup()
@@ -450,10 +437,10 @@ const disableLinks = () => {
 export const toggleAirPanel = () => {
      if (airIsEnabled) {
           disableAir()
-          sfxPlaySlide()
+          playUiSound('slide')
      } else {
           enableAir()
-          sfxPlayClick()
+          playUiSound('click')
      }
 
      toggleFrame()
@@ -584,35 +571,8 @@ export const hideLeftPanels = () => {
      disableAir()
      disableLinks()
 
-     sfxPlaySlide()
+     playUiSound('slide')
      toggleFrame()
-}
-
-const sfxPlayClick = () => {
-     sfxCounter++
-     if (sfxCounter == 1) sfxClick.play()
-     else {
-          sfxClick2.play()
-          sfxCounter = 0
-     }
-}
-
-const sfxPlaySlide = () => {
-     sfxCounter++
-     if (sfxCounter == 1) sfxSlide.play()
-     else {
-          sfxSlide2.play()
-          sfxCounter = 0
-     }
-}
-
-const sfxPlayCamera = () => {
-     sfxCounter++
-     if (sfxCounter == 1) sfxCamera.play()
-     else {
-          sfxCamera2.play()
-          sfxCounter = 0
-     }
 }
 
 export const toggleNavi = () => {
@@ -626,7 +586,7 @@ export const toggleNavi = () => {
      naviIsEnabled = !naviIsEnabled
 
      if (!naviIsEnabled) {
-          sfxPlaySlide()
+          playUiSound('slide')
 
           navi.animate(
                {
@@ -673,7 +633,7 @@ export const toggleNavi = () => {
 
           //coverImage.animate({'background-size': 'cover 100%'}, durationHide);
      } else {
-          sfxPlayClick()
+          playUiSound('click')
           switchFrame()
 
           navi.animate(
@@ -783,7 +743,7 @@ let popupTimeout
 
 export function showPopup() {
      toggleBright()
-     sfxClick.play()
+     playUiSound('click')
      //radioStop();
 
      clearTimeout(popupTimeout)
