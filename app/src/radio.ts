@@ -133,7 +133,7 @@ const setSignalState = (nextState: RadioSignalState) => {
 	}
 
 	tempShowing = false;
-	if (showingTrackStruct) setTrackInfo(showingTrackStruct);
+	setTrackInfo(showingTrackStruct || ' ');
 };
 
 const clearRestartTimer = () => {
@@ -432,7 +432,7 @@ function getCurrentTrack(onSuccess, isBrief?: boolean) {
 	}).done(function (data) {
 		onSuccess(data);
 	}).fail(function (jq, jx) {
-		setTrackInfo(' ');
+		if (!tempShowing) setTrackInfo(' ');
 	});
 }
 
@@ -559,6 +559,8 @@ const setArtistLink = (link) => {
 
 const setTrackInfo = (track) => {
 	if (!track)
+		return;
+	if (tempShowing && typeof track === 'object')
 		return;
 
 	let trackToDisplay = "";

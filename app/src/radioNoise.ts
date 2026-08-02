@@ -39,7 +39,7 @@ class RadioNoiseController {
           if (!context) return
 
           try {
-               if (context.state === 'suspended') await context.resume()
+               if (context.state !== 'running') await context.resume()
                await this.getBuffer(context)
                this.startIfNeeded()
           } catch (loadError) {
@@ -98,6 +98,7 @@ class RadioNoiseController {
 
      private getContext() {
           if (this.context) return this.context
+          if (this.loadFailed) return null
 
           const AudioContextConstructor =
                globalThis.AudioContext ||
