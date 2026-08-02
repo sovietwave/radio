@@ -1,6 +1,7 @@
 import { randword } from "./common";
 import { setVal } from "./statusSave";
 import { state } from "./core";
+import { radioNoise } from './radioNoise';
 
 const error = console.error;
 
@@ -13,13 +14,30 @@ let trackHistoryAmount = 0;
 let radioPlayer = null;
 let playerReady = false;
 let currentChannel = '';
+let activeChannel = '';
+let activeStreamUrl = '';
 let nowPlaying = false;
-let playerRestartTimer = null;
+let playerRestartTimer: ReturnType<typeof setTimeout> | null = null;
+let degradedTimer: ReturnType<typeof setTimeout> | null = null;
+let stalledRestartTimer: ReturnType<typeof setTimeout> | null = null;
+let retryAttempt = 0;
 let tempShowing = false;
-let trackTimer = null;
 const volumeChangeEventName = 'swr:volume-change';
+const degradedNoiseDelay = 200;
+const stalledRestartDelay = 8000;
+const retryDelays = [1000, 2000, 5000, 10000, 20000, 30000];
+
+type RadioSignalState =
+	| 'stopped'
+	| 'connecting'
+	| 'live'
+	| 'degraded'
+	| 'retrying';
+
+let signalState: RadioSignalState = 'stopped';
 
 const dispatchVolumeChange = (volume: number) => {
+	radioNoise.setVolume(volume);
 	window.dispatchEvent(
 		new CustomEvent(volumeChangeEventName, {
 			detail: { volume }
@@ -46,8 +64,9 @@ class Volume {
 		this.slider.on("input", () => {
 			const vol = +this.slider.val() / 100;
 
-			if (playerReady) {
+			if (playerReady && radioPlayer) {
 				radioPlayer.volume = vol;
+				radioPlayer.muted = vol === 0;
 				state.volumeValue = vol;
 			}
 
@@ -56,7 +75,7 @@ class Volume {
 		});
 		this.slider.val(DEFAULT_VOLUME_VALUE * 100);
 
-		radioPlayer.volume = DEFAULT_VOLUME_VALUE;
+		if (radioPlayer) radioPlayer.volume = DEFAULT_VOLUME_VALUE;
 		state.volumeValue = DEFAULT_VOLUME_VALUE;
 		dispatchVolumeChange(DEFAULT_VOLUME_VALUE);
 
@@ -72,11 +91,14 @@ class Volume {
 	}
 
 	toggleVolume() {
-		if (radioPlayer.volume != 0) {
+		if (!radioPlayer) return;
+
+		if (state.volumeValue != 0) {
 			// mute
 
 			this.lastVolumeValue = +this.slider.val() / 100;
 			radioPlayer.volume = 0;
+			radioPlayer.muted = true;
 			state.volumeValue = 0;
 			this.slider.val(0.);
 			this.setVolumeIcon(0);
@@ -85,6 +107,7 @@ class Volume {
 			// unmute
 
 			radioPlayer.volume = this.lastVolumeValue;
+			radioPlayer.muted = false;
 			state.volumeValue = this.lastVolumeValue;
 			this.slider.val(radioPlayer.volume * 100);
 			this.setVolumeIcon(radioPlayer.volume);
@@ -93,9 +116,186 @@ class Volume {
 	}
 }
 
+const signalStatusTitle: Partial<Record<RadioSignalState, string>> = {
+	connecting: 'Поиск частоты...',
+	degraded: 'Слабый сигнал...',
+	retrying: 'Сигнал потерян — ищем снова...',
+};
+
+const setSignalState = (nextState: RadioSignalState) => {
+	signalState = nextState;
+	const statusTitle = signalStatusTitle[nextState];
+
+	if (statusTitle) {
+		tempShowing = true;
+		setTrackInfo(statusTitle);
+		return;
+	}
+
+	tempShowing = false;
+	if (showingTrackStruct) setTrackInfo(showingTrackStruct);
+};
+
+const clearRestartTimer = () => {
+	if (playerRestartTimer === null) return;
+	clearTimeout(playerRestartTimer);
+	playerRestartTimer = null;
+};
+
+const clearDegradedTimers = () => {
+	if (degradedTimer !== null) {
+		clearTimeout(degradedTimer);
+		degradedTimer = null;
+	}
+
+	if (stalledRestartTimer !== null) {
+		clearTimeout(stalledRestartTimer);
+		stalledRestartTimer = null;
+	}
+};
+
+const clearRecoveryTimers = () => {
+	clearRestartTimer();
+	clearDegradedTimers();
+};
+
+const isActiveStream = () =>
+	nowPlaying &&
+	playerReady &&
+	radioPlayer &&
+	activeStreamUrl !== '' &&
+	radioPlayer.src === activeStreamUrl;
+
+const stopStreamTransport = () => {
+	if (!radioPlayer) return;
+
+	activeStreamUrl = '';
+	radioPlayer.pause();
+	radioPlayer.removeAttribute('src');
+	radioPlayer.load();
+};
+
+const getRetryDelay = () =>
+	retryDelays[Math.min(retryAttempt, retryDelays.length - 1)];
+
+const connectStream = (isRetry = false) => {
+	if (!playerReady || !radioPlayer || !nowPlaying) return;
+
+	clearRestartTimer();
+	clearDegradedTimers();
+	setSignalState(isRetry ? 'retrying' : 'connecting');
+
+	const streamUrl = `https://station.waveradio.org/${activeChannel}?${randword()}`;
+	activeStreamUrl = streamUrl;
+	radioPlayer.src = streamUrl;
+	radioPlayer.title = showingTrack;
+
+	void radioPlayer.play().catch((playError) => {
+		if (!isActiveStream()) return;
+
+		if (playError instanceof DOMException && playError.name === 'NotAllowedError') {
+			console.warn('Radio playback was blocked by the browser', playError);
+			radioStop();
+			return;
+		}
+
+		handleStreamFailure();
+	});
+};
+
+const scheduleRetry = () => {
+	if (!nowPlaying) return;
+
+	clearRestartTimer();
+	setSignalState('retrying');
+	const delay = getRetryDelay();
+	retryAttempt += 1;
+	playerRestartTimer = setTimeout(() => connectStream(true), delay);
+};
+
+const retryStreamNow = () => {
+	if (!nowPlaying) return;
+
+	clearRecoveryTimers();
+	stopStreamTransport();
+	connectStream(true);
+};
+
+const handleStreamFailure = () => {
+	if (!isActiveStream()) return;
+
+	clearDegradedTimers();
+	radioNoise.fadeIn();
+	stopStreamTransport();
+	scheduleRetry();
+};
+
+const handleStreamPlaying = () => {
+	if (!isActiveStream()) return;
+
+	clearRecoveryTimers();
+	retryAttempt = 0;
+	setSignalState('live');
+	radioNoise.fadeOut();
+	getCurrentTrack(setTrackInfo);
+};
+
+const handlePotentialInterruption = () => {
+	if (!isActiveStream() || signalState === 'degraded') return;
+
+	setSignalState('degraded');
+	degradedTimer = setTimeout(() => {
+		degradedTimer = null;
+		if (!isActiveStream()) return;
+
+		if (radioPlayer.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+			handleStreamPlaying();
+			return;
+		}
+
+		radioNoise.fadeIn();
+	}, degradedNoiseDelay);
+
+	stalledRestartTimer = setTimeout(() => {
+		stalledRestartTimer = null;
+		if (!isActiveStream()) return;
+
+		if (radioPlayer.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+			handleStreamPlaying();
+			return;
+		}
+
+		radioNoise.fadeIn();
+		retryStreamNow();
+	}, stalledRestartDelay);
+};
+
+const bindStreamEvents = () => {
+	if (!radioPlayer) return;
+
+	radioPlayer.onerror = handleStreamFailure;
+	radioPlayer.onplaying = handleStreamPlaying;
+	radioPlayer.onwaiting = handlePotentialInterruption;
+	radioPlayer.onstalled = handlePotentialInterruption;
+	radioPlayer.ontimeupdate = () => {
+		if (
+			signalState === 'degraded' &&
+			isActiveStream() &&
+			radioPlayer.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA
+		) {
+			handleStreamPlaying();
+		}
+	};
+	radioPlayer.onloadstart = () => {
+		if (!isActiveStream()) return;
+		setSignalState(retryAttempt > 0 ? 'retrying' : 'connecting');
+	};
+};
+
 export const radioInit = () => {
 	try {
 		radioPlayer = document.createElement('audio');
+		radioNoise.preload();
 		
 		// Set audio attributes for background playback
 		radioPlayer.setAttribute('preload', 'auto');
@@ -103,6 +303,7 @@ export const radioInit = () => {
 		radioPlayer.setAttribute('playsinline', 'true');
 		radioPlayer.setAttribute('webkit-playsinline', 'true');
 		radioPlayer.setAttribute('x-webkit-airplay', 'allow');
+		bindStreamEvents();
 		
 		// Add event listeners for background playback
 		document.addEventListener('visibilitychange', () => {
@@ -124,6 +325,11 @@ export const radioInit = () => {
 				// Keep playing when page is about to unload
 				radioPlayer.play().catch(() => {});
 			}
+			radioNoise.stopImmediately();
+		});
+
+		window.addEventListener('online', () => {
+			if (nowPlaying && signalState !== 'live') retryStreamNow();
 		});
 		
 		if (radioPlayer.canPlayType('audio/aac') != 'no' &&
@@ -155,53 +361,14 @@ export const radioInit = () => {
 	}
 };
 
-const radioPlay = (channel?: string) => {
-	channel = channel || currentChannel;
-
-	if (playerReady) {
-		// Create a player object
-		radioPlayer.src = `https://station.waveradio.org/${channel}?${randword()}`; // fixes buffering
-		radioPlayer.title = showingTrack;
-
-		radioPlayer.onerror = function () {
-			if (nowPlaying) {
-				setTempTitle('Сигнал потерян...');
-				radioStop();
-
-				clearTimeout(playerRestartTimer);
-				playerRestartTimer = setTimeout(function () {
-					radioPlay();
-				}, 1000);
-			}
-		}
-
-		radioPlayer.oncanplay = function () {
-			setTrackInfo(showingTrackStruct);
-			clearTimeout(playerRestartTimer);
-		}
-
-		radioPlayer.onstalled = function () {
-			setTempTitle('Слабый сигнал...');
-		}
-
-		radioPlayer.onloadstart = function () {
-			if (nowPlaying)
-				setTempTitle('Поиск частоты...');
-		}
-
-		radioPlayer.play();
-
-		$('#player-switch').attr('class', 'player-switch-playing');
-
-		setVal("player_on", "1");
-	} else
-		error("ERR: Still loading");
-};
-
 export const radioStop = () => {
 	if (playerReady && radioPlayer) {
-		radioPlayer.pause();
-		radioPlayer.src = '';
+		nowPlaying = false;
+		retryAttempt = 0;
+		clearRecoveryTimers();
+		stopStreamTransport();
+		radioNoise.fadeOut(0.25);
+		setSignalState('stopped');
 
 		$('#player-switch').attr('class', 'player-switch-stalled');
 		setVal('player_on', "0");
@@ -209,14 +376,12 @@ export const radioStop = () => {
 };
 
 export const radioStopPlayback = () => {
-	nowPlaying = false;
 	radioStop();
 };
 
 export const radioIsPlaying = () => nowPlaying;
 
 export const radioGetVolume = () => {
-	if (radioPlayer) return radioPlayer.volume;
 	return state.volumeValue;
 };
 
@@ -230,13 +395,18 @@ export const radioToggle = (channel?: string) => {
 	if (nowPlaying == false) {
 		try {
 			nowPlaying = true;
-			radioPlay(channel);
+			activeChannel = channel;
+			retryAttempt = 0;
+			void radioNoise.unlock();
+			$('#player-switch').attr('class', 'player-switch-playing');
+			setVal("player_on", "1");
+			connectStream();
 		} catch (e) {
 			error('Error: ' + e.message);
+			radioStop();
 		}
 	} else {
 		try {
-			nowPlaying = false;
 			radioStop();
 		} catch (e) {
 			error('Error: ' + e.message);
@@ -473,18 +643,6 @@ const setTrackInfo = (track) => {
 		}
 	}
 };
-
-const setTempTitle = (title) => {
-	tempShowing = true;
-
-	setTrackInfo(title);
-	clearTimeout(trackTimer);
-	trackTimer = setTimeout(function () {
-		tempShowing = false;
-		setTrackInfo(showingTrackStruct);
-	}, 5000);
-};
-
 
 // Sovietwave-specific code but may be used anywhere
 const requestListenersCount = () => {
